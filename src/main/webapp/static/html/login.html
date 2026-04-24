@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>软件学院信息管理系统-登录</title>
+  <script src="https://kit.fontawesome.com/b81ce93c93.js" crossorigin="anonymous"></script>
+  <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon">
+  
+  <style>
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5; 
+    display: flex;
+    justify-content: center; 
+    align-items: center;   
+    min-height: 100vh;
+  }
+
+  /* 核心：新增一个容器包裹左右两部分 */
+  .login-container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px; /* 限制最大宽度，不再满屏幕跑 */
+    height: 800px;     /* 固定高度，看起来更精致 */
+    background-color: #fff;
+    border-radius: 20px;
+    overflow: hidden;  /* 确保内部圆角生效 */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1); /* 加点阴影更高级 */
+  }
+  .enterprisename {
+    font-size: 20px;
+    color: black;
+    margin-bottom: 60px;
+    display: flex;
+    align-items: center;
+  }
+  .left {
+    flex: 1; /* 自动分配空间 */
+    padding: 80px;
+    
+    box-sizing: border-box;
+    background-color: #fff;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .right {
+    flex: 1.2; /* 图片区域稍微宽一点点更好看 */
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px; 
+  }
+
+  .right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 确保图片覆盖整个区域 */
+    border-radius: 15px;
+  }
+
+  /* 简单的美化输入框 */
+  input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+
+  /* 只美化文本和密码输入，避免影响复选框 */
+  input[type="text"],
+  input[type="password"]{
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  button {
+    background: #7e01fb;
+    color: #ffffff;
+    padding: 10px 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+    margin-top: 50px;
+  }
+  .tips{
+    color:grey;
+     margin-bottom: 40px;
+  }
+  /* 复选框与标签在一行 */
+  .reme{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .reme input[type="checkbox"]{
+    width: 16px;
+    height: 16px;
+    margin: 0;
+  }
+  .reme a{ /* 恢复为可见颜色，放到右侧 */
+    color: grey;
+    margin-left: auto;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .hints {
+    margin-top: 60px;
+   color:grey;
+  }
+  .hints a{
+    color: #7e01fb;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  </style>
+   
+   
+</head>
+<body>
+    <div class="login-container"> <div class="left">
+            <div class="enterprisename">
+                <span class="fas fa-seedling"></span> <strong>SeInfor</strong>
+            </div>
+            <div class="welcome">
+                <h1>Hello,<br>Welcome Back</h1>
+                <p class="tips">Hey, welcome back to your special place</p>
+            </div>
+            <div class="postinfor">
+                <form action="">
+                    <input type="text" placeholder="Username" required>
+                    <input type="password" placeholder="Password" required>
+                    <div class="reme"> 
+                      <label for="remember">Remember me</label>
+                        <input type="checkbox" id="remember">
+                       
+                        <a href="#">Forgot password?</a>
+                    </div>
+                </form>
+            </div>
+            <div class="buttons">
+                <button>sign in</button>
+            </div>
+            <div class="hints">
+                <p>Don't have an account? 
+                   <a href="#">Sign up</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="right">
+            <img src="../img/right-ilu.webp" alt="illustration">
+        </div>
+    </div> </body>
+</html>
