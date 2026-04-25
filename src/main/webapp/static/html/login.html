@@ -20,16 +20,16 @@
     min-height: 100vh;
   }
 
-  /* 核心：新增一个容器包裹左右两部分 */
+
   .login-container {
     display: flex;
     width: 90%;
-    max-width: 1200px; /* 限制最大宽度，不再满屏幕跑 */
-    height: 800px;     /* 固定高度，看起来更精致 */
+    max-width: 1200px;
+    height: 800px;   
     background-color: #fff;
     border-radius: 20px;
-    overflow: hidden;  /* 确保内部圆角生效 */
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1); /* 加点阴影更高级 */
+    overflow: hidden; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
   }
   .enterprisename {
     font-size: 20px;
@@ -39,7 +39,7 @@
     align-items: center;
   }
   .left {
-    flex: 1; /* 自动分配空间 */
+    flex: 1;
     padding: 80px;
     
     box-sizing: border-box;
@@ -51,7 +51,7 @@
   }
 
   .right {
-    flex: 1.2; /* 图片区域稍微宽一点点更好看 */
+    flex: 1.2; 
     background-color: #ffffff;
     display: flex;
     align-items: center;
@@ -62,11 +62,11 @@
   .right img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 确保图片覆盖整个区域 */
+ 
     border-radius: 15px;
   }
 
-  /* 简单的美化输入框 */
+ 
   input {
     width: 100%;
     padding: 12px;
@@ -76,7 +76,7 @@
     box-sizing: border-box;
   }
 
-  /* 只美化文本和密码输入，避免影响复选框 */
+ 
   input[type="text"],
   input[type="password"]{
     -webkit-appearance: none;
@@ -94,11 +94,16 @@
     text-align: center;
     margin-top: 50px;
   }
+  button:hover {
+    background: skyblue;
+    color: #7e01fb;
+  }
+  
   .tips{
     color:grey;
      margin-bottom: 40px;
   }
-  /* 复选框与标签在一行 */
+
   .reme{
     display: flex;
     align-items: center;
@@ -110,7 +115,7 @@
     height: 16px;
     margin: 0;
   }
-  .reme a{ /* 恢复为可见颜色，放到右侧 */
+  .reme a{ 
     color: grey;
     margin-left: auto;
     text-decoration: none;
@@ -124,6 +129,124 @@
     color: #7e01fb;
     text-decoration: none;
     font-weight: bold;
+  }
+
+
+  .left {
+    transition: all 0.8s ease-in-out;
+    position: relative;
+  }
+
+  .left.slide-out-left {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  /* 右侧容器动画 */
+  .right {
+    transition: all 0.8s ease-in-out;
+    position: relative;
+  }
+
+  .right.slide-out-right {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  /* 隐藏的注册表单和左侧图片 - 初始状态隐藏 */
+  .signup-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.8s ease-in-out 0.3s;
+    pointer-events: none;
+  }
+
+  .signup-container.show {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .signup-left {
+    flex: 1.2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: #fff;
+    overflow: hidden;
+  }
+
+  .signup-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+  }
+
+  .signup-right {
+    flex: 1;
+    padding: 80px;
+    box-sizing: border-box;
+    background-color: #fff;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto;
+  }
+
+  .signup-form h1 {
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
+
+  .signup-form p {
+    color: grey;
+    margin-bottom: 20px;
+  }
+
+  .signup-form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+
+
+
+  .back-to-login {
+    margin-top: 30px;
+    text-align: center;
+    color: grey;
+  }
+
+  .back-to-login a {
+    color: #7e01fb;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+  }
+.signup-button{
+  color: #ffffff;
+  background-color:rgb(26, 233, 164) ;
+}
+.signup-button:hover{
+  background-color: pink;
+  color: rgb(26, 233, 164);
+}
+  /* 绝对定位容器 */
+  .login-container {
+    position: relative;
   }
   </style>
    
@@ -163,5 +286,63 @@
         <div class="right">
             <img src="../img/right-ilu.webp" alt="illustration">
         </div>
-    </div> </body>
+
+        <!-- 注册界面 -->
+        <div class="signup-container">
+            <div class="signup-left">
+                <img src="../img/left-ilu.png" alt="signup illustration">
+            </div>
+            <div class="signup-right">
+                <form class="signup-form" action="">
+                    <h1>Create Account</h1>
+                    <p>Join us today and get started</p>
+                     
+                    <input type="username" placeholder="Username" required>
+                    <input type="password" placeholder="Password" required>
+                    <input type="password" placeholder="Confirm Password" required>
+                    <button type="submit" class="signup-button" " >Sign up</button>
+                    <div class="back-to-login">
+                        <p>Already have an account? 
+                           <a href="#" onclick="backToLogin()" style="color: rgb(26, 233, 164);" >Sign in</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+   </body>
+   <script>
+    // 获取DOM元素
+    const loginContainer = document.querySelector('.login-container');
+    const leftSection = document.querySelector('.left');
+    const rightSection = document.querySelector('.right');
+    const signupContainer = document.querySelector('.signup-container');
+    const signupLink = document.querySelector('.hints a');
+
+    // 点击"Sign up"跳转到注册页面
+    signupLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // 添加滑出动画类
+        leftSection.classList.add('slide-out-left');
+        rightSection.classList.add('slide-out-right');
+        
+        // 延迟显示注册容器
+        setTimeout(() => {
+            signupContainer.classList.add('show');
+        }, 100);
+    });
+
+    // 返回登录页面
+    function backToLogin() {
+        // 移除注册容器的show类
+        signupContainer.classList.remove('show');
+        
+        // 延迟移除登录的滑出类，使登录页面重新显示
+        setTimeout(() => {
+            leftSection.classList.remove('slide-out-left');
+            rightSection.classList.remove('slide-out-right');
+        }, 100);
+    }
+   </script>
 </html>
