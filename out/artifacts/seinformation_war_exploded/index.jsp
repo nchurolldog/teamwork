@@ -11,7 +11,7 @@
     <title>Title</title>
   </head>
   <body>
-  my first jsp
+
   </body>
 
 </html>
