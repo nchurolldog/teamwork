@@ -37,5 +37,8 @@ build/
 ### Mac OS ###
 .DS_Store
 
+### Node.js ###
+node_modules/
+
 ### Database Config ###
 src/main/java/org/se/model/util/DbUtil.java
