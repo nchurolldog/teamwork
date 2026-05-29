@@ -37,7 +37,5 @@ build/
 ### Mac OS ###
 .DS_Store
 
-
 ### Database Config ###
 src/main/java/org/se/model/util/DbUtil.java
-No newline at end of file
