@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard_Template</title>
+      <script src="https://kit.fontawesome.com/b81ce93c93.js" crossorigin="anonymous"></script>
+  <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="../css/templatetest.css">
+  <link rel="stylesheet" href="../css/mycss.css">
+  <style>
+      /* these are default styles do not change and remove */
+
+    /* Add your custom styles here */ 
+  </style>
+</head>
+<body>
+    <div class="navbarleft">
+      <div class="logo-header">
+        <img src="../img/money.png" alt="Logo"> <span>SEInformation</span>
+      </div>
+      <div class="maincontent">
+        <div class="links">
+          <div class="selectionlink"><i class="fas fa-home"></i><span>Dashboard</span></div>
+          <div class="selectionlink"><i class="fas fa-inbox"></i><span>Inbox</span></div>
+          <div class="selectionlink"><i class="fas fa-exchange-alt"></i><span>Transactions</span></div>
+          <div class="selectionlink"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></div>
+          <div class="selectionlink"><i class="fas fa-user-graduate"></i><span>Students</span></div>
+          <div class="selectionlink"><i class="fas fa-calendar-check"></i><span>Attendance</span></div>
+          <div class="selectionlink"><i class="fas fa-user-friends"></i><span>Consultator</span></div>
+          <div class="selectionlink"><i class="fas fa-graduation-cap"></i><span>Scholarship</span></div>
+          <div class="selectionlink"><i class="fas fa-users"></i><span>Community</span></div>
+        </div>
+      </div>
+      <div class="cardandlogout">
+        <div class="card">
+          <div class="cardicon"><img src="../img/money.png" alt="Card Icon"></div>
+          <div class="cardtext"><h1>New Tools Available</h1><p>Smarter updates for easier school management</p>
+            <button>See Updates</button>
+          </div>
+        </div>
+        <div class="logout">
+          <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="headinfor">
+        <div class="currentpage">
+          <div class="page-title">Dashboard</div>
+          <div class="page-breadcrumb">path: Home / Dashboard</div>
+        </div>
+        <div class="userprofile">
+          <div class="searchbar">
+            <label for="search"><i class="fas fa-search"></i></label>
+            <input type="text" id="search" placeholder="Search...">
+          </div>
+          <div class="normalbutton">
+            <i class="fas fa-cog"></i>
+          </div>
+          <div class="normalbutton">
+            <i class="fas fa-bell"></i>
+          </div>
+          <div class="photoandname">
+            <div class="photo">
+              <img src="../img/maomao.jpg" alt="Profile Photo">
+            </div>
+            <div class="nameandposition">
+              <div class="name">John Doe</div>
+              <div class="position">Administrator</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="main">
+       here is the main content 
+      </div>
+      <div class="copyright">
+        <div class="copyrightleft">
+          <span>Copyright © 2024 SEInformation. All rights reserved.</span> 
+          <a href="#">Privacy Policy</a>  <a href="#">Terms of Service</a>
+        </div>
+        <div class="contactwithus">
+          <!-- Facebook -->
+    <i class="fab fa-facebook"></i>
+
+    <!-- X (原Twitter) -->
+    <i class="fab fa-x-twitter"></i>
+
+    <!-- Instagram -->
+    <i class="fab fa-instagram"></i>
+
+    <!-- YouTube -->
+    <i class="fab fa-youtube"></i>
+        </div>
+      </div>
+    </div>
+    
+</body>
+<script>
+  // 菜单项点击事件
+  const selectionLinks = document.querySelectorAll('.selectionlink');
+  
+  selectionLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      // 移除所有菜单项的active类
+      selectionLinks.forEach(item => item.classList.remove('active'));
+      // 给当前点击的菜单项添加active类
+      this.classList.add('active');
+      
+      // 这里可以添加加载不同内容的逻辑
+      console.log('Clicked:', this.querySelector('span').textContent);
+    });
+  });
+  
+  // 登出按钮点击事件
+  const logoutBtn = document.querySelector('.logout');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function() {
+      console.log('Logout clicked');
+      // 添加登出逻辑
+    });
+  }
+</script>
+</html>

@@ -1,0 +1,32 @@
+select{
+    border-radius: 3px;
+    background-color: #CEEBF1;
+    color:#1A2B57;
+    font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+}
+button{
+    border-radius: 3px;
+    background-color: #FFCDFE;
+    color:#1A2B57;
+    font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+}
+input{
+    border-radius: 3px;
+    background-color: white;
+    color:grey;
+    font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+}
+html{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body{
+    height: 100vh;
+    width: 1400px;
+    margin: 0;
+    display: flex;
+    font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+}
