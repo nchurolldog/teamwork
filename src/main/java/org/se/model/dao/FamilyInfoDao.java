@@ -18,7 +18,7 @@ public class FamilyInfoDao {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, familyInfo.getStudentID());
             pstmt.setString(2, familyInfo.getHomeAddress());
-            pstmt.setInt(3, familyInfo.getFamilySize());
+            pstmt.setObject(3, familyInfo.getFamilySize());
             pstmt.setString(4, familyInfo.getPhone());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -32,7 +32,7 @@ public class FamilyInfoDao {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, familyInfo.getHomeAddress());
-            pstmt.setInt(2, familyInfo.getFamilySize());
+            pstmt.setObject(2, familyInfo.getFamilySize());
             pstmt.setString(3, familyInfo.getPhone());
             pstmt.setString(4, familyInfo.getStudentID());
             return pstmt.executeUpdate() > 0;
@@ -64,7 +64,7 @@ public class FamilyInfoDao {
                     FamilyInfo familyInfo = new FamilyInfo();
                     familyInfo.setStudentID(rs.getString("student_id"));
                     familyInfo.setHomeAddress(rs.getString("home_address"));
-                    familyInfo.setFamilySize(rs.getInt("family_size"));
+                    familyInfo.setFamilySize((Integer) rs.getObject("family_size"));
                     familyInfo.setPhone(rs.getString("phone"));
                     return familyInfo;
                 }
@@ -85,7 +85,7 @@ public class FamilyInfoDao {
                 FamilyInfo familyInfo = new FamilyInfo();
                 familyInfo.setStudentID(rs.getString("student_id"));
                 familyInfo.setHomeAddress(rs.getString("home_address"));
-                familyInfo.setFamilySize(rs.getInt("family_size"));
+                familyInfo.setFamilySize((Integer) rs.getObject("family_size"));
                 familyInfo.setPhone(rs.getString("phone"));
                 list.add(familyInfo);
             }
