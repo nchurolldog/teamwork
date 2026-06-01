@@ -13,7 +13,7 @@ import java.util.List;
 public class StudentDAO {
 
     public boolean insert(Student student) {
-        String sql = "INSERT INTO Student (StudentID, Account, Name, Gender, Position) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO student (student_id, account, name, gender, position) VALUES (?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -23,7 +23,7 @@ public class StudentDAO {
             pstmt.setString(1, student.getStudentID());
             pstmt.setString(2, student.getAccount());
             pstmt.setString(3, student.getName());
-            pstmt.setString(4, student.getGender());
+            pstmt.setObject(4, student.getGender());
             pstmt.setString(5, student.getPosition());
 
             return pstmt.executeUpdate() > 0;
@@ -41,7 +41,7 @@ public class StudentDAO {
     }
 
     public boolean update(Student student) {
-        String sql = "UPDATE Student SET Account = ?, Name = ?, Gender = ?, Position = ? WHERE StudentID = ?";
+        String sql = "UPDATE student SET account = ?, name = ?, gender = ?, position = ? WHERE student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -50,7 +50,7 @@ public class StudentDAO {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, student.getAccount());
             pstmt.setString(2, student.getName());
-            pstmt.setString(3, student.getGender());
+            pstmt.setObject(3, student.getGender());
             pstmt.setString(4, student.getPosition());
             pstmt.setString(5, student.getStudentID());
 
@@ -69,7 +69,7 @@ public class StudentDAO {
     }
 
     public boolean delete(String studentID) {
-        String sql = "DELETE FROM Student WHERE StudentID = ?";
+        String sql = "DELETE FROM student WHERE student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -93,7 +93,7 @@ public class StudentDAO {
     }
 
     public Student findById(String studentID) {
-        String sql = "SELECT * FROM Student WHERE StudentID = ?";
+        String sql = "SELECT * FROM student WHERE student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -106,11 +106,11 @@ public class StudentDAO {
 
             if (rs.next()) {
                 Student student = new Student();
-                student.setStudentID(rs.getString("StudentID"));
-                student.setAccount(rs.getString("Account"));
-                student.setName(rs.getString("Name"));
-                student.setGender(rs.getString("Gender"));
-                student.setPosition(rs.getString("Position"));
+                student.setStudentID(rs.getString("student_id"));
+                student.setAccount(rs.getString("account"));
+                student.setName(rs.getString("name"));
+                student.setGender(rs.getInt("gender"));
+                student.setPosition(rs.getString("position"));
                 return student;
             }
             return null;
@@ -129,7 +129,7 @@ public class StudentDAO {
     }
 
     public Student findByAccount(String account) {
-        String sql = "SELECT * FROM Student WHERE Account = ?";
+        String sql = "SELECT * FROM student WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -142,11 +142,11 @@ public class StudentDAO {
 
             if (rs.next()) {
                 Student student = new Student();
-                student.setStudentID(rs.getString("StudentID"));
-                student.setAccount(rs.getString("Account"));
-                student.setName(rs.getString("Name"));
-                student.setGender(rs.getString("Gender"));
-                student.setPosition(rs.getString("Position"));
+                student.setStudentID(rs.getString("student_id"));
+                student.setAccount(rs.getString("account"));
+                student.setName(rs.getString("name"));
+                student.setGender(rs.getInt("gender"));
+                student.setPosition(rs.getString("position"));
                 return student;
             }
             return null;
@@ -165,7 +165,7 @@ public class StudentDAO {
     }
 
     public List<Student> findAll() {
-        String sql = "SELECT * FROM Student";
+        String sql = "SELECT * FROM student";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -178,11 +178,11 @@ public class StudentDAO {
             List<Student> list = new ArrayList<>();
             while (rs.next()) {
                 Student student = new Student();
-                student.setStudentID(rs.getString("StudentID"));
-                student.setAccount(rs.getString("Account"));
-                student.setName(rs.getString("Name"));
-                student.setGender(rs.getString("Gender"));
-                student.setPosition(rs.getString("Position"));
+                student.setStudentID(rs.getString("student_id"));
+                student.setAccount(rs.getString("account"));
+                student.setName(rs.getString("name"));
+                student.setGender(rs.getInt("gender"));
+                student.setPosition(rs.getString("position"));
                 list.add(student);
             }
             return list;
@@ -201,7 +201,7 @@ public class StudentDAO {
     }
 
     public List<Student> findByName(String name) {
-        String sql = "SELECT * FROM Student WHERE Name LIKE ?";
+        String sql = "SELECT * FROM student WHERE name LIKE ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -215,11 +215,11 @@ public class StudentDAO {
             List<Student> list = new ArrayList<>();
             while (rs.next()) {
                 Student student = new Student();
-                student.setStudentID(rs.getString("StudentID"));
-                student.setAccount(rs.getString("Account"));
-                student.setName(rs.getString("Name"));
-                student.setGender(rs.getString("Gender"));
-                student.setPosition(rs.getString("Position"));
+                student.setStudentID(rs.getString("student_id"));
+                student.setAccount(rs.getString("account"));
+                student.setName(rs.getString("name"));
+                student.setGender(rs.getInt("gender"));
+                student.setPosition(rs.getString("position"));
                 list.add(student);
             }
             return list;
@@ -238,7 +238,7 @@ public class StudentDAO {
     }
 
     public boolean exists(String studentID) {
-        String sql = "SELECT COUNT(*) FROM Student WHERE StudentID = ?";
+        String sql = "SELECT COUNT(*) FROM student WHERE student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -268,7 +268,7 @@ public class StudentDAO {
     }
 
     public boolean existsByAccount(String account) {
-        String sql = "SELECT COUNT(*) FROM Student WHERE Account = ?";
+        String sql = "SELECT COUNT(*) FROM student WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

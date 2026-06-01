@@ -13,7 +13,7 @@ import java.util.List;
 public class AttendancePublishDAO {
 
     public boolean insert(AttendancePublish attendancePublish) {
-        String sql = "INSERT INTO AttendancePublish (recordID, meetingID, studentID) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO attendance_publish (record_id, meeting_id, student_id) VALUES (?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -39,7 +39,7 @@ public class AttendancePublishDAO {
     }
 
     public boolean update(AttendancePublish attendancePublish) {
-        String sql = "UPDATE AttendancePublish SET meetingID = ?, studentID = ? WHERE recordID = ?";
+        String sql = "UPDATE attendance_publish SET meeting_id = ?, student_id = ? WHERE record_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -65,7 +65,7 @@ public class AttendancePublishDAO {
     }
 
     public boolean delete(int recordID) {
-        String sql = "DELETE FROM AttendancePublish WHERE recordID = ?";
+        String sql = "DELETE FROM attendance_publish WHERE record_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -89,7 +89,7 @@ public class AttendancePublishDAO {
     }
 
     public AttendancePublish findById(int recordID) {
-        String sql = "SELECT * FROM AttendancePublish WHERE recordID = ?";
+        String sql = "SELECT * FROM attendance_publish WHERE record_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -102,9 +102,9 @@ public class AttendancePublishDAO {
 
             if (rs.next()) {
                 AttendancePublish attendancePublish = new AttendancePublish();
-                attendancePublish.setRecordID(rs.getInt("recordID"));
-                attendancePublish.setMeetingID(rs.getString("meetingID"));
-                attendancePublish.setStudentID(rs.getString("studentID"));
+                attendancePublish.setRecordID(rs.getInt("record_id"));
+                attendancePublish.setMeetingID(rs.getString("meeting_id"));
+                attendancePublish.setStudentID(rs.getString("student_id"));
                 return attendancePublish;
             }
             return null;
@@ -123,7 +123,7 @@ public class AttendancePublishDAO {
     }
 
     public List<AttendancePublish> findByMeetingId(String meetingID) {
-        String sql = "SELECT * FROM AttendancePublish WHERE meetingID = ?";
+        String sql = "SELECT * FROM attendance_publish WHERE meeting_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -137,9 +137,9 @@ public class AttendancePublishDAO {
             List<AttendancePublish> list = new ArrayList<>();
             while (rs.next()) {
                 AttendancePublish attendancePublish = new AttendancePublish();
-                attendancePublish.setRecordID(rs.getInt("recordID"));
-                attendancePublish.setMeetingID(rs.getString("meetingID"));
-                attendancePublish.setStudentID(rs.getString("studentID"));
+                attendancePublish.setRecordID(rs.getInt("record_id"));
+                attendancePublish.setMeetingID(rs.getString("meeting_id"));
+                attendancePublish.setStudentID(rs.getString("student_id"));
                 list.add(attendancePublish);
             }
             return list;
@@ -158,7 +158,7 @@ public class AttendancePublishDAO {
     }
 
     public List<AttendancePublish> findByStudentId(String studentID) {
-        String sql = "SELECT * FROM AttendancePublish WHERE studentID = ?";
+        String sql = "SELECT * FROM attendance_publish WHERE student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -172,9 +172,9 @@ public class AttendancePublishDAO {
             List<AttendancePublish> list = new ArrayList<>();
             while (rs.next()) {
                 AttendancePublish attendancePublish = new AttendancePublish();
-                attendancePublish.setRecordID(rs.getInt("recordID"));
-                attendancePublish.setMeetingID(rs.getString("meetingID"));
-                attendancePublish.setStudentID(rs.getString("studentID"));
+                attendancePublish.setRecordID(rs.getInt("record_id"));
+                attendancePublish.setMeetingID(rs.getString("meeting_id"));
+                attendancePublish.setStudentID(rs.getString("student_id"));
                 list.add(attendancePublish);
             }
             return list;
@@ -193,7 +193,7 @@ public class AttendancePublishDAO {
     }
 
     public List<AttendancePublish> findAll() {
-        String sql = "SELECT * FROM AttendancePublish";
+        String sql = "SELECT * FROM attendance_publish";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -206,9 +206,9 @@ public class AttendancePublishDAO {
             List<AttendancePublish> list = new ArrayList<>();
             while (rs.next()) {
                 AttendancePublish attendancePublish = new AttendancePublish();
-                attendancePublish.setRecordID(rs.getInt("recordID"));
-                attendancePublish.setMeetingID(rs.getString("meetingID"));
-                attendancePublish.setStudentID(rs.getString("studentID"));
+                attendancePublish.setRecordID(rs.getInt("record_id"));
+                attendancePublish.setMeetingID(rs.getString("meeting_id"));
+                attendancePublish.setStudentID(rs.getString("student_id"));
                 list.add(attendancePublish);
             }
             return list;
@@ -227,7 +227,7 @@ public class AttendancePublishDAO {
     }
 
     public boolean exists(int recordID) {
-        String sql = "SELECT COUNT(*) FROM AttendancePublish WHERE recordID = ?";
+        String sql = "SELECT COUNT(*) FROM attendance_publish WHERE record_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

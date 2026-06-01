@@ -13,7 +13,7 @@ import java.util.List;
 public class ClassEntityDAO {
 
     public boolean insert(ClassEntity classEntity) {
-        String sql = "INSERT INTO ClassEntity (classID, className, TeacherID, CounselorID) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO class_entity (class_id, class_name, teacher_id, counselor_id) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -40,7 +40,7 @@ public class ClassEntityDAO {
     }
 
     public boolean update(ClassEntity classEntity) {
-        String sql = "UPDATE ClassEntity SET className = ?, TeacherID = ?, CounselorID = ? WHERE classID = ?";
+        String sql = "UPDATE class_entity SET class_name = ?, teacher_id = ?, counselor_id = ? WHERE class_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -67,7 +67,7 @@ public class ClassEntityDAO {
     }
 
     public boolean delete(int classID) {
-        String sql = "DELETE FROM ClassEntity WHERE classID = ?";
+        String sql = "DELETE FROM class_entity WHERE class_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -91,7 +91,7 @@ public class ClassEntityDAO {
     }
 
     public ClassEntity findById(int classID) {
-        String sql = "SELECT * FROM ClassEntity WHERE classID = ?";
+        String sql = "SELECT * FROM class_entity WHERE class_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,10 +104,10 @@ public class ClassEntityDAO {
 
             if (rs.next()) {
                 ClassEntity classEntity = new ClassEntity();
-                classEntity.setClassID(rs.getInt("classID"));
-                classEntity.setClassName(rs.getString("className"));
-                classEntity.setTeacherID(rs.getString("TeacherID"));
-                classEntity.setCounselorID(rs.getString("CounselorID"));
+                classEntity.setClassID(rs.getInt("class_id"));
+                classEntity.setClassName(rs.getString("class_name"));
+                classEntity.setTeacherID(rs.getString("teacher_id"));
+                classEntity.setCounselorID(rs.getString("counselor_id"));
                 return classEntity;
             }
             return null;
@@ -126,7 +126,7 @@ public class ClassEntityDAO {
     }
 
     public List<ClassEntity> findAll() {
-        String sql = "SELECT * FROM ClassEntity";
+        String sql = "SELECT * FROM class_entity";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -139,10 +139,10 @@ public class ClassEntityDAO {
             List<ClassEntity> list = new ArrayList<>();
             while (rs.next()) {
                 ClassEntity classEntity = new ClassEntity();
-                classEntity.setClassID(rs.getInt("classID"));
-                classEntity.setClassName(rs.getString("className"));
-                classEntity.setTeacherID(rs.getString("TeacherID"));
-                classEntity.setCounselorID(rs.getString("CounselorID"));
+                classEntity.setClassID(rs.getInt("class_id"));
+                classEntity.setClassName(rs.getString("class_name"));
+                classEntity.setTeacherID(rs.getString("teacher_id"));
+                classEntity.setCounselorID(rs.getString("counselor_id"));
                 list.add(classEntity);
             }
             return list;
@@ -160,8 +160,8 @@ public class ClassEntityDAO {
         }
     }
 
-    public List<ClassEntity> findByTeacherId(String teacherID) {
-        String sql = "SELECT * FROM ClassEntity WHERE TeacherID = ?";
+    public List<ClassEntity> findByTeacherId(String teacher_id) {
+        String sql = "SELECT * FROM class_entity WHERE teacher_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -169,16 +169,16 @@ public class ClassEntityDAO {
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, teacherID);
+            pstmt.setString(1, teacher_id);
             rs = pstmt.executeQuery();
 
             List<ClassEntity> list = new ArrayList<>();
             while (rs.next()) {
                 ClassEntity classEntity = new ClassEntity();
-                classEntity.setClassID(rs.getInt("classID"));
-                classEntity.setClassName(rs.getString("className"));
-                classEntity.setTeacherID(rs.getString("TeacherID"));
-                classEntity.setCounselorID(rs.getString("CounselorID"));
+                classEntity.setClassID(rs.getInt("class_id"));
+                classEntity.setClassName(rs.getString("class_name"));
+                classEntity.setTeacherID(rs.getString("teacher_id"));
+                classEntity.setCounselorID(rs.getString("counselor_id"));
                 list.add(classEntity);
             }
             return list;
@@ -196,8 +196,8 @@ public class ClassEntityDAO {
         }
     }
 
-    public List<ClassEntity> findByCounselorId(String counselorID) {
-        String sql = "SELECT * FROM ClassEntity WHERE CounselorID = ?";
+    public List<ClassEntity> findByCounselorId(String counselor_id) {
+        String sql = "SELECT * FROM class_entity WHERE counselor_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -205,16 +205,16 @@ public class ClassEntityDAO {
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, counselorID);
+            pstmt.setString(1, counselor_id);
             rs = pstmt.executeQuery();
 
             List<ClassEntity> list = new ArrayList<>();
             while (rs.next()) {
                 ClassEntity classEntity = new ClassEntity();
-                classEntity.setClassID(rs.getInt("classID"));
-                classEntity.setClassName(rs.getString("className"));
-                classEntity.setTeacherID(rs.getString("TeacherID"));
-                classEntity.setCounselorID(rs.getString("CounselorID"));
+                classEntity.setClassID(rs.getInt("class_id"));
+                classEntity.setClassName(rs.getString("class_name"));
+                classEntity.setTeacherID(rs.getString("teacher_id"));
+                classEntity.setCounselorID(rs.getString("counselor_id"));
                 list.add(classEntity);
             }
             return list;
@@ -233,7 +233,7 @@ public class ClassEntityDAO {
     }
 
     public boolean exists(int classID) {
-        String sql = "SELECT COUNT(*) FROM ClassEntity WHERE classID = ?";
+        String sql = "SELECT COUNT(*) FROM class_entity WHERE class_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

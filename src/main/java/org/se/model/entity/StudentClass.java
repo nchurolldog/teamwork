@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 
 public class StudentClass {
     public String studentID;
-    public int classID;
+    public Integer classID;
 }

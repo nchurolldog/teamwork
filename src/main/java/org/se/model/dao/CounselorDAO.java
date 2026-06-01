@@ -13,7 +13,7 @@ import java.util.List;
 public class CounselorDAO {
 
     public boolean insert(Counselor counselor) {
-        String sql = "INSERT INTO Counselor (EmployeeID, Account, Name, Gender) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO counselor (employee_id, account, name, gender) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -23,7 +23,7 @@ public class CounselorDAO {
             pstmt.setString(1, counselor.getEmployeeID());
             pstmt.setString(2, counselor.getAccount());
             pstmt.setString(3, counselor.getName());
-            pstmt.setString(4, counselor.getGender());
+            pstmt.setObject(4, counselor.getGender());
 
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -40,7 +40,7 @@ public class CounselorDAO {
     }
 
     public boolean update(Counselor counselor) {
-        String sql = "UPDATE Counselor SET Account = ?, Name = ?, Gender = ? WHERE EmployeeID = ?";
+        String sql = "UPDATE counselor SET account = ?, name = ?, gender = ? WHERE employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -49,7 +49,7 @@ public class CounselorDAO {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, counselor.getAccount());
             pstmt.setString(2, counselor.getName());
-            pstmt.setString(3, counselor.getGender());
+            pstmt.setObject(3, counselor.getGender());
             pstmt.setString(4, counselor.getEmployeeID());
 
             return pstmt.executeUpdate() > 0;
@@ -67,7 +67,7 @@ public class CounselorDAO {
     }
 
     public boolean delete(String employeeID) {
-        String sql = "DELETE FROM Counselor WHERE EmployeeID = ?";
+        String sql = "DELETE FROM counselor WHERE employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -91,7 +91,7 @@ public class CounselorDAO {
     }
 
     public Counselor findById(String employeeID) {
-        String sql = "SELECT * FROM Counselor WHERE EmployeeID = ?";
+        String sql = "SELECT * FROM counselor WHERE employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,10 +104,10 @@ public class CounselorDAO {
 
             if (rs.next()) {
                 Counselor counselor = new Counselor();
-                counselor.setEmployeeID(rs.getString("EmployeeID"));
-                counselor.setAccount(rs.getString("Account"));
-                counselor.setName(rs.getString("Name"));
-                counselor.setGender(rs.getString("Gender"));
+                counselor.setEmployeeID(rs.getString("employee_id"));
+                counselor.setAccount(rs.getString("account"));
+                counselor.setName(rs.getString("name"));
+                counselor.setGender(rs.getInt("gender"));
                 return counselor;
             }
             return null;
@@ -126,7 +126,7 @@ public class CounselorDAO {
     }
 
     public Counselor findByAccount(String account) {
-        String sql = "SELECT * FROM Counselor WHERE Account = ?";
+        String sql = "SELECT * FROM counselor WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -139,10 +139,10 @@ public class CounselorDAO {
 
             if (rs.next()) {
                 Counselor counselor = new Counselor();
-                counselor.setEmployeeID(rs.getString("EmployeeID"));
-                counselor.setAccount(rs.getString("Account"));
-                counselor.setName(rs.getString("Name"));
-                counselor.setGender(rs.getString("Gender"));
+                counselor.setEmployeeID(rs.getString("employee_id"));
+                counselor.setAccount(rs.getString("account"));
+                counselor.setName(rs.getString("name"));
+                counselor.setGender(rs.getInt("gender"));
                 return counselor;
             }
             return null;
@@ -161,7 +161,7 @@ public class CounselorDAO {
     }
 
     public List<Counselor> findAll() {
-        String sql = "SELECT * FROM Counselor";
+        String sql = "SELECT * FROM counselor";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -174,10 +174,10 @@ public class CounselorDAO {
             List<Counselor> list = new ArrayList<>();
             while (rs.next()) {
                 Counselor counselor = new Counselor();
-                counselor.setEmployeeID(rs.getString("EmployeeID"));
-                counselor.setAccount(rs.getString("Account"));
-                counselor.setName(rs.getString("Name"));
-                counselor.setGender(rs.getString("Gender"));
+                counselor.setEmployeeID(rs.getString("employee_id"));
+                counselor.setAccount(rs.getString("account"));
+                counselor.setName(rs.getString("name"));
+                counselor.setGender(rs.getInt("gender"));
                 list.add(counselor);
             }
             return list;
@@ -196,7 +196,7 @@ public class CounselorDAO {
     }
 
     public List<Counselor> findByName(String name) {
-        String sql = "SELECT * FROM Counselor WHERE Name LIKE ?";
+        String sql = "SELECT * FROM counselor WHERE name LIKE ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -210,10 +210,10 @@ public class CounselorDAO {
             List<Counselor> list = new ArrayList<>();
             while (rs.next()) {
                 Counselor counselor = new Counselor();
-                counselor.setEmployeeID(rs.getString("EmployeeID"));
-                counselor.setAccount(rs.getString("Account"));
-                counselor.setName(rs.getString("Name"));
-                counselor.setGender(rs.getString("Gender"));
+                counselor.setEmployeeID(rs.getString("employee_id"));
+                counselor.setAccount(rs.getString("account"));
+                counselor.setName(rs.getString("name"));
+                counselor.setGender(rs.getInt("gender"));
                 list.add(counselor);
             }
             return list;
@@ -232,7 +232,7 @@ public class CounselorDAO {
     }
 
     public boolean exists(String employeeID) {
-        String sql = "SELECT COUNT(*) FROM Counselor WHERE EmployeeID = ?";
+        String sql = "SELECT COUNT(*) FROM counselor WHERE employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -262,7 +262,7 @@ public class CounselorDAO {
     }
 
     public boolean existsByAccount(String account) {
-        String sql = "SELECT COUNT(*) FROM Counselor WHERE Account = ?";
+        String sql = "SELECT COUNT(*) FROM counselor WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

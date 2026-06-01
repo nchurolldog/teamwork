@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class AttendancePublish {
-    public int recordID;
+    public Integer recordID;
     public String meetingID;
     public String studentID;
 }

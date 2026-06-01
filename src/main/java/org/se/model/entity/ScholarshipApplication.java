@@ -16,4 +16,5 @@ public class ScholarshipApplication {
     public String typeCode;
     public BigDecimal amount;
     public String reason;
+    public String status;
 }

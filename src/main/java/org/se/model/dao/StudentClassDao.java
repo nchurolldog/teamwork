@@ -25,7 +25,7 @@ public class StudentClassDao {
         }
     }
 
-    // 联合主键：student_id + class_id，update 需要先删除再插入
+    // 閼辨柨鎮庢稉濠氭暛閿涙tudent_id + class_id閿涘瘈pdate 闂団偓鐟曚礁鍘涢崚鐘绘珟閸愬秵褰冮崗?
     public boolean update(StudentClass studentClass) {
         delete(studentClass.getStudentID(), studentClass.getClassID());
         return insert(studentClass);

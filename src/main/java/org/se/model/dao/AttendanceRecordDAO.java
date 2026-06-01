@@ -14,7 +14,7 @@ import java.util.List;
 public class AttendanceRecordDAO {
 
     public boolean insert(AttendanceRecord attendanceRecord) {
-        String sql = "INSERT INTO AttendanceRecord (recordID, studentID, attendanceDate, isAbsent) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO attendance_record (record_id, student_id, attendance_date, is_absent) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -23,8 +23,8 @@ public class AttendanceRecordDAO {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, attendanceRecord.getRecordID());
             pstmt.setString(2, attendanceRecord.getStudentID());
-            pstmt.setDate(3, attendanceRecord.getAttendanceDate());
-            pstmt.setInt(4, attendanceRecord.getIsAbsent());
+            pstmt.setDate(3, java.sql.Date.valueOf(attendanceRecord.getAttendanceDate()));
+            pstmt.setBoolean(4, Boolean.TRUE.equals(attendanceRecord.getAbsent()));
 
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -41,7 +41,7 @@ public class AttendanceRecordDAO {
     }
 
     public boolean update(AttendanceRecord attendanceRecord) {
-        String sql = "UPDATE AttendanceRecord SET studentID = ?, attendanceDate = ?, isAbsent = ? WHERE recordID = ?";
+        String sql = "UPDATE attendance_record SET student_id = ?, attendance_date = ?, is_absent = ? WHERE record_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -49,8 +49,8 @@ public class AttendanceRecordDAO {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, attendanceRecord.getStudentID());
-            pstmt.setDate(2, attendanceRecord.getAttendanceDate());
-            pstmt.setInt(3, attendanceRecord.getIsAbsent());
+            pstmt.setDate(2, java.sql.Date.valueOf(attendanceRecord.getAttendanceDate()));
+            pstmt.setBoolean(3, Boolean.TRUE.equals(attendanceRecord.getAbsent()));
             pstmt.setInt(4, attendanceRecord.getRecordID());
 
             return pstmt.executeUpdate() > 0;
@@ -68,7 +68,7 @@ public class AttendanceRecordDAO {
     }
 
     public boolean delete(int recordID) {
-        String sql = "DELETE FROM AttendanceRecord WHERE recordID = ?";
+        String sql = "DELETE FROM attendance_record WHERE record_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -92,7 +92,7 @@ public class AttendanceRecordDAO {
     }
 
     public AttendanceRecord findById(int recordID) {
-        String sql = "SELECT * FROM AttendanceRecord WHERE recordID = ?";
+        String sql = "SELECT * FROM attendance_record WHERE record_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -105,10 +105,10 @@ public class AttendanceRecordDAO {
 
             if (rs.next()) {
                 AttendanceRecord attendanceRecord = new AttendanceRecord();
-                attendanceRecord.setRecordID(rs.getInt("recordID"));
-                attendanceRecord.setStudentID(rs.getString("studentID"));
-                attendanceRecord.setAttendanceDate(rs.getDate("attendanceDate"));
-                attendanceRecord.setIsAbsent(rs.getInt("isAbsent"));
+                attendanceRecord.setRecordID(rs.getInt("record_id"));
+                attendanceRecord.setStudentID(rs.getString("student_id"));
+                attendanceRecord.setAttendanceDate(rs.getDate("attendance_date").toLocalDate());
+                attendanceRecord.setAbsent(rs.getBoolean("is_absent"));
                 return attendanceRecord;
             }
             return null;
@@ -127,7 +127,7 @@ public class AttendanceRecordDAO {
     }
 
     public List<AttendanceRecord> findByStudentId(String studentID) {
-        String sql = "SELECT * FROM AttendanceRecord WHERE studentID = ?";
+        String sql = "SELECT * FROM attendance_record WHERE student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -141,10 +141,10 @@ public class AttendanceRecordDAO {
             List<AttendanceRecord> list = new ArrayList<>();
             while (rs.next()) {
                 AttendanceRecord attendanceRecord = new AttendanceRecord();
-                attendanceRecord.setRecordID(rs.getInt("recordID"));
-                attendanceRecord.setStudentID(rs.getString("studentID"));
-                attendanceRecord.setAttendanceDate(rs.getDate("attendanceDate"));
-                attendanceRecord.setIsAbsent(rs.getInt("isAbsent"));
+                attendanceRecord.setRecordID(rs.getInt("record_id"));
+                attendanceRecord.setStudentID(rs.getString("student_id"));
+                attendanceRecord.setAttendanceDate(rs.getDate("attendance_date").toLocalDate());
+                attendanceRecord.setAbsent(rs.getBoolean("is_absent"));
                 list.add(attendanceRecord);
             }
             return list;
@@ -163,7 +163,7 @@ public class AttendanceRecordDAO {
     }
 
     public List<AttendanceRecord> findByDate(Date attendanceDate) {
-        String sql = "SELECT * FROM AttendanceRecord WHERE attendanceDate = ?";
+        String sql = "SELECT * FROM attendance_record WHERE attendance_date = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -177,10 +177,10 @@ public class AttendanceRecordDAO {
             List<AttendanceRecord> list = new ArrayList<>();
             while (rs.next()) {
                 AttendanceRecord attendanceRecord = new AttendanceRecord();
-                attendanceRecord.setRecordID(rs.getInt("recordID"));
-                attendanceRecord.setStudentID(rs.getString("studentID"));
-                attendanceRecord.setAttendanceDate(rs.getDate("attendanceDate"));
-                attendanceRecord.setIsAbsent(rs.getInt("isAbsent"));
+                attendanceRecord.setRecordID(rs.getInt("record_id"));
+                attendanceRecord.setStudentID(rs.getString("student_id"));
+                attendanceRecord.setAttendanceDate(rs.getDate("attendance_date").toLocalDate());
+                attendanceRecord.setAbsent(rs.getBoolean("is_absent"));
                 list.add(attendanceRecord);
             }
             return list;
@@ -199,7 +199,7 @@ public class AttendanceRecordDAO {
     }
 
     public List<AttendanceRecord> findAll() {
-        String sql = "SELECT * FROM AttendanceRecord";
+        String sql = "SELECT * FROM attendance_record";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -212,10 +212,10 @@ public class AttendanceRecordDAO {
             List<AttendanceRecord> list = new ArrayList<>();
             while (rs.next()) {
                 AttendanceRecord attendanceRecord = new AttendanceRecord();
-                attendanceRecord.setRecordID(rs.getInt("recordID"));
-                attendanceRecord.setStudentID(rs.getString("studentID"));
-                attendanceRecord.setAttendanceDate(rs.getDate("attendanceDate"));
-                attendanceRecord.setIsAbsent(rs.getInt("isAbsent"));
+                attendanceRecord.setRecordID(rs.getInt("record_id"));
+                attendanceRecord.setStudentID(rs.getString("student_id"));
+                attendanceRecord.setAttendanceDate(rs.getDate("attendance_date").toLocalDate());
+                attendanceRecord.setAbsent(rs.getBoolean("is_absent"));
                 list.add(attendanceRecord);
             }
             return list;
@@ -234,7 +234,7 @@ public class AttendanceRecordDAO {
     }
 
     public boolean exists(int recordID) {
-        String sql = "SELECT COUNT(*) FROM AttendanceRecord WHERE recordID = ?";
+        String sql = "SELECT COUNT(*) FROM attendance_record WHERE record_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

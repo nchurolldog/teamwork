@@ -13,7 +13,7 @@ import java.util.List;
 public class PartyApprovalDao {
 
     public boolean insert(PartyApproval approval) {
-        String sql = "INSERT INTO PartyApproval (ApprovalID, ApplicationID, ApproverEmployeeID, Status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO party_approval (approval_id, application_id, approver_employee_id, status) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -40,7 +40,7 @@ public class PartyApprovalDao {
     }
 
     public boolean update(PartyApproval approval) {
-        String sql = "UPDATE PartyApproval SET ApplicationID = ?, ApproverEmployeeID = ?, Status = ? WHERE ApprovalID = ?";
+        String sql = "UPDATE party_approval SET application_id = ?, approver_employee_id = ?, status = ? WHERE approval_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -67,7 +67,7 @@ public class PartyApprovalDao {
     }
 
     public boolean delete(String approvalID) {
-        String sql = "DELETE FROM PartyApproval WHERE ApprovalID = ?";
+        String sql = "DELETE FROM party_approval WHERE approval_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -91,7 +91,7 @@ public class PartyApprovalDao {
     }
 
     public PartyApproval findById(String approvalID) {
-        String sql = "SELECT * FROM PartyApproval WHERE ApprovalID = ?";
+        String sql = "SELECT * FROM party_approval WHERE approval_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,10 +104,10 @@ public class PartyApprovalDao {
             
             if (rs.next()) {
                 PartyApproval approval = new PartyApproval();
-                approval.setApprovalID(rs.getString("ApprovalID"));
-                approval.setApplicationID(rs.getString("ApplicationID"));
-                approval.setApproverEmployeeID(rs.getString("ApproverEmployeeID"));
-                approval.setStatus(rs.getString("Status"));
+                approval.setApprovalID(rs.getString("approval_id"));
+                approval.setApplicationID(rs.getString("application_id"));
+                approval.setApproverEmployeeID(rs.getString("approver_employee_id"));
+                approval.setStatus(rs.getString("status"));
                 return approval;
             }
             return null;
@@ -126,7 +126,7 @@ public class PartyApprovalDao {
     }
 
     public List<PartyApproval> findAll() {
-        String sql = "SELECT * FROM PartyApproval";
+        String sql = "SELECT * FROM party_approval";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -139,10 +139,10 @@ public class PartyApprovalDao {
             List<PartyApproval> list = new ArrayList<>();
             while (rs.next()) {
                 PartyApproval approval = new PartyApproval();
-                approval.setApprovalID(rs.getString("ApprovalID"));
-                approval.setApplicationID(rs.getString("ApplicationID"));
-                approval.setApproverEmployeeID(rs.getString("ApproverEmployeeID"));
-                approval.setStatus(rs.getString("Status"));
+                approval.setApprovalID(rs.getString("approval_id"));
+                approval.setApplicationID(rs.getString("application_id"));
+                approval.setApproverEmployeeID(rs.getString("approver_employee_id"));
+                approval.setStatus(rs.getString("status"));
                 list.add(approval);
             }
             return list;
@@ -161,7 +161,7 @@ public class PartyApprovalDao {
     }
 
     public List<PartyApproval> findByApplicationId(String applicationID) {
-        String sql = "SELECT * FROM PartyApproval WHERE ApplicationID = ?";
+        String sql = "SELECT * FROM party_approval WHERE application_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -175,10 +175,10 @@ public class PartyApprovalDao {
             List<PartyApproval> list = new ArrayList<>();
             while (rs.next()) {
                 PartyApproval approval = new PartyApproval();
-                approval.setApprovalID(rs.getString("ApprovalID"));
-                approval.setApplicationID(rs.getString("ApplicationID"));
-                approval.setApproverEmployeeID(rs.getString("ApproverEmployeeID"));
-                approval.setStatus(rs.getString("Status"));
+                approval.setApprovalID(rs.getString("approval_id"));
+                approval.setApplicationID(rs.getString("application_id"));
+                approval.setApproverEmployeeID(rs.getString("approver_employee_id"));
+                approval.setStatus(rs.getString("status"));
                 list.add(approval);
             }
             return list;
@@ -197,7 +197,7 @@ public class PartyApprovalDao {
     }
 
     public List<PartyApproval> findByApproverId(String approverEmployeeID) {
-        String sql = "SELECT * FROM PartyApproval WHERE ApproverEmployeeID = ?";
+        String sql = "SELECT * FROM party_approval WHERE approver_employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -211,10 +211,10 @@ public class PartyApprovalDao {
             List<PartyApproval> list = new ArrayList<>();
             while (rs.next()) {
                 PartyApproval approval = new PartyApproval();
-                approval.setApprovalID(rs.getString("ApprovalID"));
-                approval.setApplicationID(rs.getString("ApplicationID"));
-                approval.setApproverEmployeeID(rs.getString("ApproverEmployeeID"));
-                approval.setStatus(rs.getString("Status"));
+                approval.setApprovalID(rs.getString("approval_id"));
+                approval.setApplicationID(rs.getString("application_id"));
+                approval.setApproverEmployeeID(rs.getString("approver_employee_id"));
+                approval.setStatus(rs.getString("status"));
                 list.add(approval);
             }
             return list;
@@ -233,7 +233,7 @@ public class PartyApprovalDao {
     }
 
     public List<PartyApproval> findByStatus(String status) {
-        String sql = "SELECT * FROM PartyApproval WHERE Status = ?";
+        String sql = "SELECT * FROM party_approval WHERE status = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -247,10 +247,10 @@ public class PartyApprovalDao {
             List<PartyApproval> list = new ArrayList<>();
             while (rs.next()) {
                 PartyApproval approval = new PartyApproval();
-                approval.setApprovalID(rs.getString("ApprovalID"));
-                approval.setApplicationID(rs.getString("ApplicationID"));
-                approval.setApproverEmployeeID(rs.getString("ApproverEmployeeID"));
-                approval.setStatus(rs.getString("Status"));
+                approval.setApprovalID(rs.getString("approval_id"));
+                approval.setApplicationID(rs.getString("application_id"));
+                approval.setApproverEmployeeID(rs.getString("approver_employee_id"));
+                approval.setStatus(rs.getString("status"));
                 list.add(approval);
             }
             return list;

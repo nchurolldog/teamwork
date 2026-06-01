@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 public class ClassMeeting {
     public String meetingID;
-    public int classID;
+    public Integer classID;
     public String meetingTheme;
     public String classroom;
 }

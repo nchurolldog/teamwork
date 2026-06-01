@@ -13,7 +13,7 @@ import java.util.List;
 public class DemocraticReviewParticipantDao {
 
     public boolean insert(DemocraticReviewParticipant participant) {
-        String sql = "INSERT INTO DemocraticReviewParticipant (ReviewID, ParticipantStudentID, Access) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO democratic_review_participant (review_id, participant_student_id, access) VALUES (?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -22,7 +22,7 @@ public class DemocraticReviewParticipantDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, participant.getReviewID());
             pstmt.setString(2, participant.getParticipantStudentID());
-            pstmt.setInt(3, participant.getAccess() != null ? participant.getAccess() : 0);
+            pstmt.setBoolean(3, Boolean.TRUE.equals(participant.getAccess()));
             
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -39,14 +39,14 @@ public class DemocraticReviewParticipantDao {
     }
 
     public boolean update(DemocraticReviewParticipant participant) {
-        String sql = "UPDATE DemocraticReviewParticipant SET Access = ? WHERE ReviewID = ? AND ParticipantStudentID = ?";
+        String sql = "UPDATE democratic_review_participant SET access = ? WHERE review_id = ? AND participant_student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, participant.getAccess() != null ? participant.getAccess() : 0);
+            pstmt.setBoolean(1, Boolean.TRUE.equals(participant.getAccess()));
             pstmt.setString(2, participant.getReviewID());
             pstmt.setString(3, participant.getParticipantStudentID());
             
@@ -65,7 +65,7 @@ public class DemocraticReviewParticipantDao {
     }
 
     public boolean delete(String reviewID, String participantStudentID) {
-        String sql = "DELETE FROM DemocraticReviewParticipant WHERE ReviewID = ? AND ParticipantStudentID = ?";
+        String sql = "DELETE FROM democratic_review_participant WHERE review_id = ? AND participant_student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -90,7 +90,7 @@ public class DemocraticReviewParticipantDao {
     }
 
     public DemocraticReviewParticipant findById(String reviewID, String participantStudentID) {
-        String sql = "SELECT * FROM DemocraticReviewParticipant WHERE ReviewID = ? AND ParticipantStudentID = ?";
+        String sql = "SELECT * FROM democratic_review_participant WHERE review_id = ? AND participant_student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,9 +104,9 @@ public class DemocraticReviewParticipantDao {
             
             if (rs.next()) {
                 DemocraticReviewParticipant participant = new DemocraticReviewParticipant();
-                participant.setReviewID(rs.getString("ReviewID"));
-                participant.setParticipantStudentID(rs.getString("ParticipantStudentID"));
-                participant.setAccess(rs.getInt("Access"));
+                participant.setReviewID(rs.getString("review_id"));
+                participant.setParticipantStudentID(rs.getString("participant_student_id"));
+                participant.setAccess(rs.getBoolean("access"));
                 return participant;
             }
             return null;
@@ -125,7 +125,7 @@ public class DemocraticReviewParticipantDao {
     }
 
     public List<DemocraticReviewParticipant> findByReviewId(String reviewID) {
-        String sql = "SELECT * FROM DemocraticReviewParticipant WHERE ReviewID = ?";
+        String sql = "SELECT * FROM democratic_review_participant WHERE review_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -139,9 +139,9 @@ public class DemocraticReviewParticipantDao {
             List<DemocraticReviewParticipant> list = new ArrayList<>();
             while (rs.next()) {
                 DemocraticReviewParticipant participant = new DemocraticReviewParticipant();
-                participant.setReviewID(rs.getString("ReviewID"));
-                participant.setParticipantStudentID(rs.getString("ParticipantStudentID"));
-                participant.setAccess(rs.getInt("Access"));
+                participant.setReviewID(rs.getString("review_id"));
+                participant.setParticipantStudentID(rs.getString("participant_student_id"));
+                participant.setAccess(rs.getBoolean("access"));
                 list.add(participant);
             }
             return list;
@@ -160,7 +160,7 @@ public class DemocraticReviewParticipantDao {
     }
 
     public List<DemocraticReviewParticipant> findByStudentId(String studentID) {
-        String sql = "SELECT * FROM DemocraticReviewParticipant WHERE ParticipantStudentID = ?";
+        String sql = "SELECT * FROM democratic_review_participant WHERE participant_student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -174,9 +174,9 @@ public class DemocraticReviewParticipantDao {
             List<DemocraticReviewParticipant> list = new ArrayList<>();
             while (rs.next()) {
                 DemocraticReviewParticipant participant = new DemocraticReviewParticipant();
-                participant.setReviewID(rs.getString("ReviewID"));
-                participant.setParticipantStudentID(rs.getString("ParticipantStudentID"));
-                participant.setAccess(rs.getInt("Access"));
+                participant.setReviewID(rs.getString("review_id"));
+                participant.setParticipantStudentID(rs.getString("participant_student_id"));
+                participant.setAccess(rs.getBoolean("access"));
                 list.add(participant);
             }
             return list;
@@ -195,7 +195,7 @@ public class DemocraticReviewParticipantDao {
     }
 
     public boolean deleteByReviewId(String reviewID) {
-        String sql = "DELETE FROM DemocraticReviewParticipant WHERE ReviewID = ?";
+        String sql = "DELETE FROM democratic_review_participant WHERE review_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         

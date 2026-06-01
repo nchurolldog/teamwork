@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/b81ce93c93.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../css/templatetest.css">
+    <title>Form Elements Template</title>
+</head>
+<body>
+
+<!-- ==================== 基础文本输入 / Basic Text Inputs ==================== -->
+<fieldset>
+    <legend>基础文本输入</legend>
+
+    <label for="text-input">文本输入 (Text)</label>
+    <input type="text" id="text-input" name="text" placeholder="请输入文本...">
+
+    <label for="password-input">密码输入 (Password)</label>
+    <input type="password" id="password-input" name="password" placeholder="请输入密码...">
+
+    <label for="email-input">邮箱输入 (Email)</label>
+    <input type="email" id="email-input" name="email" placeholder="example@mail.com">
+
+    <label for="number-input">数字输入 (Number)</label>
+    <input type="number" id="number-input" name="number" min="0" max="100" step="1" placeholder="0">
+
+    <label for="tel-input">电话输入 (Tel)</label>
+    <input type="tel" id="tel-input" name="tel" placeholder="请输入电话号码...">
+
+    <label for="url-input">网址输入 (URL)</label>
+    <input type="url" id="url-input" name="url" placeholder="https://example.com">
+
+    <label for="search-input">搜索框 (Search)</label>
+    <input type="search" id="search-input" name="search" placeholder="搜索...">
+
+</fieldset>
+
+<!-- ==================== 日期与时间 / Date & Time ==================== -->
+<fieldset>
+    <legend>日期与时间</legend>
+
+    <label for="date-input">日期 (Date)</label>
+    <input type="date" id="date-input" name="date">
+
+    <label for="time-input">时间 (Time)</label>
+    <input type="time" id="time-input" name="time">
+
+    <label for="datetime-input">日期时间 (Datetime-Local)</label>
+    <input type="datetime-local" id="datetime-input" name="datetime">
+
+    <label for="month-input">月份 (Month)</label>
+    <input type="month" id="month-input" name="month">
+
+    <label for="week-input">周 (Week)</label>
+    <input type="week" id="week-input" name="week">
+
+</fieldset>
+
+<!-- ==================== 特殊输入 / Special Inputs ==================== -->
+<fieldset>
+    <legend>特殊输入</legend>
+
+    <label for="color-input">颜色选择 (Color)</label>
+    <input type="color" id="color-input" name="color" value="#3b82f6">
+
+    <label for="range-input">范围滑块 (Range)</label>
+    <input type="range" id="range-input" name="range" min="0" max="100" value="50">
+    <output for="range-input" id="range-output">50</output>
+
+    <label for="file-input">文件上传 (File)</label>
+    <input type="file" id="file-input" name="file">
+
+    <label for="file-multi-input">多文件上传 (File Multiple)</label>
+    <input type="file" id="file-multi-input" name="files" multiple>
+
+    <label for="hidden-input">隐藏域 (Hidden) — 不可见</label>
+    <input type="hidden" id="hidden-input" name="hidden" value="secret-value">
+
+</fieldset>
+
+<!-- ==================== 文本域 / Textarea ==================== -->
+<fieldset>
+    <legend>文本域</legend>
+
+    <label for="textarea-default">多行文本 (Textarea)</label>
+    <textarea id="textarea-default" name="textarea" rows="5" cols="40" placeholder="请输入多行文本..."></textarea>
+
+    <label for="textarea-resize">可调整大小 (Resizable)</label>
+    <textarea id="textarea-resize" name="textarea-resize" rows="3" cols="30" placeholder="可拖拽调整大小..."></textarea>
+
+</fieldset>
+
+<!-- ==================== 下拉选择 / Select ==================== -->
+<fieldset>
+    <legend>下拉选择框</legend>
+
+    <label for="select-single">单选下拉 (Select Single)</label>
+    <select id="select-single" name="select-single">
+        <option value="" disabled selected>请选择...</option>
+        <option value="1">选项一</option>
+        <option value="2">选项二</option>
+        <option value="3">选项三</option>
+    </select>
+
+    <label for="select-multi">多选下拉 (Select Multiple)</label>
+    <select id="select-multi" name="select-multi" multiple size="4">
+        <option value="a">选项 A</option>
+        <option value="b">选项 B</option>
+        <option value="c">选项 C</option>
+        <option value="d">选项 D</option>
+        <option value="e">选项 E</option>
+    </select>
+
+    <label for="select-optgroup">分组下拉 (Select with Optgroup)</label>
+    <select id="select-optgroup" name="select-optgroup">
+        <option value="" disabled selected>请选择...</option>
+        <optgroup label="水果">
+            <option value="apple">苹果</option>
+            <option value="banana">香蕉</option>
+            <option value="orange">橙子</option>
+        </optgroup>
+        <optgroup label="蔬菜">
+            <option value="carrot">胡萝卜</option>
+            <option value="broccoli">西兰花</option>
+            <option value="spinach">菠菜</option>
+        </optgroup>
+        <optgroup label="肉类">
+            <option value="beef">牛肉</option>
+            <option value="chicken">鸡肉</option>
+            <option value="pork">猪肉</option>
+        </optgroup>
+    </select>
+
+</fieldset>
+
+<!-- ==================== 数据列表 / Datalist (Autocomplete) ==================== -->
+<fieldset>
+    <legend>数据列表 / 自动补全</legend>
+
+    <label for="datalist-input">带建议的输入框 (Datalist)</label>
+    <input type="text" id="datalist-input" name="datalist" list="browsers" placeholder="输入或选择浏览器...">
+    <datalist id="browsers">
+        <option value="Chrome">
+        <option value="Firefox">
+        <option value="Safari">
+        <option value="Edge">
+        <option value="Opera">
+        <option value="Brave">
+    </datalist>
+
+    <label for="datalist-color">带建议的颜色 (Datalist + Color)</label>
+    <input type="text" id="datalist-color" name="color-name" list="colors" placeholder="输入或选择颜色...">
+    <datalist id="colors">
+        <option value="红色">
+        <option value="蓝色">
+        <option value="绿色">
+        <option value="黄色">
+        <option value="紫色">
+        <option value="橙色">
+    </datalist>
+
+</fieldset>
+
+<!-- ==================== 单选按钮 / Radio Buttons ==================== -->
+<fieldset>
+    <legend>单选按钮 (Radio)</legend>
+
+    <p>性别：</p>
+    <input type="radio" id="radio-male" name="gender" value="male">
+    <label for="radio-male">男</label>
+
+    <input type="radio" id="radio-female" name="gender" value="female">
+    <label for="radio-female">女</label>
+
+    <input type="radio" id="radio-other" name="gender" value="other">
+    <label for="radio-other">其他</label>
+
+    <hr>
+
+    <p>偏好：</p>
+    <input type="radio" id="radio-a" name="preference" value="a">
+    <label for="radio-a">选项 A</label>
+
+    <input type="radio" id="radio-b" name="preference" value="b" checked>
+    <label for="radio-b">选项 B (默认选中)</label>
+
+    <input type="radio" id="radio-c" name="preference" value="c" disabled>
+    <label for="radio-c">选项 C (禁用)</label>
+
+</fieldset>
+
+<!-- ==================== 多选框 / Checkboxes ==================== -->
+<fieldset>
+    <legend>多选框 (Checkbox)</legend>
+
+    <p>兴趣：</p>
+    <input type="checkbox" id="cb-sports" name="interests" value="sports">
+    <label for="cb-sports">运动</label>
+
+    <input type="checkbox" id="cb-music" name="interests" value="music" checked>
+    <label for="cb-music">音乐 (默认选中)</label>
+
+    <input type="checkbox" id="cb-reading" name="interests" value="reading">
+    <label for="cb-reading">阅读</label>
+
+    <input type="checkbox" id="cb-travel" name="interests" value="travel">
+    <label for="cb-travel">旅行</label>
+
+    <input type="checkbox" id="cb-gaming" name="interests" value="gaming" disabled>
+    <label for="cb-gaming">游戏 (禁用)</label>
+
+    <hr>
+
+    <p>协议：</p>
+    <input type="checkbox" id="cb-agree" name="agree" value="yes" required>
+    <label for="cb-agree">我已阅读并同意 <a href="#">服务条款</a> (必选)</label>
+
+    <input type="checkbox" id="cb-newsletter" name="newsletter" value="subscribe">
+    <label for="cb-newsletter">订阅新闻通讯</label>
+
+</fieldset>
+
+<!-- ==================== 开关 / Toggle (Checkbox-based) ==================== -->
+<fieldset>
+    <legend>开关切换 (Toggle Switch - Checkbox 变体)</legend>
+
+    <p>设置：</p>
+    <input type="checkbox" id="toggle-darkmode" name="darkmode" role="switch">
+    <label for="toggle-darkmode">深色模式</label>
+
+    <input type="checkbox" id="toggle-notif" name="notifications" role="switch" checked>
+    <label for="toggle-notif">启用通知 (默认开)</label>
+
+    <input type="checkbox" id="toggle-autosave" name="autosave" role="switch" disabled>
+    <label for="toggle-autosave">自动保存 (禁用)</label>
+
+</fieldset>
+
+<!-- ==================== 状态变体 / State Variants ==================== -->
+<fieldset>
+    <legend>状态变体</legend>
+
+    <label for="input-readonly">只读输入 (Readonly)</label>
+    <input type="text" id="input-readonly" name="readonly" value="此内容不可修改" readonly>
+
+    <label for="input-disabled">禁用输入 (Disabled)</label>
+    <input type="text" id="input-disabled" name="disabled" value="此输入已禁用" disabled>
+
+    <label for="input-required">必填输入 (Required)</label>
+    <input type="text" id="input-required" name="required" placeholder="此字段为必填..." required>
+
+    <label for="input-readonly-select">只读下拉</label>
+    <select id="input-readonly-select" disabled>
+        <option>禁用的下拉框</option>
+        <option>选项二</option>
+    </select>
+
+</fieldset>
+
+<!-- ==================== 复选框/单选的按钮样式变体 ==================== -->
+<fieldset>
+    <legend>按钮式选择 (Chip / Button Group 变体)</legend>
+
+    <p>筛选标签（用隐藏 checkbox 实现）：</p>
+    <input type="checkbox" id="chip-all" name="filter" value="all" checked>
+    <label for="chip-all">全部</label>
+
+    <input type="checkbox" id="chip-pending" name="filter" value="pending">
+    <label for="chip-pending">待处理</label>
+
+    <input type="checkbox" id="chip-done" name="filter" value="done">
+    <label for="chip-done">已完成</label>
+
+    <input type="checkbox" id="chip-cancel" name="filter" value="cancelled">
+    <label for="chip-cancel">已取消</label>
+
+</fieldset>
+
+<!-- ==================== 按钮 / Buttons ==================== -->
+<fieldset>
+    <legend>按钮</legend>
+
+    <button type="submit">提交 (Submit)</button>
+    <button type="reset">重置 (Reset)</button>
+    <button type="button">普通按钮 (Button)</button>
+    <button type="button" disabled>禁用按钮</button>
+
+    <hr>
+
+    <p>用 input 实现的按钮：</p>
+    <input type="submit" value="提交 (input)">
+    <input type="reset" value="重置 (input)">
+    <input type="button" value="普通按钮 (input)">
+    <input type="button" value="禁用 (input)" disabled>
+
+    <hr>
+
+    <p>图标按钮：</p>
+    <button type="button"><i class="fa-solid fa-magnifying-glass"></i> 搜索</button>
+    <button type="button"><i class="fa-solid fa-plus"></i> 新增</button>
+    <button type="button"><i class="fa-solid fa-trash"></i> 删除</button>
+    <button type="button"><i class="fa-solid fa-pen-to-square"></i> 编辑</button>
+    <button type="button"><i class="fa-solid fa-floppy-disk"></i> 保存</button>
+    <button type="button"><i class="fa-solid fa-download"></i> 下载</button>
+    <button type="button"><i class="fa-solid fa-upload"></i> 上传</button>
+    <button type="button"><i class="fa-solid fa-print"></i> 打印</button>
+    <button type="button"><i class="fa-solid fa-share"></i> 分享</button>
+
+</fieldset>
+
+<!-- ==================== 图片按钮 / Image Button ==================== -->
+<fieldset>
+    <legend>图片按钮</legend>
+
+    <input type="image" src="../img/favicon.ico" alt="图片提交按钮" width="32" height="32">
+
+</fieldset>
+
+<!-- ==================== 进度条 / Progress ==================== -->
+<fieldset>
+    <legend>进度条</legend>
+
+    <label for="progress-bar">进度条 (Progress)</label>
+    <progress id="progress-bar" value="60" max="100">60%</progress>
+
+    <label for="progress-indeterminate">不确定进度 (Indeterminate)</label>
+    <progress id="progress-indeterminate" max="100">加载中...</progress>
+
+    <label for="meter-bar">度量条 (Meter)</label>
+    <meter id="meter-bar" min="0" max="100" low="30" high="70" optimum="80" value="65">65/100</meter>
+
+</fieldset>
+
+<!-- ==================== 表单验证提示 / Validation Feedback ==================== -->
+<fieldset>
+    <legend>验证状态提示</legend>
+
+    <label for="input-success">成功状态</label>
+    <input type="text" id="input-success" name="success" value="验证通过" aria-invalid="false">
+
+    <label for="input-error">错误状态</label>
+    <input type="text" id="input-error" name="error" value="格式不正确" aria-invalid="true">
+    <small role="alert">请输入有效的邮箱地址。</small>
+
+    <label for="input-warning">警告状态</label>
+    <input type="text" id="input-warning" name="warning" value="用户名可能重复">
+
+</fieldset>
+
+</body>
+</html>

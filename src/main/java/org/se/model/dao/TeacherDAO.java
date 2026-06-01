@@ -13,7 +13,7 @@ import java.util.List;
 public class TeacherDAO {
 
     public boolean insert(Teacher teacher) {
-        String sql = "INSERT INTO Teacher (EmployeeID, Account, Name, Gender) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO teacher (employee_id, account, name, gender) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -23,7 +23,7 @@ public class TeacherDAO {
             pstmt.setString(1, teacher.getEmployeeID());
             pstmt.setString(2, teacher.getAccount());
             pstmt.setString(3, teacher.getName());
-            pstmt.setString(4, teacher.getGender());
+            pstmt.setObject(4, teacher.getGender());
 
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -40,7 +40,7 @@ public class TeacherDAO {
     }
 
     public boolean update(Teacher teacher) {
-        String sql = "UPDATE Teacher SET Account = ?, Name = ?, Gender = ? WHERE EmployeeID = ?";
+        String sql = "UPDATE teacher SET account = ?, name = ?, gender = ? WHERE employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -49,7 +49,7 @@ public class TeacherDAO {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, teacher.getAccount());
             pstmt.setString(2, teacher.getName());
-            pstmt.setString(3, teacher.getGender());
+            pstmt.setObject(3, teacher.getGender());
             pstmt.setString(4, teacher.getEmployeeID());
 
             return pstmt.executeUpdate() > 0;
@@ -67,7 +67,7 @@ public class TeacherDAO {
     }
 
     public boolean delete(String employeeID) {
-        String sql = "DELETE FROM Teacher WHERE EmployeeID = ?";
+        String sql = "DELETE FROM teacher WHERE employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -91,7 +91,7 @@ public class TeacherDAO {
     }
 
     public Teacher findById(String employeeID) {
-        String sql = "SELECT * FROM Teacher WHERE EmployeeID = ?";
+        String sql = "SELECT * FROM teacher WHERE employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,10 +104,10 @@ public class TeacherDAO {
 
             if (rs.next()) {
                 Teacher teacher = new Teacher();
-                teacher.setEmployeeID(rs.getString("EmployeeID"));
-                teacher.setAccount(rs.getString("Account"));
-                teacher.setName(rs.getString("Name"));
-                teacher.setGender(rs.getString("Gender"));
+                teacher.setEmployeeID(rs.getString("employee_id"));
+                teacher.setAccount(rs.getString("account"));
+                teacher.setName(rs.getString("name"));
+                teacher.setGender(rs.getInt("gender"));
                 return teacher;
             }
             return null;
@@ -126,7 +126,7 @@ public class TeacherDAO {
     }
 
     public Teacher findByAccount(String account) {
-        String sql = "SELECT * FROM Teacher WHERE Account = ?";
+        String sql = "SELECT * FROM teacher WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -139,10 +139,10 @@ public class TeacherDAO {
 
             if (rs.next()) {
                 Teacher teacher = new Teacher();
-                teacher.setEmployeeID(rs.getString("EmployeeID"));
-                teacher.setAccount(rs.getString("Account"));
-                teacher.setName(rs.getString("Name"));
-                teacher.setGender(rs.getString("Gender"));
+                teacher.setEmployeeID(rs.getString("employee_id"));
+                teacher.setAccount(rs.getString("account"));
+                teacher.setName(rs.getString("name"));
+                teacher.setGender(rs.getInt("gender"));
                 return teacher;
             }
             return null;
@@ -161,7 +161,7 @@ public class TeacherDAO {
     }
 
     public List<Teacher> findAll() {
-        String sql = "SELECT * FROM Teacher";
+        String sql = "SELECT * FROM teacher";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -174,10 +174,10 @@ public class TeacherDAO {
             List<Teacher> list = new ArrayList<>();
             while (rs.next()) {
                 Teacher teacher = new Teacher();
-                teacher.setEmployeeID(rs.getString("EmployeeID"));
-                teacher.setAccount(rs.getString("Account"));
-                teacher.setName(rs.getString("Name"));
-                teacher.setGender(rs.getString("Gender"));
+                teacher.setEmployeeID(rs.getString("employee_id"));
+                teacher.setAccount(rs.getString("account"));
+                teacher.setName(rs.getString("name"));
+                teacher.setGender(rs.getInt("gender"));
                 list.add(teacher);
             }
             return list;
@@ -196,7 +196,7 @@ public class TeacherDAO {
     }
 
     public List<Teacher> findByName(String name) {
-        String sql = "SELECT * FROM Teacher WHERE Name LIKE ?";
+        String sql = "SELECT * FROM teacher WHERE name LIKE ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -210,10 +210,10 @@ public class TeacherDAO {
             List<Teacher> list = new ArrayList<>();
             while (rs.next()) {
                 Teacher teacher = new Teacher();
-                teacher.setEmployeeID(rs.getString("EmployeeID"));
-                teacher.setAccount(rs.getString("Account"));
-                teacher.setName(rs.getString("Name"));
-                teacher.setGender(rs.getString("Gender"));
+                teacher.setEmployeeID(rs.getString("employee_id"));
+                teacher.setAccount(rs.getString("account"));
+                teacher.setName(rs.getString("name"));
+                teacher.setGender(rs.getInt("gender"));
                 list.add(teacher);
             }
             return list;
@@ -232,7 +232,7 @@ public class TeacherDAO {
     }
 
     public boolean exists(String employeeID) {
-        String sql = "SELECT COUNT(*) FROM Teacher WHERE EmployeeID = ?";
+        String sql = "SELECT COUNT(*) FROM teacher WHERE employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -262,7 +262,7 @@ public class TeacherDAO {
     }
 
     public boolean existsByAccount(String account) {
-        String sql = "SELECT COUNT(*) FROM Teacher WHERE Account = ?";
+        String sql = "SELECT COUNT(*) FROM teacher WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
