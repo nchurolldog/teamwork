@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 public class ClassEntity {
     public int classID;
     public String className;
+    public String TeacherID;
+    public String CounselorID;
 }
