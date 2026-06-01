@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class ClassEntity {
-    public int classID;
+    public Integer classID;
     public String className;
-    public String TeacherID;
-    public String CounselorID;
+    public String teacherID;
+    public String counselorID;
 }

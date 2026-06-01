@@ -13,7 +13,7 @@ import java.util.List;
 public class UsersDAO {
 
     public boolean insert(Users user) {
-        String sql = "INSERT INTO Users (Account, Password, UserType) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (account, password, user_type) VALUES (?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -39,7 +39,7 @@ public class UsersDAO {
     }
 
     public boolean update(Users user) {
-        String sql = "UPDATE Users SET Password = ?, UserType = ? WHERE Account = ?";
+        String sql = "UPDATE users SET password = ?, user_type = ? WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -65,7 +65,7 @@ public class UsersDAO {
     }
 
     public boolean delete(String account) {
-        String sql = "DELETE FROM Users WHERE Account = ?";
+        String sql = "DELETE FROM users WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -89,7 +89,7 @@ public class UsersDAO {
     }
 
     public Users findById(String account) {
-        String sql = "SELECT * FROM Users WHERE Account = ?";
+        String sql = "SELECT * FROM users WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -102,9 +102,9 @@ public class UsersDAO {
 
             if (rs.next()) {
                 Users user = new Users();
-                user.setAccount(rs.getString("Account"));
-                user.setPassword(rs.getString("Password"));
-                user.setUserType(rs.getInt("UserType"));
+                user.setAccount(rs.getString("account"));
+                user.setPassword(rs.getString("password"));
+                user.setUserType(rs.getInt("user_type"));
                 return user;
             }
             return null;
@@ -123,7 +123,7 @@ public class UsersDAO {
     }
 
     public List<Users> findAll() {
-        String sql = "SELECT * FROM Users";
+        String sql = "SELECT * FROM users";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -136,9 +136,9 @@ public class UsersDAO {
             List<Users> list = new ArrayList<>();
             while (rs.next()) {
                 Users user = new Users();
-                user.setAccount(rs.getString("Account"));
-                user.setPassword(rs.getString("Password"));
-                user.setUserType(rs.getInt("UserType"));
+                user.setAccount(rs.getString("account"));
+                user.setPassword(rs.getString("password"));
+                user.setUserType(rs.getInt("user_type"));
                 list.add(user);
             }
             return list;
@@ -157,7 +157,7 @@ public class UsersDAO {
     }
 
     public Users login(String account, String password) {
-        String sql = "SELECT * FROM Users WHERE Account = ? AND Password = ?";
+        String sql = "SELECT * FROM users WHERE account = ? AND password = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -171,9 +171,9 @@ public class UsersDAO {
 
             if (rs.next()) {
                 Users user = new Users();
-                user.setAccount(rs.getString("Account"));
-                user.setPassword(rs.getString("Password"));
-                user.setUserType(rs.getInt("UserType"));
+                user.setAccount(rs.getString("account"));
+                user.setPassword(rs.getString("password"));
+                user.setUserType(rs.getInt("user_type"));
                 return user;
             }
             return null;
@@ -192,7 +192,7 @@ public class UsersDAO {
     }
 
     public List<Users> findByUserType(Integer userType) {
-        String sql = "SELECT * FROM Users WHERE UserType = ?";
+        String sql = "SELECT * FROM users WHERE user_type = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -206,9 +206,9 @@ public class UsersDAO {
             List<Users> list = new ArrayList<>();
             while (rs.next()) {
                 Users user = new Users();
-                user.setAccount(rs.getString("Account"));
-                user.setPassword(rs.getString("Password"));
-                user.setUserType(rs.getInt("UserType"));
+                user.setAccount(rs.getString("account"));
+                user.setPassword(rs.getString("password"));
+                user.setUserType(rs.getInt("user_type"));
                 list.add(user);
             }
             return list;
@@ -227,7 +227,7 @@ public class UsersDAO {
     }
 
     public boolean updatePassword(String account, String newPassword) {
-        String sql = "UPDATE Users SET Password = ? WHERE Account = ?";
+        String sql = "UPDATE users SET password = ? WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -252,7 +252,7 @@ public class UsersDAO {
     }
 
     public boolean exists(String account) {
-        String sql = "SELECT COUNT(*) FROM Users WHERE Account = ?";
+        String sql = "SELECT COUNT(*) FROM users WHERE account = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

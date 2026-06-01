@@ -13,7 +13,7 @@ import java.util.List;
 public class ScholarshipApplicationDao {
 
     public boolean insert(ScholarshipApplication application) {
-        String sql = "INSERT INTO scholarship_application (app_id, student_id, type_code, amount, reason) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO scholarship_application (app_id, student_id, type_code, amount, reason, status) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, application.getAppID());
@@ -21,6 +21,7 @@ public class ScholarshipApplicationDao {
             pstmt.setString(3, application.getTypeCode());
             pstmt.setBigDecimal(4, application.getAmount());
             pstmt.setString(5, application.getReason());
+            pstmt.setString(6, application.getStatus());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -29,14 +30,15 @@ public class ScholarshipApplicationDao {
     }
 
     public boolean update(ScholarshipApplication application) {
-        String sql = "UPDATE scholarship_application SET student_id = ?, type_code = ?, amount = ?, reason = ? WHERE app_id = ?";
+        String sql = "UPDATE scholarship_application SET student_id = ?, type_code = ?, amount = ?, reason = ?, status = ? WHERE app_id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, application.getStudentID());
             pstmt.setString(2, application.getTypeCode());
             pstmt.setBigDecimal(3, application.getAmount());
             pstmt.setString(4, application.getReason());
-            pstmt.setString(5, application.getAppID());
+            pstmt.setString(5, application.getStatus());
+            pstmt.setString(6, application.getAppID());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -69,6 +71,7 @@ public class ScholarshipApplicationDao {
                     application.setTypeCode(rs.getString("type_code"));
                     application.setAmount(rs.getBigDecimal("amount"));
                     application.setReason(rs.getString("reason"));
+                    application.setStatus(rs.getString("status"));
                     return application;
                 }
             }
@@ -91,6 +94,7 @@ public class ScholarshipApplicationDao {
                 application.setTypeCode(rs.getString("type_code"));
                 application.setAmount(rs.getBigDecimal("amount"));
                 application.setReason(rs.getString("reason"));
+                application.setStatus(rs.getString("status"));
                 list.add(application);
             }
         } catch (SQLException e) {
@@ -113,6 +117,7 @@ public class ScholarshipApplicationDao {
                     application.setTypeCode(rs.getString("type_code"));
                     application.setAmount(rs.getBigDecimal("amount"));
                     application.setReason(rs.getString("reason"));
+                    application.setStatus(rs.getString("status"));
                     list.add(application);
                 }
             }
@@ -136,6 +141,7 @@ public class ScholarshipApplicationDao {
                     application.setTypeCode(rs.getString("type_code"));
                     application.setAmount(rs.getBigDecimal("amount"));
                     application.setReason(rs.getString("reason"));
+                    application.setStatus(rs.getString("status"));
                     list.add(application);
                 }
             }

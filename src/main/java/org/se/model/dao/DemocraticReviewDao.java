@@ -13,7 +13,7 @@ import java.util.List;
 public class DemocraticReviewDao {
 
     public boolean insert(DemocraticReview democraticReview) {
-        String sql = "INSERT INTO DemocraticReview (ReviewID, ApplicationID, OrganizerEmployeeID, Status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO democratic_review (review_id, application_id, organizer_employee_id, status) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -40,7 +40,7 @@ public class DemocraticReviewDao {
     }
 
     public boolean update(DemocraticReview democraticReview) {
-        String sql = "UPDATE DemocraticReview SET ApplicationID = ?, OrganizerEmployeeID = ?, Status = ? WHERE ReviewID = ?";
+        String sql = "UPDATE democratic_review SET application_id = ?, organizer_employee_id = ?, status = ? WHERE review_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -67,7 +67,7 @@ public class DemocraticReviewDao {
     }
 
     public boolean delete(String reviewID) {
-        String sql = "DELETE FROM DemocraticReview WHERE ReviewID = ?";
+        String sql = "DELETE FROM democratic_review WHERE review_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -91,7 +91,7 @@ public class DemocraticReviewDao {
     }
 
     public DemocraticReview findById(String reviewID) {
-        String sql = "SELECT * FROM DemocraticReview WHERE ReviewID = ?";
+        String sql = "SELECT * FROM democratic_review WHERE review_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,10 +104,10 @@ public class DemocraticReviewDao {
             
             if (rs.next()) {
                 DemocraticReview democraticReview = new DemocraticReview();
-                democraticReview.setReviewID(rs.getString("ReviewID"));
-                democraticReview.setApplicationID(rs.getString("ApplicationID"));
-                democraticReview.setOrganizerEmployeeID(rs.getString("OrganizerEmployeeID"));
-                democraticReview.setStatus(rs.getString("Status"));
+                democraticReview.setReviewID(rs.getString("review_id"));
+                democraticReview.setApplicationID(rs.getString("application_id"));
+                democraticReview.setOrganizerEmployeeID(rs.getString("organizer_employee_id"));
+                democraticReview.setStatus(rs.getString("status"));
                 return democraticReview;
             }
             return null;
@@ -126,7 +126,7 @@ public class DemocraticReviewDao {
     }
 
     public List<DemocraticReview> findAll() {
-        String sql = "SELECT * FROM DemocraticReview";
+        String sql = "SELECT * FROM democratic_review";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -139,10 +139,10 @@ public class DemocraticReviewDao {
             List<DemocraticReview> list = new ArrayList<>();
             while (rs.next()) {
                 DemocraticReview democraticReview = new DemocraticReview();
-                democraticReview.setReviewID(rs.getString("ReviewID"));
-                democraticReview.setApplicationID(rs.getString("ApplicationID"));
-                democraticReview.setOrganizerEmployeeID(rs.getString("OrganizerEmployeeID"));
-                democraticReview.setStatus(rs.getString("Status"));
+                democraticReview.setReviewID(rs.getString("review_id"));
+                democraticReview.setApplicationID(rs.getString("application_id"));
+                democraticReview.setOrganizerEmployeeID(rs.getString("organizer_employee_id"));
+                democraticReview.setStatus(rs.getString("status"));
                 list.add(democraticReview);
             }
             return list;
@@ -161,7 +161,7 @@ public class DemocraticReviewDao {
     }
 
     public List<DemocraticReview> findByApplicationId(String applicationID) {
-        String sql = "SELECT * FROM DemocraticReview WHERE ApplicationID = ?";
+        String sql = "SELECT * FROM democratic_review WHERE application_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -175,10 +175,10 @@ public class DemocraticReviewDao {
             List<DemocraticReview> list = new ArrayList<>();
             while (rs.next()) {
                 DemocraticReview democraticReview = new DemocraticReview();
-                democraticReview.setReviewID(rs.getString("ReviewID"));
-                democraticReview.setApplicationID(rs.getString("ApplicationID"));
-                democraticReview.setOrganizerEmployeeID(rs.getString("OrganizerEmployeeID"));
-                democraticReview.setStatus(rs.getString("Status"));
+                democraticReview.setReviewID(rs.getString("review_id"));
+                democraticReview.setApplicationID(rs.getString("application_id"));
+                democraticReview.setOrganizerEmployeeID(rs.getString("organizer_employee_id"));
+                democraticReview.setStatus(rs.getString("status"));
                 list.add(democraticReview);
             }
             return list;
@@ -197,7 +197,7 @@ public class DemocraticReviewDao {
     }
 
     public List<DemocraticReview> findByStatus(String status) {
-        String sql = "SELECT * FROM DemocraticReview WHERE Status = ?";
+        String sql = "SELECT * FROM democratic_review WHERE status = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -211,10 +211,10 @@ public class DemocraticReviewDao {
             List<DemocraticReview> list = new ArrayList<>();
             while (rs.next()) {
                 DemocraticReview democraticReview = new DemocraticReview();
-                democraticReview.setReviewID(rs.getString("ReviewID"));
-                democraticReview.setApplicationID(rs.getString("ApplicationID"));
-                democraticReview.setOrganizerEmployeeID(rs.getString("OrganizerEmployeeID"));
-                democraticReview.setStatus(rs.getString("Status"));
+                democraticReview.setReviewID(rs.getString("review_id"));
+                democraticReview.setApplicationID(rs.getString("application_id"));
+                democraticReview.setOrganizerEmployeeID(rs.getString("organizer_employee_id"));
+                democraticReview.setStatus(rs.getString("status"));
                 list.add(democraticReview);
             }
             return list;
@@ -233,7 +233,7 @@ public class DemocraticReviewDao {
     }
 
     public List<DemocraticReview> findByOrganizerId(String organizerEmployeeID) {
-        String sql = "SELECT * FROM DemocraticReview WHERE OrganizerEmployeeID = ?";
+        String sql = "SELECT * FROM democratic_review WHERE organizer_employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -247,10 +247,10 @@ public class DemocraticReviewDao {
             List<DemocraticReview> list = new ArrayList<>();
             while (rs.next()) {
                 DemocraticReview democraticReview = new DemocraticReview();
-                democraticReview.setReviewID(rs.getString("ReviewID"));
-                democraticReview.setApplicationID(rs.getString("ApplicationID"));
-                democraticReview.setOrganizerEmployeeID(rs.getString("OrganizerEmployeeID"));
-                democraticReview.setStatus(rs.getString("Status"));
+                democraticReview.setReviewID(rs.getString("review_id"));
+                democraticReview.setApplicationID(rs.getString("application_id"));
+                democraticReview.setOrganizerEmployeeID(rs.getString("organizer_employee_id"));
+                democraticReview.setStatus(rs.getString("status"));
                 list.add(democraticReview);
             }
             return list;

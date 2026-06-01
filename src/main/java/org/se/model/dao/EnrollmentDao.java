@@ -26,7 +26,7 @@ public class EnrollmentDao {
         }
     }
 
-    // 对于只有联合主键的表，update 操作实际是先删除后插入
+    // 鐎甸€涚艾閸欘亝婀侀懕鏂挎値娑撳鏁惃鍕€冮敍瀵€pdate 閹垮秳缍旂€圭偤妾弰顖氬帥閸掔娀娅庨崥搴㈠絻閸?
     public boolean update(Enrollment enrollment) {
         delete(enrollment.getStudentID(), enrollment.getCourseID());
         return insert(enrollment);

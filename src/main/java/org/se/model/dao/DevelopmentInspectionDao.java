@@ -13,7 +13,7 @@ import java.util.List;
 public class DevelopmentInspectionDao {
 
     public boolean insert(DevelopmentInspection inspection) {
-        String sql = "INSERT INTO DevelopmentInspection (InspectionID, ApplicationID, InspectorEmployeeID, Status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO development_inspection (inspection_id, application_id, inspector_employee_id, status) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -40,7 +40,7 @@ public class DevelopmentInspectionDao {
     }
 
     public boolean update(DevelopmentInspection inspection) {
-        String sql = "UPDATE DevelopmentInspection SET ApplicationID = ?, InspectorEmployeeID = ?, Status = ? WHERE InspectionID = ?";
+        String sql = "UPDATE development_inspection SET application_id = ?, inspector_employee_id = ?, status = ? WHERE inspection_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -67,7 +67,7 @@ public class DevelopmentInspectionDao {
     }
 
     public boolean delete(String inspectionID) {
-        String sql = "DELETE FROM DevelopmentInspection WHERE InspectionID = ?";
+        String sql = "DELETE FROM development_inspection WHERE inspection_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -91,7 +91,7 @@ public class DevelopmentInspectionDao {
     }
 
     public DevelopmentInspection findById(String inspectionID) {
-        String sql = "SELECT * FROM DevelopmentInspection WHERE InspectionID = ?";
+        String sql = "SELECT * FROM development_inspection WHERE inspection_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,10 +104,10 @@ public class DevelopmentInspectionDao {
             
             if (rs.next()) {
                 DevelopmentInspection inspection = new DevelopmentInspection();
-                inspection.setInspectionID(rs.getString("InspectionID"));
-                inspection.setApplicationID(rs.getString("ApplicationID"));
-                inspection.setInspectorEmployeeID(rs.getString("InspectorEmployeeID"));
-                inspection.setStatus(rs.getString("Status"));
+                inspection.setInspectionID(rs.getString("inspection_id"));
+                inspection.setApplicationID(rs.getString("application_id"));
+                inspection.setInspectorEmployeeID(rs.getString("inspector_employee_id"));
+                inspection.setStatus(rs.getString("status"));
                 return inspection;
             }
             return null;
@@ -126,7 +126,7 @@ public class DevelopmentInspectionDao {
     }
 
     public List<DevelopmentInspection> findAll() {
-        String sql = "SELECT * FROM DevelopmentInspection";
+        String sql = "SELECT * FROM development_inspection";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -139,10 +139,10 @@ public class DevelopmentInspectionDao {
             List<DevelopmentInspection> list = new ArrayList<>();
             while (rs.next()) {
                 DevelopmentInspection inspection = new DevelopmentInspection();
-                inspection.setInspectionID(rs.getString("InspectionID"));
-                inspection.setApplicationID(rs.getString("ApplicationID"));
-                inspection.setInspectorEmployeeID(rs.getString("InspectorEmployeeID"));
-                inspection.setStatus(rs.getString("Status"));
+                inspection.setInspectionID(rs.getString("inspection_id"));
+                inspection.setApplicationID(rs.getString("application_id"));
+                inspection.setInspectorEmployeeID(rs.getString("inspector_employee_id"));
+                inspection.setStatus(rs.getString("status"));
                 list.add(inspection);
             }
             return list;
@@ -161,7 +161,7 @@ public class DevelopmentInspectionDao {
     }
 
     public List<DevelopmentInspection> findByApplicationId(String applicationID) {
-        String sql = "SELECT * FROM DevelopmentInspection WHERE ApplicationID = ?";
+        String sql = "SELECT * FROM development_inspection WHERE application_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -175,10 +175,10 @@ public class DevelopmentInspectionDao {
             List<DevelopmentInspection> list = new ArrayList<>();
             while (rs.next()) {
                 DevelopmentInspection inspection = new DevelopmentInspection();
-                inspection.setInspectionID(rs.getString("InspectionID"));
-                inspection.setApplicationID(rs.getString("ApplicationID"));
-                inspection.setInspectorEmployeeID(rs.getString("InspectorEmployeeID"));
-                inspection.setStatus(rs.getString("Status"));
+                inspection.setInspectionID(rs.getString("inspection_id"));
+                inspection.setApplicationID(rs.getString("application_id"));
+                inspection.setInspectorEmployeeID(rs.getString("inspector_employee_id"));
+                inspection.setStatus(rs.getString("status"));
                 list.add(inspection);
             }
             return list;
@@ -197,7 +197,7 @@ public class DevelopmentInspectionDao {
     }
 
     public List<DevelopmentInspection> findByInspectorId(String inspectorEmployeeID) {
-        String sql = "SELECT * FROM DevelopmentInspection WHERE InspectorEmployeeID = ?";
+        String sql = "SELECT * FROM development_inspection WHERE inspector_employee_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -211,10 +211,10 @@ public class DevelopmentInspectionDao {
             List<DevelopmentInspection> list = new ArrayList<>();
             while (rs.next()) {
                 DevelopmentInspection inspection = new DevelopmentInspection();
-                inspection.setInspectionID(rs.getString("InspectionID"));
-                inspection.setApplicationID(rs.getString("ApplicationID"));
-                inspection.setInspectorEmployeeID(rs.getString("InspectorEmployeeID"));
-                inspection.setStatus(rs.getString("Status"));
+                inspection.setInspectionID(rs.getString("inspection_id"));
+                inspection.setApplicationID(rs.getString("application_id"));
+                inspection.setInspectorEmployeeID(rs.getString("inspector_employee_id"));
+                inspection.setStatus(rs.getString("status"));
                 list.add(inspection);
             }
             return list;
@@ -233,7 +233,7 @@ public class DevelopmentInspectionDao {
     }
 
     public List<DevelopmentInspection> findByStatus(String status) {
-        String sql = "SELECT * FROM DevelopmentInspection WHERE Status = ?";
+        String sql = "SELECT * FROM development_inspection WHERE status = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -247,10 +247,10 @@ public class DevelopmentInspectionDao {
             List<DevelopmentInspection> list = new ArrayList<>();
             while (rs.next()) {
                 DevelopmentInspection inspection = new DevelopmentInspection();
-                inspection.setInspectionID(rs.getString("InspectionID"));
-                inspection.setApplicationID(rs.getString("ApplicationID"));
-                inspection.setInspectorEmployeeID(rs.getString("InspectorEmployeeID"));
-                inspection.setStatus(rs.getString("Status"));
+                inspection.setInspectionID(rs.getString("inspection_id"));
+                inspection.setApplicationID(rs.getString("application_id"));
+                inspection.setInspectorEmployeeID(rs.getString("inspector_employee_id"));
+                inspection.setStatus(rs.getString("status"));
                 list.add(inspection);
             }
             return list;

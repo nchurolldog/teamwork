@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 public class FamilyInfo {
     public String studentID;
     public String homeAddress;
-    public int familySize;
+    public Integer familySize;
     public String phone;
 }

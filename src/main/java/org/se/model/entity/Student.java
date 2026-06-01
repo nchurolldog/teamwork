@@ -12,6 +12,6 @@ public class Student {
     public String studentID;
     public String account;
     public String name;
-    public String gender;
+    public Integer gender;
     public String position;
 }

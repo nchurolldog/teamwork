@@ -18,7 +18,7 @@ public class CounselorApprovalDao {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, approval.getAppID());
             pstmt.setString(2, approval.getEmployeeID());
-            pstmt.setString(3, approval.getResult());
+            pstmt.setBoolean(3, Boolean.TRUE.equals(approval.getResult()));
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -31,7 +31,7 @@ public class CounselorApprovalDao {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, approval.getEmployeeID());
-            pstmt.setString(2, approval.getResult());
+            pstmt.setBoolean(2, Boolean.TRUE.equals(approval.getResult()));
             pstmt.setString(3, approval.getAppID());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -62,7 +62,7 @@ public class CounselorApprovalDao {
                     CounselorApproval approval = new CounselorApproval();
                     approval.setAppID(rs.getString("app_id"));
                     approval.setEmployeeID(rs.getString("employee_id"));
-                    approval.setResult(rs.getString("result"));
+                    approval.setResult(rs.getBoolean("result"));
                     return approval;
                 }
             }
@@ -82,7 +82,7 @@ public class CounselorApprovalDao {
                 CounselorApproval approval = new CounselorApproval();
                 approval.setAppID(rs.getString("app_id"));
                 approval.setEmployeeID(rs.getString("employee_id"));
-                approval.setResult(rs.getString("result"));
+                approval.setResult(rs.getBoolean("result"));
                 list.add(approval);
             }
         } catch (SQLException e) {
@@ -102,7 +102,7 @@ public class CounselorApprovalDao {
                     CounselorApproval approval = new CounselorApproval();
                     approval.setAppID(rs.getString("app_id"));
                     approval.setEmployeeID(rs.getString("employee_id"));
-                    approval.setResult(rs.getString("result"));
+                    approval.setResult(rs.getBoolean("result"));
                     list.add(approval);
                 }
             }

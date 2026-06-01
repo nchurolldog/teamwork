@@ -13,7 +13,7 @@ import java.util.List;
 public class PartyApplicationDao {
 
     public boolean insert(PartyApplication partyApplication) {
-        String sql = "INSERT INTO PartyApplication (ApplicationID, ApplicantStudentID, Reason, Status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO party_application (application_id, applicant_student_id, reason, status) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -40,7 +40,7 @@ public class PartyApplicationDao {
     }
 
     public boolean update(PartyApplication partyApplication) {
-        String sql = "UPDATE PartyApplication SET ApplicantStudentID = ?, Reason = ?, Status = ? WHERE ApplicationID = ?";
+        String sql = "UPDATE party_application SET applicant_student_id = ?, reason = ?, status = ? WHERE application_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -67,7 +67,7 @@ public class PartyApplicationDao {
     }
 
     public boolean delete(String applicationID) {
-        String sql = "DELETE FROM PartyApplication WHERE ApplicationID = ?";
+        String sql = "DELETE FROM party_application WHERE application_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         
@@ -91,7 +91,7 @@ public class PartyApplicationDao {
     }
 
     public PartyApplication findById(String applicationID) {
-        String sql = "SELECT * FROM PartyApplication WHERE ApplicationID = ?";
+        String sql = "SELECT * FROM party_application WHERE application_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,10 +104,10 @@ public class PartyApplicationDao {
             
             if (rs.next()) {
                 PartyApplication partyApplication = new PartyApplication();
-                partyApplication.setApplicationID(rs.getString("ApplicationID"));
-                partyApplication.setApplicantStudentID(rs.getString("ApplicantStudentID"));
-                partyApplication.setReason(rs.getString("Reason"));
-                partyApplication.setStatus(rs.getString("Status"));
+                partyApplication.setApplicationID(rs.getString("application_id"));
+                partyApplication.setApplicantStudentID(rs.getString("applicant_student_id"));
+                partyApplication.setReason(rs.getString("reason"));
+                partyApplication.setStatus(rs.getString("status"));
                 return partyApplication;
             }
             return null;
@@ -126,7 +126,7 @@ public class PartyApplicationDao {
     }
 
     public List<PartyApplication> findAll() {
-        String sql = "SELECT * FROM PartyApplication";
+        String sql = "SELECT * FROM party_application";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -139,10 +139,10 @@ public class PartyApplicationDao {
             List<PartyApplication> list = new ArrayList<>();
             while (rs.next()) {
                 PartyApplication partyApplication = new PartyApplication();
-                partyApplication.setApplicationID(rs.getString("ApplicationID"));
-                partyApplication.setApplicantStudentID(rs.getString("ApplicantStudentID"));
-                partyApplication.setReason(rs.getString("Reason"));
-                partyApplication.setStatus(rs.getString("Status"));
+                partyApplication.setApplicationID(rs.getString("application_id"));
+                partyApplication.setApplicantStudentID(rs.getString("applicant_student_id"));
+                partyApplication.setReason(rs.getString("reason"));
+                partyApplication.setStatus(rs.getString("status"));
                 list.add(partyApplication);
             }
             return list;
@@ -161,7 +161,7 @@ public class PartyApplicationDao {
     }
 
     public List<PartyApplication> findByStudentId(String studentID) {
-        String sql = "SELECT * FROM PartyApplication WHERE ApplicantStudentID = ?";
+        String sql = "SELECT * FROM party_application WHERE applicant_student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -175,10 +175,10 @@ public class PartyApplicationDao {
             List<PartyApplication> list = new ArrayList<>();
             while (rs.next()) {
                 PartyApplication partyApplication = new PartyApplication();
-                partyApplication.setApplicationID(rs.getString("ApplicationID"));
-                partyApplication.setApplicantStudentID(rs.getString("ApplicantStudentID"));
-                partyApplication.setReason(rs.getString("Reason"));
-                partyApplication.setStatus(rs.getString("Status"));
+                partyApplication.setApplicationID(rs.getString("application_id"));
+                partyApplication.setApplicantStudentID(rs.getString("applicant_student_id"));
+                partyApplication.setReason(rs.getString("reason"));
+                partyApplication.setStatus(rs.getString("status"));
                 list.add(partyApplication);
             }
             return list;
@@ -197,7 +197,7 @@ public class PartyApplicationDao {
     }
 
     public List<PartyApplication> findByStatus(String status) {
-        String sql = "SELECT * FROM PartyApplication WHERE Status = ?";
+        String sql = "SELECT * FROM party_application WHERE status = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -211,10 +211,10 @@ public class PartyApplicationDao {
             List<PartyApplication> list = new ArrayList<>();
             while (rs.next()) {
                 PartyApplication partyApplication = new PartyApplication();
-                partyApplication.setApplicationID(rs.getString("ApplicationID"));
-                partyApplication.setApplicantStudentID(rs.getString("ApplicantStudentID"));
-                partyApplication.setReason(rs.getString("Reason"));
-                partyApplication.setStatus(rs.getString("Status"));
+                partyApplication.setApplicationID(rs.getString("application_id"));
+                partyApplication.setApplicantStudentID(rs.getString("applicant_student_id"));
+                partyApplication.setReason(rs.getString("reason"));
+                partyApplication.setStatus(rs.getString("status"));
                 list.add(partyApplication);
             }
             return list;

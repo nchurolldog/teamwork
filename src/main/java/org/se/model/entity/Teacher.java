@@ -12,5 +12,5 @@ public class Teacher {
     public String employeeID;
     public String account;
     public String name;
-    public String gender;
+    public Integer gender;
 }

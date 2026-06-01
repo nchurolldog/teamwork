@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class DemocraticReviewParticipant {
     public String reviewID;
     public String participantStudentID;
-    public Integer access;
+    public Boolean access;
 }

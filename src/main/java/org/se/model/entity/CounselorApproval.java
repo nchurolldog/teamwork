@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class CounselorApproval {
     public String appID;
     public String employeeID;
-    public String result;
+    public Boolean result;
 }

@@ -1,6 +1,6 @@
 package org.se.model.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class AttendanceRecord {
-    public int recordID;
+    public Integer recordID;
     public String studentID;
-    public Date attendanceDate;
-    public int isAbsent;
+    public LocalDate attendanceDate;
+    public Boolean absent;
 }

@@ -13,7 +13,7 @@ import java.util.List;
 public class ClassMeetingAssociationDAO {
 
     public boolean insert(ClassMeetingAssociation association) {
-        String sql = "INSERT INTO ClassMeetingAssociation (meetingID, studentID) VALUES (?, ?)";
+        String sql = "INSERT INTO class_meeting_association (meeting_id, student_id) VALUES (?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -38,7 +38,7 @@ public class ClassMeetingAssociationDAO {
     }
 
     public boolean delete(String meetingID, String studentID) {
-        String sql = "DELETE FROM ClassMeetingAssociation WHERE meetingID = ? AND studentID = ?";
+        String sql = "DELETE FROM class_meeting_association WHERE meeting_id = ? AND student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -63,7 +63,7 @@ public class ClassMeetingAssociationDAO {
     }
 
     public ClassMeetingAssociation findById(String meetingID, String studentID) {
-        String sql = "SELECT * FROM ClassMeetingAssociation WHERE meetingID = ? AND studentID = ?";
+        String sql = "SELECT * FROM class_meeting_association WHERE meeting_id = ? AND student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -77,8 +77,8 @@ public class ClassMeetingAssociationDAO {
 
             if (rs.next()) {
                 ClassMeetingAssociation association = new ClassMeetingAssociation();
-                association.setMeetingID(rs.getString("meetingID"));
-                association.setStudentID(rs.getString("studentID"));
+                association.setMeetingID(rs.getString("meeting_id"));
+                association.setStudentID(rs.getString("student_id"));
                 return association;
             }
             return null;
@@ -97,7 +97,7 @@ public class ClassMeetingAssociationDAO {
     }
 
     public List<ClassMeetingAssociation> findByMeetingId(String meetingID) {
-        String sql = "SELECT * FROM ClassMeetingAssociation WHERE meetingID = ?";
+        String sql = "SELECT * FROM class_meeting_association WHERE meeting_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -111,8 +111,8 @@ public class ClassMeetingAssociationDAO {
             List<ClassMeetingAssociation> list = new ArrayList<>();
             while (rs.next()) {
                 ClassMeetingAssociation association = new ClassMeetingAssociation();
-                association.setMeetingID(rs.getString("meetingID"));
-                association.setStudentID(rs.getString("studentID"));
+                association.setMeetingID(rs.getString("meeting_id"));
+                association.setStudentID(rs.getString("student_id"));
                 list.add(association);
             }
             return list;
@@ -131,7 +131,7 @@ public class ClassMeetingAssociationDAO {
     }
 
     public List<ClassMeetingAssociation> findByStudentId(String studentID) {
-        String sql = "SELECT * FROM ClassMeetingAssociation WHERE studentID = ?";
+        String sql = "SELECT * FROM class_meeting_association WHERE student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -145,8 +145,8 @@ public class ClassMeetingAssociationDAO {
             List<ClassMeetingAssociation> list = new ArrayList<>();
             while (rs.next()) {
                 ClassMeetingAssociation association = new ClassMeetingAssociation();
-                association.setMeetingID(rs.getString("meetingID"));
-                association.setStudentID(rs.getString("studentID"));
+                association.setMeetingID(rs.getString("meeting_id"));
+                association.setStudentID(rs.getString("student_id"));
                 list.add(association);
             }
             return list;
@@ -165,7 +165,7 @@ public class ClassMeetingAssociationDAO {
     }
 
     public boolean deleteByMeetingId(String meetingID) {
-        String sql = "DELETE FROM ClassMeetingAssociation WHERE meetingID = ?";
+        String sql = "DELETE FROM class_meeting_association WHERE meeting_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -189,7 +189,7 @@ public class ClassMeetingAssociationDAO {
     }
 
     public boolean exists(String meetingID, String studentID) {
-        String sql = "SELECT COUNT(*) FROM ClassMeetingAssociation WHERE meetingID = ? AND studentID = ?";
+        String sql = "SELECT COUNT(*) FROM class_meeting_association WHERE meeting_id = ? AND student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
