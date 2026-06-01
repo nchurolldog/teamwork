@@ -242,24 +242,6 @@
     color: #ccc;
 }
 
-.normalbutton{
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #CEEBF1;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: #1A2B57;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.normalbutton:hover{
-    background-color: #b8dce5;
-}
 
 .photoandname{
     display: flex;
