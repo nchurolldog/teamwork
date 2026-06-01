@@ -123,6 +123,18 @@ CREATE TABLE IF NOT EXISTS family_info (
   phone VARCHAR(30),
   CONSTRAINT fk_family_info_student FOREIGN KEY (student_id) REFERENCES student(student_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS profile_image (
+  image_id INT PRIMARY KEY AUTO_INCREMENT,
+  owner_type TINYINT NOT NULL COMMENT '1 teacher, 2 counselor, 3 student',
+  owner_account VARCHAR(50) NOT NULL,
+  image_path VARCHAR(255) NOT NULL,
+  original_name VARCHAR(255),
+  content_type VARCHAR(100),
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_profile_image_owner (owner_type, owner_account),
+  CONSTRAINT fk_profile_image_user FOREIGN KEY (owner_account) REFERENCES users(account)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
 ## 奖学金
