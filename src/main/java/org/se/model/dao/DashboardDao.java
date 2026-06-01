@@ -101,7 +101,7 @@ public class DashboardDao {
     }
 
     public List<Map<String, Object>> findCounselorStudents(String employeeID) {
-        String sql = "SELECT s.student_id, s.name, ce.class_id, ce.class_name, " +
+        String sql = "SELECT s.student_id, s.name, s.position, ce.class_id, ce.class_name, " +
                 "COALESCE(pa.status, 'none') AS party_status, COALESCE(sa.status, 'none') AS scholarship_status " +
                 "FROM class_entity ce " +
                 "JOIN student_class sc ON ce.class_id = sc.class_id " +
@@ -113,7 +113,7 @@ public class DashboardDao {
     }
 
     public List<Map<String, Object>> findCounselorStudentsPaged(String employeeID, String search, Integer classID, int offset, int limit) {
-        String sql = "SELECT s.student_id, s.name, ce.class_id, ce.class_name, " +
+        String sql = "SELECT s.student_id, s.name, s.position, ce.class_id, ce.class_name, " +
                 "COALESCE(pa.status, 'none') AS party_status, COALESCE(sa.status, 'none') AS scholarship_status " +
                 "FROM class_entity ce " +
                 "JOIN student_class sc ON ce.class_id = sc.class_id " +
@@ -138,10 +138,64 @@ public class DashboardDao {
         return countQuery(sql, employeeID, pattern, pattern, pattern, classID, classID);
     }
 
+    public List<Map<String, Object>> findAvailableScholarships(String studentID) {
+        String sql = "SELECT st.type_code, st.description " +
+                "FROM scholarship_type st " +
+                "WHERE NOT EXISTS (SELECT 1 FROM scholarship_application sa WHERE sa.type_code = st.type_code AND sa.student_id = ?) " +
+                "ORDER BY st.type_code";
+        return query(sql, studentID);
+    }
+
+    public List<Map<String, Object>> findStudentScholarshipApplications(String studentID) {
+        String sql = "SELECT sa.app_id, sa.type_code, st.description, sa.amount, sa.reason, sa.status, " +
+                "sad.requested_amount, sad.family_situation, sad.academic_score, sad.conduct_evaluation, " +
+                "sad.honors, sad.application_reason, sad.supporting_materials, sad.promise " +
+                "FROM scholarship_application sa " +
+                "LEFT JOIN scholarship_type st ON sa.type_code = st.type_code " +
+                "LEFT JOIN scholarship_application_detail sad ON sa.app_id = sad.app_id " +
+                "WHERE sa.student_id = ? ORDER BY sa.app_id DESC";
+        return query(sql, studentID);
+    }
+
+    public List<Map<String, Object>> findPublishedScholarships() {
+        String sql = "SELECT sa.app_id, s.student_id, s.name, ce.class_name, sa.type_code, st.description, sa.amount, sa.status " +
+                "FROM scholarship_application sa " +
+                "JOIN student s ON sa.student_id = s.student_id " +
+                "LEFT JOIN scholarship_type st ON sa.type_code = st.type_code " +
+                "LEFT JOIN student_class sc ON s.student_id = sc.student_id " +
+                "LEFT JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "WHERE sa.status IN ('approved', 'published', '公示', '已公示') " +
+                "ORDER BY sa.app_id DESC";
+        return query(sql);
+    }
+
     public List<Map<String, Object>> findCounselorMeetings(String employeeID) {
         String sql = "SELECT cm.meeting_theme, ce.class_name, cm.classroom " +
                 "FROM class_meeting cm JOIN class_entity ce ON cm.class_id = ce.class_id " +
                 "WHERE ce.counselor_id = ? ORDER BY cm.meeting_id";
+        return query(sql, employeeID);
+    }
+
+    public List<Map<String, Object>> findCounselorPartyApplications(String employeeID) {
+        String sql = "SELECT pa.application_id, s.student_id, s.name, ce.class_name, pa.reason, pa.status " +
+                "FROM party_application pa " +
+                "JOIN student s ON pa.applicant_student_id = s.student_id " +
+                "JOIN student_class sc ON s.student_id = sc.student_id " +
+                "JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "WHERE ce.counselor_id = ? ORDER BY pa.application_id DESC";
+        return query(sql, employeeID);
+    }
+
+    public List<Map<String, Object>> findCounselorScholarshipApplications(String employeeID) {
+        String sql = "SELECT sa.app_id, s.student_id, s.name, ce.class_name, sa.type_code, st.description, sa.amount, sa.reason, sa.status, " +
+                "sad.requested_amount, sad.family_situation, sad.academic_score, sad.conduct_evaluation, sad.honors, sad.supporting_materials " +
+                "FROM scholarship_application sa " +
+                "JOIN student s ON sa.student_id = s.student_id " +
+                "JOIN student_class sc ON s.student_id = sc.student_id " +
+                "JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "LEFT JOIN scholarship_type st ON sa.type_code = st.type_code " +
+                "LEFT JOIN scholarship_application_detail sad ON sa.app_id = sad.app_id " +
+                "WHERE ce.counselor_id = ? ORDER BY sa.app_id DESC";
         return query(sql, employeeID);
     }
 

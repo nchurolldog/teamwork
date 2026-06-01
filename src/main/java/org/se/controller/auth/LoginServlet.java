@@ -1,4 +1,4 @@
-package org.se.controller;
+package org.se.controller.auth;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

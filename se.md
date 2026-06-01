@@ -156,6 +156,58 @@ CREATE TABLE IF NOT EXISTS scholarship_application (
   CONSTRAINT fk_scholarship_type FOREIGN KEY (type_code) REFERENCES scholarship_type(type_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS scholarship_application_detail (
+  app_id VARCHAR(30) PRIMARY KEY,
+  requested_amount DECIMAL(10,2),
+  family_situation VARCHAR(50) NOT NULL,
+  academic_score VARCHAR(50) NOT NULL,
+  conduct_evaluation VARCHAR(50) NOT NULL,
+  honors TEXT,
+  application_reason TEXT NOT NULL,
+  supporting_materials TEXT,
+  promise BOOLEAN DEFAULT TRUE,
+  CONSTRAINT fk_scholarship_detail_application FOREIGN KEY (app_id) REFERENCES scholarship_application(app_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS scholarship_democratic_review (
+  review_id VARCHAR(30) PRIMARY KEY,
+  app_id VARCHAR(30) NOT NULL,
+  status VARCHAR(30) DEFAULT 'pending',
+  CONSTRAINT fk_scholarship_review_application FOREIGN KEY (app_id) REFERENCES scholarship_application(app_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS scholarship_review_vote (
+  review_id VARCHAR(30) NOT NULL,
+  voter_student_id VARCHAR(30) NOT NULL,
+  agree BOOLEAN,
+  comment TEXT,
+  PRIMARY KEY (review_id, voter_student_id),
+  CONSTRAINT fk_scholarship_vote_review FOREIGN KEY (review_id) REFERENCES scholarship_democratic_review(review_id),
+  CONSTRAINT fk_scholarship_vote_student FOREIGN KEY (voter_student_id) REFERENCES student(student_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS scholarship_counselor_review (
+  review_id VARCHAR(30) PRIMARY KEY,
+  app_id VARCHAR(30) NOT NULL,
+  employee_id VARCHAR(30) NOT NULL,
+  result BOOLEAN,
+  comment TEXT,
+  status VARCHAR(30) DEFAULT 'pending',
+  CONSTRAINT fk_scholarship_counselor_review_app FOREIGN KEY (app_id) REFERENCES scholarship_application(app_id),
+  CONSTRAINT fk_scholarship_counselor_review_employee FOREIGN KEY (employee_id) REFERENCES counselor(employee_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS scholarship_teacher_review (
+  review_id VARCHAR(30) PRIMARY KEY,
+  app_id VARCHAR(30) NOT NULL,
+  employee_id VARCHAR(30) NOT NULL,
+  result BOOLEAN,
+  comment TEXT,
+  status VARCHAR(30) DEFAULT 'pending',
+  CONSTRAINT fk_scholarship_teacher_review_app FOREIGN KEY (app_id) REFERENCES scholarship_application(app_id),
+  CONSTRAINT fk_scholarship_teacher_review_employee FOREIGN KEY (employee_id) REFERENCES teacher(employee_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS counselor_approval (
   app_id VARCHAR(30) PRIMARY KEY,
   employee_id VARCHAR(30) NOT NULL,

@@ -1,4 +1,4 @@
-package org.se.controller;
+package org.se.controller.profile;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -7,16 +7,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.se.model.dao.TeacherDAO;
-import org.se.model.entity.Teacher;
+import org.se.model.dao.CounselorDAO;
+import org.se.model.entity.Counselor;
 import org.se.model.entity.Users;
 
 import java.io.IOException;
 
-@WebServlet("/updateTeacherProfile")
+@WebServlet("/updateCounselorProfile")
 @MultipartConfig(maxFileSize = 2 * 1024 * 1024, maxRequestSize = 3 * 1024 * 1024)
-public class UpdateTeacherProfileServlet extends HttpServlet {
-    private final TeacherDAO teacherDAO = new TeacherDAO();
+public class UpdateCounselorProfileServlet extends HttpServlet {
+    private final CounselorDAO counselorDAO = new CounselorDAO();
     private final ProfileImageSupport profileImageSupport = new ProfileImageSupport();
 
     @Override
@@ -25,26 +25,26 @@ public class UpdateTeacherProfileServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         Users currentUser = session == null ? null : (Users) session.getAttribute("currentUser");
 
-        if (currentUser == null || currentUser.getUserType() == null || currentUser.getUserType() != 1) {
+        if (currentUser == null || currentUser.getUserType() == null || currentUser.getUserType() != 2) {
             response.sendRedirect("index.jsp");
             return;
         }
 
-        Teacher existingTeacher = teacherDAO.findByAccount(currentUser.getAccount());
-        String employeeID = existingTeacher == null ? trimToNull(request.getParameter("employeeID")) : existingTeacher.getEmployeeID();
+        Counselor existingCounselor = counselorDAO.findByAccount(currentUser.getAccount());
+        String employeeID = existingCounselor == null ? trimToNull(request.getParameter("employeeID")) : existingCounselor.getEmployeeID();
         String name = trimToNull(request.getParameter("name"));
         Integer gender = parseInteger(request.getParameter("gender"));
 
         if (employeeID == null || name == null) {
-            response.sendRedirect("teacher.jsp?profile=failed");
+            response.sendRedirect("counselor.jsp?profile=failed");
             return;
         }
 
-        Teacher teacher = new Teacher(employeeID, currentUser.getAccount(), name, gender);
-        boolean profileSaved = existingTeacher == null ? teacherDAO.insert(teacher) : teacherDAO.update(teacher);
+        Counselor counselor = new Counselor(employeeID, currentUser.getAccount(), name, gender);
+        boolean profileSaved = existingCounselor == null ? counselorDAO.insert(counselor) : counselorDAO.update(counselor);
         boolean avatarSaved = profileImageSupport.saveAvatarIfPresent(request, currentUser.getUserType(), currentUser.getAccount());
 
-        response.sendRedirect(profileSaved && avatarSaved ? "teacher.jsp?profile=saved" : "teacher.jsp?profile=failed");
+        response.sendRedirect(profileSaved && avatarSaved ? "counselor.jsp?profile=saved" : "counselor.jsp?profile=failed");
     }
 
     private String trimToNull(String value) {

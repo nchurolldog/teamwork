@@ -1,4 +1,4 @@
-package org.se.controller;
+package org.se.controller.profile;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
