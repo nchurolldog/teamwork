@@ -11,6 +11,7 @@
 <%@ page import="org.se.model.dao.DashboardDao" %>
 <%@ page import="org.se.model.dao.PartyApplicationDao" %>
 <%@ page import="org.se.model.dao.ScholarshipApplicationDao" %>
+<%@ page import="org.se.model.dao.ScholarshipWorkflowDao" %>
 <%@ page import="org.se.model.entity.PartyApplication" %>
 <%@ page import="org.se.model.entity.ScholarshipApplication" %>
 <%@ page import="java.util.List" %>
@@ -35,6 +36,14 @@
     if (value == null) return "-";
     String text = String.valueOf(value);
     return text.trim().isEmpty() ? "-" : text;
+  }
+
+  private String attrValue(Object value) {
+    return valueText(value)
+        .replace("&", "&amp;")
+        .replace("\"", "&quot;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;");
   }
 
   private String firstStatus(List<?> rows, String emptyText) {
@@ -66,6 +75,7 @@
   DashboardDao dashboardDao = new DashboardDao();
   PartyApplicationDao partyApplicationDao = new PartyApplicationDao();
   ScholarshipApplicationDao scholarshipApplicationDao = new ScholarshipApplicationDao();
+  ScholarshipWorkflowDao scholarshipWorkflowDao = new ScholarshipWorkflowDao();
   Student student = studentDAO.findByAccount(currentUser.getAccount());
   String studentID = student == null ? currentUser.getAccount() : student.getStudentID();
   PersonalInfo personalInfo = studentID == null ? null : personalInfoDao.findById(studentID);
@@ -78,6 +88,20 @@
   List<Map<String, Object>> meetingRows = dashboardDao.findStudentMeetings(studentID);
   List<PartyApplication> partyRows = partyApplicationDao.findByStudentId(studentID);
   List<ScholarshipApplication> scholarshipRows = scholarshipApplicationDao.findByStudentID(studentID);
+  List<Map<String, Object>> availableScholarshipRows = dashboardDao.findAvailableScholarships(studentID);
+  List<Map<String, Object>> appliedScholarshipRows = dashboardDao.findStudentScholarshipApplications(studentID);
+  List<Map<String, Object>> publishedScholarshipRows = dashboardDao.findPublishedScholarships();
+  List<Map<String, Object>> scholarshipVoteRows = scholarshipWorkflowDao.findStudentVoteTasks(studentID);
+  String selectedAppID = request.getParameter("appId");
+  Map<String, Object> selectedScholarship = null;
+  for (Map<String, Object> row : appliedScholarshipRows) {
+    if (selectedAppID != null && selectedAppID.equals(valueText(row.get("app_id")))) {
+      selectedScholarship = row;
+      break;
+    }
+  }
+  String scholarshipStatus = request.getParameter("scholarship");
+  String voteStatus = request.getParameter("vote");
   String profileStatus = request.getParameter("profile");
   String view = request.getParameter("view") == null ? "personal" : request.getParameter("view");
 %>
@@ -140,6 +164,20 @@
     .secondary-btn, .primary-btn { border: 0; border-radius: 8px; height: 40px; padding: 0 16px; font-weight: 800; cursor: pointer; }
     .secondary-btn { background: var(--page); color: var(--ink); }
     .primary-btn { background: var(--pink); color: var(--ink); }
+    .scholarship-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
+    .scholarship-grid .wide { grid-column: span 8; }
+    .scholarship-grid .side { grid-column: span 4; }
+    textarea { width: 100%; min-height: 76px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: inherit; color: var(--ink); resize: vertical; }
+    .application-card { border: 1px solid var(--line); border-radius: 8px; padding: 16px; background: #fbfdfe; display: grid; gap: 14px; }
+    .application-title { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .application-title strong { font-size: 16px; color: var(--ink); }
+    .application-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .application-form label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .application-form label.full { grid-column: 1 / -1; }
+    .application-form input, .application-form select { width: 100%; height: 40px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; font: inherit; color: var(--ink); background: white; }
+    .checkbox-field { display: flex !important; grid-column: 1 / -1; align-items: center; gap: 8px; }
+    .checkbox-field input { width: 16px; height: 16px; }
+    .apply-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--line); }
     th { color: var(--muted); font-size: 12px; }
@@ -154,8 +192,8 @@
         <a class="<%= activeNav(view, "personal") %>" href="student.jsp"><i class="fas fa-id-card"></i>Personal</a>
         <a class="<%= activeNav(view, "class") %>" href="student.jsp?view=class"><i class="fas fa-users"></i>Class</a>
         <a class="<%= activeNav(view, "grades") %>" href="student.jsp?view=grades"><i class="fas fa-chart-line"></i>Grades</a>
-        <a class="<%= activeNav(view, "applications") %>" href="student.jsp?view=applications"><i class="fas fa-award"></i>Scholarship</a>
-        <a class="<%= activeNav(view, "applications") %>" href="student.jsp?view=applications"><i class="fas fa-flag"></i>Party Application</a>
+        <a class="<%= activeNav(view, "scholarship") %>" href="student.jsp?view=scholarship"><i class="fas fa-award"></i>Scholarship</a>
+        <a class="<%= activeNav(view, "party") %>" href="student.jsp?view=party"><i class="fas fa-flag"></i>Party Application</a>
         <a class="<%= activeNav(view, "meetings") %>" href="student.jsp?view=meetings"><i class="fas fa-calendar-check"></i>Meetings</a>
       </nav>
       <a class="logout" href="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -237,14 +275,259 @@
           </article>
         <% } %>
 
-        <% if ("applications".equals(view)) { %>
-        <article class="card span-12" id="applications">
-          <h2>Application Status</h2>
-          <div class="info-list">
-            <div class="info-row"><span>Party Application</span><span class="pill warning"><%= firstStatus(partyRows, "Not Submitted") %></span></div>
-            <div class="info-row"><span>Scholarship</span><span class="pill"><%= firstStatus(scholarshipRows, "No Active Application") %></span></div>
+        <% if ("party".equals(view)) { %>
+          <article class="card span-12">
+            <h2>Party Application</h2>
+            <div class="info-list">
+              <div class="info-row"><span>Current Status</span><span class="pill warning"><%= firstStatus(partyRows, "Not Submitted") %></span></div>
+              <% if (partyRows == null || partyRows.isEmpty()) { %>
+                <div class="info-row"><span>Application</span><strong>No party application record.</strong></div>
+              <% } else {
+                for (PartyApplication row : partyRows) {
+              %>
+                <div class="info-row"><span><%= textOrDash(row.getApplicationID()) %></span><strong><%= textOrDash(row.getReason()) %></strong></div>
+              <% }} %>
+            </div>
+          </article>
+        <% } %>
+
+        <% if ("scholarship".equals(view)) { %>
+          <% if ("saved".equals(scholarshipStatus)) { %>
+            <div class="notice">Scholarship application submitted.</div>
+          <% } else if ("duplicate".equals(scholarshipStatus)) { %>
+            <div class="notice error">You have already applied for this scholarship.</div>
+          <% } else if ("failed".equals(scholarshipStatus)) { %>
+            <div class="notice error">Scholarship application failed.</div>
+          <% } %>
+          <% if ("saved".equals(voteStatus)) { %>
+            <div class="notice">Democratic review vote submitted.</div>
+          <% } else if ("failed".equals(voteStatus)) { %>
+            <div class="notice error">Democratic review vote failed.</div>
+          <% } %>
+          <article class="card span-12" id="applications">
+            <h2>Scholarship Status</h2>
+            <div class="info-list">
+              <div class="info-row"><span>Scholarship</span><span class="pill"><%= firstStatus(scholarshipRows, "No Active Application") %></span></div>
+            </div>
+          </article>
+
+          <div class="span-12 scholarship-grid">
+            <article class="card wide">
+              <h2>Available Scholarships</h2>
+              <div class="info-list">
+                <% if (availableScholarshipRows.isEmpty()) { %>
+                  <div class="info-row"><span>Available</span><strong>No available scholarships.</strong></div>
+                <% } else { %>
+                  <div class="application-card">
+                    <div class="application-title">
+                      <strong id="selectedScholarshipDescription"><%= valueText(availableScholarshipRows.get(0).get("description")) %></strong>
+                      <span class="pill">Ready to apply</span>
+                    </div>
+                    <form class="application-form" action="applyScholarship" method="post">
+                      <label class="full">
+                        Scholarship Type
+                        <select id="scholarshipTypeSelect" name="typeCode" required>
+                          <% for (Map<String, Object> row : availableScholarshipRows) { %>
+                            <option value="<%= attrValue(row.get("type_code")) %>" data-description="<%= attrValue(row.get("description")) %>">
+                              <%= valueText(row.get("type_code")) %> - <%= valueText(row.get("description")) %>
+                            </option>
+                          <% } %>
+                        </select>
+                      </label>
+                      <label>
+                        Applicant
+                        <input type="text" value="<%= student == null ? "" : fieldValue(student.getName()) %>" readonly>
+                      </label>
+                      <label>
+                        Student ID
+                        <input type="text" value="<%= fieldValue(studentID) %>" readonly>
+                      </label>
+                      <label>
+                        Requested Amount
+                        <input type="number" name="amount" min="0" step="0.01" placeholder="e.g. 1200">
+                      </label>
+                      <label>
+                        Family Situation
+                        <select name="familySituation" required>
+                          <option value="">Select</option>
+                          <option value="Normal">Normal</option>
+                          <option value="Financial Difficulty">Financial Difficulty</option>
+                          <option value="Special Difficulty">Special Difficulty</option>
+                        </select>
+                      </label>
+                      <label>
+                        GPA / Average Score
+                        <input type="text" name="academicScore" placeholder="e.g. 91.5" required>
+                      </label>
+                      <label>
+                        Conduct Evaluation
+                        <select name="conductEvaluation" required>
+                          <option value="">Select</option>
+                          <option value="Excellent">Excellent</option>
+                          <option value="Good">Good</option>
+                          <option value="Qualified">Qualified</option>
+                        </select>
+                      </label>
+                      <label class="full">
+                        Honors / Awards
+                        <textarea name="honors" placeholder="List awards, competitions, volunteer work, class contributions"></textarea>
+                      </label>
+                      <label class="full">
+                        Application Reason
+                        <textarea name="reason" placeholder="Explain why you are applying, your academic performance, family situation, and future plan" required></textarea>
+                      </label>
+                      <label class="full">
+                        Supporting Materials
+                        <textarea name="materials" placeholder="Describe certificates or documents you will submit offline"></textarea>
+                      </label>
+                      <label class="checkbox-field">
+                        <input type="checkbox" name="promise" value="true" required>
+                        I promise the submitted information is true and accept review/publicity.
+                      </label>
+                      <div class="apply-actions">
+                        <button class="primary-btn" type="submit">Submit Application</button>
+                      </div>
+                    </form>
+                  </div>
+                <% } %>
+              </div>
+            </article>
+
+            <article class="card side">
+              <h2>Application Detail</h2>
+              <div class="info-list">
+                <% if (selectedScholarship == null) { %>
+                  <div class="info-row"><span>Status</span><strong>Select an application.</strong></div>
+                <% } else { %>
+                  <div class="info-row"><span>Application</span><strong><%= valueText(selectedScholarship.get("app_id")) %></strong></div>
+                  <div class="info-row"><span>Type</span><strong><%= valueText(selectedScholarship.get("type_code")) %></strong></div>
+                  <div class="info-row"><span>Description</span><strong><%= valueText(selectedScholarship.get("description")) %></strong></div>
+                  <div class="info-row"><span>Status</span><span class="pill"><%= valueText(selectedScholarship.get("status")) %></span></div>
+                  <div class="info-row"><span>Requested Amount</span><strong><%= valueText(selectedScholarship.get("requested_amount")) %></strong></div>
+                  <div class="info-row"><span>Family Situation</span><strong><%= valueText(selectedScholarship.get("family_situation")) %></strong></div>
+                  <div class="info-row"><span>Academic Score</span><strong><%= valueText(selectedScholarship.get("academic_score")) %></strong></div>
+                  <div class="info-row"><span>Conduct</span><strong><%= valueText(selectedScholarship.get("conduct_evaluation")) %></strong></div>
+                  <div class="info-row"><span>Honors</span><strong><%= valueText(selectedScholarship.get("honors")) %></strong></div>
+                  <div class="info-row"><span>Reason</span><strong><%= valueText(selectedScholarship.get("application_reason")) %></strong></div>
+                  <div class="info-row"><span>Materials</span><strong><%= valueText(selectedScholarship.get("supporting_materials")) %></strong></div>
+                <% } %>
+              </div>
+            </article>
           </div>
-        </article>
+
+          <article class="card span-12">
+            <h2>Democratic Review Tasks</h2>
+            <table>
+              <thead><tr><th>Applicant</th><th>Class</th><th>Scholarship</th><th>Status</th><th>Vote</th></tr></thead>
+              <tbody>
+                <% if (scholarshipVoteRows.isEmpty()) { %>
+                  <tr><td colspan="5">No democratic review tasks.</td></tr>
+                <% } else {
+                  for (Map<String, Object> row : scholarshipVoteRows) {
+                %>
+                  <tr>
+                    <td><%= valueText(row.get("applicant_name")) %> (<%= valueText(row.get("applicant_id")) %>)</td>
+                    <td><%= valueText(row.get("class_name")) %></td>
+                    <td><%= valueText(row.get("type_code")) %></td>
+                    <td><span class="pill"><%= valueText(row.get("review_status")) %></span></td>
+                    <td>
+                      <button class="secondary-btn js-detail" type="button"
+                        data-title="Democratic Review Detail"
+                        data-application="<%= attrValue(row.get("app_id")) %>"
+                        data-applicant="<%= attrValue(row.get("applicant_name")) %> (<%= attrValue(row.get("applicant_id")) %>)"
+                        data-class="<%= attrValue(row.get("class_name")) %>"
+                        data-scholarship="<%= attrValue(row.get("type_code")) %>"
+                        data-status="<%= attrValue(row.get("review_status")) %>"
+                        data-amount="<%= attrValue(row.get("requested_amount")) %>"
+                        data-family="<%= attrValue(row.get("family_situation")) %>"
+                        data-score="<%= attrValue(row.get("academic_score")) %>"
+                        data-conduct="<%= attrValue(row.get("conduct_evaluation")) %>"
+                        data-honors="<%= attrValue(row.get("honors")) %>"
+                        data-reason="<%= attrValue(row.get("application_reason")) %>"
+                        data-materials="<%= attrValue(row.get("supporting_materials")) %>">View Detail</button>
+                      <% if (row.get("agree") == null && "pending".equals(valueText(row.get("review_status")))) { %>
+                        <form class="application-form" action="scholarshipVote" method="post">
+                          <input type="hidden" name="reviewID" value="<%= valueText(row.get("review_id")) %>">
+                          <label>
+                            Decision
+                            <select name="vote" required>
+                              <option value="agree">Agree</option>
+                              <option value="disagree">Disagree</option>
+                            </select>
+                          </label>
+                          <label>
+                            Comment
+                            <input type="text" name="comment" placeholder="Your opinion">
+                          </label>
+                          <div class="apply-actions"><button class="primary-btn" type="submit">Submit Vote</button></div>
+                        </form>
+                      <% } else { %>
+                        <span class="pill"><%= Boolean.TRUE.equals(row.get("agree")) ? "Agreed" : "Voted" %></span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }} %>
+              </tbody>
+            </table>
+          </article>
+
+          <article class="card span-12">
+            <h2>Applied Scholarships</h2>
+            <table>
+              <thead><tr><th>Application</th><th>Type</th><th>Description</th><th>Status</th><th>Detail</th></tr></thead>
+              <tbody>
+                <% if (appliedScholarshipRows.isEmpty()) { %>
+                  <tr><td colspan="5">No scholarship applications.</td></tr>
+                <% } else {
+                  for (Map<String, Object> row : appliedScholarshipRows) {
+                %>
+                  <tr>
+                    <td><%= valueText(row.get("app_id")) %></td>
+                    <td><%= valueText(row.get("type_code")) %></td>
+                    <td><%= valueText(row.get("description")) %></td>
+                    <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
+                    <td>
+                      <button class="secondary-btn js-detail" type="button"
+                        data-title="Application Detail"
+                        data-application="<%= attrValue(row.get("app_id")) %>"
+                        data-scholarship="<%= attrValue(row.get("type_code")) %>"
+                        data-description="<%= attrValue(row.get("description")) %>"
+                        data-status="<%= attrValue(row.get("status")) %>"
+                        data-amount="<%= attrValue(row.get("requested_amount")) %>"
+                        data-family="<%= attrValue(row.get("family_situation")) %>"
+                        data-score="<%= attrValue(row.get("academic_score")) %>"
+                        data-conduct="<%= attrValue(row.get("conduct_evaluation")) %>"
+                        data-honors="<%= attrValue(row.get("honors")) %>"
+                        data-reason="<%= attrValue(row.get("application_reason")) %>"
+                        data-materials="<%= attrValue(row.get("supporting_materials")) %>">View Detail</button>
+                    </td>
+                  </tr>
+                <% }} %>
+              </tbody>
+            </table>
+          </article>
+
+          <article class="card span-12">
+            <h2>Published Scholarships</h2>
+            <table>
+              <thead><tr><th>Student</th><th>Class</th><th>Type</th><th>Description</th><th>Status</th></tr></thead>
+              <tbody>
+                <% if (publishedScholarshipRows.isEmpty()) { %>
+                  <tr><td colspan="5">No published scholarships.</td></tr>
+                <% } else {
+                  for (Map<String, Object> row : publishedScholarshipRows) {
+                %>
+                  <tr>
+                    <td><%= valueText(row.get("name")) %></td>
+                    <td><%= valueText(row.get("class_name")) %></td>
+                    <td><%= valueText(row.get("type_code")) %></td>
+                    <td><%= valueText(row.get("description")) %></td>
+                    <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
+                  </tr>
+                <% }} %>
+              </tbody>
+            </table>
+          </article>
         <% } %>
 
         <% if ("grades".equals(view)) { %>
@@ -288,6 +571,16 @@
         <% } %>
       </section>
     </main>
+  </div>
+
+  <div class="modal-mask" id="scholarshipDetailMask" aria-hidden="true">
+    <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="scholarshipDetailTitle">
+      <div class="modal-head">
+        <h2 id="scholarshipDetailTitle">Application Detail</h2>
+        <button class="close-modal" type="button" id="closeScholarshipDetail" aria-label="Close"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="info-list" id="scholarshipDetailBody"></div>
+    </section>
   </div>
 
   <div class="modal-mask" id="profileEditorMask" aria-hidden="true">
@@ -360,6 +653,67 @@
   </div>
 
   <script>
+    const scholarshipTypeSelect = document.getElementById('scholarshipTypeSelect');
+    const selectedScholarshipDescription = document.getElementById('selectedScholarshipDescription');
+    if (scholarshipTypeSelect && selectedScholarshipDescription) {
+      scholarshipTypeSelect.addEventListener('change', function() {
+        const option = scholarshipTypeSelect.options[scholarshipTypeSelect.selectedIndex];
+        selectedScholarshipDescription.textContent = option ? option.dataset.description : '';
+      });
+    }
+
+    const scholarshipDetailMask = document.getElementById('scholarshipDetailMask');
+    const scholarshipDetailBody = document.getElementById('scholarshipDetailBody');
+    const scholarshipDetailTitle = document.getElementById('scholarshipDetailTitle');
+    const closeScholarshipDetail = document.getElementById('closeScholarshipDetail');
+    const detailLabels = {
+      application: 'Application',
+      applicant: 'Applicant',
+      class: 'Class',
+      scholarship: 'Scholarship',
+      description: 'Description',
+      status: 'Status',
+      amount: 'Requested Amount',
+      family: 'Family Situation',
+      score: 'Academic Score',
+      conduct: 'Conduct',
+      honors: 'Honors',
+      reason: 'Reason',
+      materials: 'Materials'
+    };
+
+    function openScholarshipDetail(button) {
+      scholarshipDetailTitle.textContent = button.dataset.title || 'Application Detail';
+      scholarshipDetailBody.innerHTML = Object.keys(detailLabels)
+        .filter(function(key) { return button.dataset[key]; })
+        .map(function(key) {
+          return '<div class="info-row"><span>' + detailLabels[key] + '</span><strong>' + escapeHtml(button.dataset[key]) + '</strong></div>';
+        }).join('');
+      scholarshipDetailMask.classList.add('show');
+      scholarshipDetailMask.setAttribute('aria-hidden', 'false');
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function(char) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]);
+      });
+    }
+
+    function closeScholarshipDetailModal() {
+      scholarshipDetailMask.classList.remove('show');
+      scholarshipDetailMask.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('.js-detail').forEach(function(button) {
+      button.addEventListener('click', function() { openScholarshipDetail(button); });
+    });
+    closeScholarshipDetail.addEventListener('click', closeScholarshipDetailModal);
+    scholarshipDetailMask.addEventListener('click', function(event) {
+      if (event.target === scholarshipDetailMask) {
+        closeScholarshipDetailModal();
+      }
+    });
+
     const profileMask = document.getElementById('profileEditorMask');
     const openProfileEditor = document.getElementById('openProfileEditor');
     const closeProfileEditor = document.getElementById('closeProfileEditor');

@@ -5,6 +5,7 @@
 <%@ page import="org.se.model.dao.CounselorDAO" %>
 <%@ page import="org.se.model.dao.ProfileImageDao" %>
 <%@ page import="org.se.model.dao.DashboardDao" %>
+<%@ page import="org.se.model.dao.ScholarshipWorkflowDao" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%!
@@ -27,6 +28,14 @@
     if (value == null) return "-";
     String text = String.valueOf(value);
     return text.trim().isEmpty() ? "-" : text;
+  }
+
+  private String attrValue(Object value) {
+    return valueText(value)
+        .replace("&", "&amp;")
+        .replace("\"", "&quot;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;");
   }
 
   private Integer parseIntegerParam(String value) {
@@ -63,6 +72,7 @@
   CounselorDAO counselorDAO = new CounselorDAO();
   ProfileImageDao profileImageDao = new ProfileImageDao();
   DashboardDao dashboardDao = new DashboardDao();
+  ScholarshipWorkflowDao scholarshipWorkflowDao = new ScholarshipWorkflowDao();
   Counselor counselor = counselorDAO.findByAccount(currentUser.getAccount());
   String employeeID = counselor == null ? currentUser.getAccount() : counselor.getEmployeeID();
   ProfileImage profileImage = profileImageDao.findByOwner(currentUser.getUserType(), currentUser.getAccount());
@@ -80,9 +90,13 @@
   int offset = (currentPage - 1) * pageSize;
   List<Map<String, Object>> counselorStudentPageRows = dashboardDao.findCounselorStudentsPaged(employeeID, search, filterClassID, offset, pageSize);
   List<Map<String, Object>> counselorMeetingRows = dashboardDao.findCounselorMeetings(employeeID);
+  List<Map<String, Object>> counselorPartyRows = dashboardDao.findCounselorPartyApplications(employeeID);
+  List<Map<String, Object>> counselorScholarshipRows = dashboardDao.findCounselorScholarshipApplications(employeeID);
+  List<Map<String, Object>> counselorScholarshipReviewRows = scholarshipWorkflowDao.findCounselorReviewTasks(employeeID);
   int partyApplicationCount = dashboardDao.countCounselorPartyApplications(employeeID);
   int scholarshipApplicationCount = dashboardDao.countCounselorScholarshipApplications(employeeID);
   String profileStatus = request.getParameter("profile");
+  String manageStatus = request.getParameter("manage");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -152,6 +166,10 @@
     .list-tools input, .list-tools select { height: 38px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; color: var(--ink); background: white; }
     .list-tools button, .page-link { height: 38px; border: 0; border-radius: 8px; padding: 0 14px; background: var(--cyan); color: var(--ink); font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; }
     .pagination { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 12px; color: var(--muted); font-size: 13px; }
+    .inline-form { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .inline-form select, .inline-form input { height: 34px; border: 1px solid var(--line); border-radius: 8px; padding: 0 8px; color: var(--ink); background: white; }
+    .small-btn { height: 34px; border: 0; border-radius: 8px; padding: 0 10px; background: var(--cyan); color: var(--ink); font-weight: 800; cursor: pointer; }
+    .small-btn.danger { background: var(--pink); }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--line); }
     th { color: var(--muted); font-size: 12px; }
@@ -167,8 +185,8 @@
         <a class="<%= activeNav(view, "personal") %>" href="counselor.jsp?view=personal"><i class="fas fa-id-card"></i>Personal Info</a>
         <a class="<%= activeNav(view, "students") %>" href="counselor.jsp?view=students"><i class="fas fa-users"></i>My Students</a>
         <a class="<%= activeNav(view, "classes") %>" href="counselor.jsp?view=classes"><i class="fas fa-school"></i>Classes</a>
-        <a class="<%= activeNav(view, "reviews") %>" href="counselor.jsp?view=reviews"><i class="fas fa-flag"></i>Party Review</a>
-        <a class="<%= activeNav(view, "reviews") %>" href="counselor.jsp?view=reviews"><i class="fas fa-award"></i>Scholarship</a>
+        <a class="<%= activeNav(view, "partyReview") %>" href="counselor.jsp?view=partyReview"><i class="fas fa-flag"></i>Party Review</a>
+        <a class="<%= activeNav(view, "scholarshipReview") %>" href="counselor.jsp?view=scholarshipReview"><i class="fas fa-award"></i>Scholarship</a>
         <a class="<%= activeNav(view, "meetings") %>" href="counselor.jsp?view=meetings"><i class="fas fa-calendar-check"></i>Class Meetings</a>
       </nav>
       <a class="logout" href="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -191,6 +209,11 @@
           <div class="notice">Personal information updated.</div>
         <% } else if ("failed".equals(profileStatus)) { %>
           <div class="notice error">Personal information update failed. Please check required fields.</div>
+        <% } %>
+        <% if ("saved".equals(manageStatus)) { %>
+          <div class="notice">Student management updated.</div>
+        <% } else if ("failed".equals(manageStatus)) { %>
+          <div class="notice error">Student management failed. Check student ID and class ownership.</div>
         <% } %>
         <% if ("overview".equals(view)) { %>
           <article class="card metric featured span-3"><strong><%= counselorClassRows.size() %></strong><span>Managed Classes</span></article>
@@ -217,6 +240,24 @@
         <% if ("overview".equals(view) || "students".equals(view)) { %>
         <article class="card <%= "students".equals(view) ? "span-12" : "span-8" %>">
           <h2>My Students</h2>
+          <% if ("students".equals(view)) { %>
+            <form class="list-tools" action="manageClassStudent" method="post">
+              <input type="hidden" name="action" value="add">
+              <input type="text" name="studentID" placeholder="Student ID" required>
+              <select name="classId" required>
+                <option value="">Class</option>
+                <% for (Map<String, Object> row : counselorClassRows) { %>
+                  <option value="<%= valueText(row.get("class_id")) %>"><%= valueText(row.get("class_name")) %></option>
+                <% } %>
+              </select>
+              <select name="position">
+                <option value="学生">学生</option>
+                <option value="班长">班长</option>
+                <option value="学习委员">学习委员</option>
+              </select>
+              <button type="submit">Add Student</button>
+            </form>
+          <% } %>
           <form class="list-tools" action="counselor.jsp" method="get">
             <input type="hidden" name="view" value="students">
             <input type="search" name="q" value="<%= fieldValue(search) %>" placeholder="Search student">
@@ -231,10 +272,10 @@
             <button type="submit">Search</button>
           </form>
           <table>
-            <thead><tr><th>Student</th><th>Class</th><th>Party Application</th><th>Scholarship</th><th>Attention</th></tr></thead>
+            <thead><tr><th>Student</th><th>Class</th><th>Position</th><th>Party Application</th><th>Scholarship</th><th>Attention</th><% if ("students".equals(view)) { %><th>Manage</th><% } %></tr></thead>
             <tbody>
               <% if (counselorStudentPageRows.isEmpty()) { %>
-                <tr><td colspan="5">No students assigned.</td></tr>
+                <tr><td colspan="<%= "students".equals(view) ? 7 : 6 %>">No students assigned.</td></tr>
               <% } else {
                 for (Map<String, Object> row : counselorStudentPageRows) {
                   boolean pending = "pending".equalsIgnoreCase(valueText(row.get("party_status")))
@@ -243,9 +284,25 @@
                 <tr>
                   <td><%= valueText(row.get("name")) %></td>
                   <td><%= valueText(row.get("class_name")) %></td>
+                  <td><%= valueText(row.get("position")) %></td>
                   <td><span class="pill <%= pending ? "warning" : "" %>"><%= valueText(row.get("party_status")) %></span></td>
                   <td><span class="pill"><%= valueText(row.get("scholarship_status")) %></span></td>
                   <td><%= pending ? "Needs review" : "Normal" %></td>
+                  <% if ("students".equals(view)) { %>
+                    <td>
+                      <form class="inline-form" action="manageClassStudent" method="post">
+                        <input type="hidden" name="studentID" value="<%= valueText(row.get("student_id")) %>">
+                        <input type="hidden" name="classId" value="<%= valueText(row.get("class_id")) %>">
+                        <select name="position">
+                          <option value="学生" <%= "学生".equals(valueText(row.get("position"))) ? "selected" : "" %>>学生</option>
+                          <option value="班长" <%= "班长".equals(valueText(row.get("position"))) ? "selected" : "" %>>班长</option>
+                          <option value="学习委员" <%= "学习委员".equals(valueText(row.get("position"))) ? "selected" : "" %>>学习委员</option>
+                        </select>
+                        <button class="small-btn" type="submit" name="action" value="position">Save</button>
+                        <button class="small-btn danger" type="submit" name="action" value="delete">Delete</button>
+                      </form>
+                    </td>
+                  <% } %>
                 </tr>
               <% }} %>
             </tbody>
@@ -298,8 +355,8 @@
         </article>
         <% } %>
 
-        <% if ("overview".equals(view) || "reviews".equals(view)) { %>
-        <article class="card <%= "reviews".equals(view) ? "span-12" : "span-6" %>">
+        <% if ("overview".equals(view)) { %>
+        <article class="card span-6">
           <h2>Review Queue</h2>
           <div class="info-list">
             <div class="info-row"><span>Scholarship waiting</span><strong><%= scholarshipApplicationCount %></strong></div>
@@ -318,8 +375,120 @@
           </div>
         </article>
         <% } %>
+
+        <% if ("partyReview".equals(view)) { %>
+        <article class="card span-12">
+          <h2>Party Review</h2>
+          <table>
+            <thead><tr><th>Application</th><th>Student</th><th>Class</th><th>Reason</th><th>Status</th></tr></thead>
+            <tbody>
+              <% if (counselorPartyRows.isEmpty()) { %>
+                <tr><td colspan="5">No party applications.</td></tr>
+              <% } else {
+                for (Map<String, Object> row : counselorPartyRows) {
+              %>
+                <tr>
+                  <td><%= valueText(row.get("application_id")) %></td>
+                  <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
+                  <td><%= valueText(row.get("class_name")) %></td>
+                  <td><%= valueText(row.get("reason")) %></td>
+                  <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
+                </tr>
+              <% }} %>
+            </tbody>
+          </table>
+        </article>
+        <% } %>
+
+        <% if ("scholarshipReview".equals(view)) { %>
+        <article class="card span-12">
+          <h2>Scholarship Review</h2>
+          <table>
+            <thead><tr><th>Application</th><th>Student</th><th>Class</th><th>Type</th><th>Detail</th><th>Status</th><th>Review</th></tr></thead>
+            <tbody>
+              <% for (Map<String, Object> row : counselorScholarshipReviewRows) { %>
+                <tr>
+                  <td><%= valueText(row.get("app_id")) %></td>
+                  <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
+                  <td><%= valueText(row.get("class_name")) %></td>
+                  <td><%= valueText(row.get("type_code")) %></td>
+                  <td>
+                    <button class="small-btn js-detail" type="button"
+                      data-title="Counselor Review Detail"
+                      data-application="<%= attrValue(row.get("app_id")) %>"
+                      data-applicant="<%= attrValue(row.get("name")) %> (<%= attrValue(row.get("student_id")) %>)"
+                      data-class="<%= attrValue(row.get("class_name")) %>"
+                      data-scholarship="<%= attrValue(row.get("type_code")) %>"
+                      data-status="<%= attrValue(row.get("status")) %>"
+                      data-amount="<%= attrValue(row.get("requested_amount")) %>"
+                      data-family="<%= attrValue(row.get("family_situation")) %>"
+                      data-score="<%= attrValue(row.get("academic_score")) %>"
+                      data-conduct="<%= attrValue(row.get("conduct_evaluation")) %>"
+                      data-honors="<%= attrValue(row.get("honors")) %>"
+                      data-reason="<%= attrValue(row.get("application_reason")) %>"
+                      data-materials="<%= attrValue(row.get("supporting_materials")) %>">View Detail</button>
+                  </td>
+                  <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
+                  <td>
+                    <% if ("pending".equals(valueText(row.get("status")))) { %>
+                      <form class="inline-form" action="scholarshipCounselorReview" method="post">
+                        <input type="hidden" name="reviewID" value="<%= valueText(row.get("review_id")) %>">
+                        <input type="hidden" name="appID" value="<%= valueText(row.get("app_id")) %>">
+                        <input type="text" name="comment" placeholder="Comment">
+                        <button class="small-btn" type="submit" name="decision" value="agree">Agree</button>
+                        <button class="small-btn danger" type="submit" name="decision" value="disagree">Reject</button>
+                      </form>
+                    <% } else { %>
+                      <span class="pill"><%= valueText(row.get("status")) %></span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% } %>
+              <% if (counselorScholarshipRows.isEmpty()) { %>
+                <tr><td colspan="7">No scholarship applications.</td></tr>
+              <% } else {
+                for (Map<String, Object> row : counselorScholarshipRows) {
+              %>
+                <tr>
+                  <td><%= valueText(row.get("app_id")) %></td>
+                  <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
+                  <td><%= valueText(row.get("class_name")) %></td>
+                  <td><%= valueText(row.get("type_code")) %></td>
+                  <td>
+                    <button class="small-btn js-detail" type="button"
+                      data-title="Scholarship Application Detail"
+                      data-application="<%= attrValue(row.get("app_id")) %>"
+                      data-applicant="<%= attrValue(row.get("name")) %> (<%= attrValue(row.get("student_id")) %>)"
+                      data-class="<%= attrValue(row.get("class_name")) %>"
+                      data-scholarship="<%= attrValue(row.get("type_code")) %>"
+                      data-status="<%= attrValue(row.get("status")) %>"
+                      data-amount="<%= attrValue(row.get("requested_amount")) %>"
+                      data-family="<%= attrValue(row.get("family_situation")) %>"
+                      data-score="<%= attrValue(row.get("academic_score")) %>"
+                      data-conduct="<%= attrValue(row.get("conduct_evaluation")) %>"
+                      data-honors="<%= attrValue(row.get("honors")) %>"
+                      data-reason="<%= attrValue(row.get("reason")) %>"
+                      data-materials="<%= attrValue(row.get("supporting_materials")) %>">View Detail</button>
+                  </td>
+                  <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
+                  <td><span class="pill">Recorded</span></td>
+                </tr>
+              <% }} %>
+            </tbody>
+          </table>
+        </article>
+        <% } %>
       </section>
     </main>
+  </div>
+  <div class="modal-mask" id="scholarshipDetailMask" aria-hidden="true">
+    <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="scholarshipDetailTitle">
+      <div class="modal-head">
+        <h2 id="scholarshipDetailTitle">Application Detail</h2>
+        <button class="close-modal" type="button" id="closeScholarshipDetail" aria-label="Close"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="info-list" id="scholarshipDetailBody"></div>
+    </section>
   </div>
   <div class="modal-mask" id="profileEditorMask" aria-hidden="true">
     <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileEditorTitle">
@@ -358,6 +527,57 @@
     </section>
   </div>
   <script>
+    const scholarshipDetailMask = document.getElementById('scholarshipDetailMask');
+    const scholarshipDetailBody = document.getElementById('scholarshipDetailBody');
+    const scholarshipDetailTitle = document.getElementById('scholarshipDetailTitle');
+    const closeScholarshipDetail = document.getElementById('closeScholarshipDetail');
+    const detailLabels = {
+      application: 'Application',
+      applicant: 'Applicant',
+      class: 'Class',
+      scholarship: 'Scholarship',
+      status: 'Status',
+      amount: 'Requested Amount',
+      family: 'Family Situation',
+      score: 'Academic Score',
+      conduct: 'Conduct',
+      honors: 'Honors',
+      reason: 'Reason',
+      materials: 'Materials'
+    };
+
+    function openScholarshipDetail(button) {
+      scholarshipDetailTitle.textContent = button.dataset.title || 'Application Detail';
+      scholarshipDetailBody.innerHTML = Object.keys(detailLabels)
+        .filter(function(key) { return button.dataset[key]; })
+        .map(function(key) {
+          return '<div class="info-row"><span>' + detailLabels[key] + '</span><strong>' + escapeHtml(button.dataset[key]) + '</strong></div>';
+        }).join('');
+      scholarshipDetailMask.classList.add('show');
+      scholarshipDetailMask.setAttribute('aria-hidden', 'false');
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function(char) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]);
+      });
+    }
+
+    function closeScholarshipDetailModal() {
+      scholarshipDetailMask.classList.remove('show');
+      scholarshipDetailMask.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('.js-detail').forEach(function(button) {
+      button.addEventListener('click', function() { openScholarshipDetail(button); });
+    });
+    closeScholarshipDetail.addEventListener('click', closeScholarshipDetailModal);
+    scholarshipDetailMask.addEventListener('click', function(event) {
+      if (event.target === scholarshipDetailMask) {
+        closeScholarshipDetailModal();
+      }
+    });
+
     const profileMask = document.getElementById('profileEditorMask');
     const openProfileEditor = document.getElementById('openProfileEditor');
     const closeProfileEditor = document.getElementById('closeProfileEditor');
