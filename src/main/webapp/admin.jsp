@@ -1,5 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="org.se.model.entity.Users" %>
+<%@ page import="org.se.model.dao.DashboardDao" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%!
+  private String valueText(Object value) {
+    if (value == null) return "-";
+    String text = String.valueOf(value);
+    return text.trim().isEmpty() ? "-" : text;
+  }
+%>
 <%
   Users currentUser = (Users) session.getAttribute("currentUser");
   if (currentUser == null) {
@@ -10,6 +20,15 @@
     response.sendRedirect("student.jsp");
     return;
   }
+  DashboardDao dashboardDao = new DashboardDao();
+  int studentCount = dashboardDao.countRows("student");
+  int teacherCount = dashboardDao.countAdminTeachers();
+  int counselorCount = dashboardDao.countAdminCounselors();
+  int classCount = dashboardDao.countAdminClasses();
+  int partyCount = dashboardDao.countRows("party_application");
+  int scholarshipCount = dashboardDao.countRows("scholarship_application");
+  List<Map<String, Object>> adminStudents = dashboardDao.findAdminStudents(8);
+  List<Map<String, Object>> adminPrograms = dashboardDao.findAdminPrograms(6);
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -390,6 +409,21 @@
       color: white;
     }
 
+    .pill.position-student {
+      background: rgba(206, 235, 241, .95);
+      color: var(--navy);
+    }
+
+    .pill.position-monitor {
+      background: var(--pink);
+      color: var(--ink);
+    }
+
+    .pill.position-study {
+      background: #65d7af;
+      color: white;
+    }
+
     .program-list {
       display: flex;
       flex-direction: column;
@@ -540,7 +574,7 @@
         <div class="photoandname">
           <div class="photo"><img src="static/img/maomao.jpg" alt="Profile Photo"></div>
           <div class="nameandposition">
-            <div class="name">Yimu Yang</div>
+            <div class="name"><%= currentUser.getAccount() %></div>
             <div class="position">Administrator</div>
           </div>
         </div>
@@ -552,23 +586,23 @@
         <div class="metrics">
           <article class="metric-card featured">
             <div class="metric-icon"><i class="fas fa-users"></i></div>
-            <strong>1,245</strong>
+            <strong><%= studentCount %></strong>
             <span>Total Students</span>
           </article>
           <article class="metric-card">
             <div class="metric-icon"><i class="fas fa-compass"></i></div>
-            <strong>410</strong>
-            <span>Grade 7 Students</span>
+            <strong><%= teacherCount %></strong>
+            <span>Total Teachers</span>
           </article>
           <article class="metric-card">
             <div class="metric-icon"><i class="fas fa-award"></i></div>
-            <strong>415</strong>
-            <span>Grade 8 Students</span>
+            <strong><%= counselorCount %></strong>
+            <span>Total Counselors</span>
           </article>
           <article class="metric-card">
             <div class="metric-icon"><i class="fas fa-lightbulb"></i></div>
-            <strong>420</strong>
-            <span>Grade 9 Students</span>
+            <strong><%= classCount %></strong>
+            <span>Total Classes</span>
           </article>
         </div>
 
@@ -626,42 +660,32 @@
                 <th>GPA</th>
                 <th>Performance</th>
                 <th>Attendance</th>
-                <th>Status</th>
+                <th>Position</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><div class="student-name"><img class="avatar" src="static/img/maomao.jpg" alt="">Michael Chen</div></td>
-                <td>7A</td>
-                <td>3.8</td>
-                <td><span class="pill">Good</span></td>
-                <td>95%</td>
-                <td><span class="pill active">Active</span></td>
-              </tr>
-              <tr>
-                <td><div class="student-name"><img class="avatar" src="static/img/left-ilu.png" alt="">Emma Williams</div></td>
-                <td>7B</td>
-                <td>2.9</td>
-                <td><span class="pill">Needs Support</span></td>
-                <td>87%</td>
-                <td><span class="pill active">Active</span></td>
-              </tr>
-              <tr>
-                <td><div class="student-name"><img class="avatar" src="static/img/right-ilu.webp" alt="">Rajesh Kumar</div></td>
-                <td>7C</td>
-                <td>2.4</td>
-                <td><span class="pill">At Risk</span></td>
-                <td>72%</td>
-                <td><span class="pill leave">On Leave</span></td>
-              </tr>
-              <tr>
-                <td><div class="student-name"><img class="avatar" src="static/img/maomao.jpg" alt="">Isabella Rossi</div></td>
-                <td>8C</td>
-                <td>3.9</td>
-                <td><span class="pill">Good</span></td>
-                <td>97%</td>
-                <td><span class="pill active">Active</span></td>
-              </tr>
+              <% if (adminStudents.isEmpty()) { %>
+                <tr><td colspan="6">No students found.</td></tr>
+              <% } else {
+                for (Map<String, Object> row : adminStudents) {
+                  Object avgGrade = row.get("avg_grade");
+                  boolean needsSupport = avgGrade instanceof Number && ((Number) avgGrade).doubleValue() < 75;
+              %>
+                <tr>
+                  <td><div class="student-name"><img class="avatar" src="<%= valueText(row.get("avatar_path")) %>" alt=""><%= valueText(row.get("name")) %></div></td>
+                  <td><%= valueText(row.get("class_name")) %></td>
+                  <td><%= valueText(avgGrade) %></td>
+                  <td><span class="pill"><%= needsSupport ? "Needs Support" : "Good" %></span></td>
+                  <td>-</td>
+                  <td>
+                    <%
+                      String position = valueText(row.get("position"));
+                      String positionClass = "班长".equals(position) ? "position-monitor" : ("学习委员".equals(position) ? "position-study" : "position-student");
+                    %>
+                    <span class="pill <%= positionClass %>"><%= position %></span>
+                  </td>
+                </tr>
+              <% }} %>
             </tbody>
           </table>
         </section>
@@ -703,8 +727,18 @@
         <section class="program-list">
           <div class="program-head">
             <div class="program-title">Special Programs</div>
+            <span class="pill"><%= scholarshipCount %> Scholarship / <%= partyCount %> Party</span>
             <i class="fas fa-ellipsis-h"></i>
           </div>
+          <% if (!adminPrograms.isEmpty()) {
+            for (Map<String, Object> row : adminPrograms) {
+          %>
+            <article class="program-card">
+              <img src="<%= valueText(row.get("avatar_path")) %>" alt="">
+              <div><strong><%= valueText(row.get("name")) %></strong><span><%= valueText(row.get("student_id")) %> · <%= valueText(row.get("class_name")) %></span><span><%= valueText(row.get("type_code")) %></span></div>
+              <div class="program-tag"><%= valueText(row.get("status")) %></div>
+            </article>
+          <% }} else { %>
           <article class="program-card">
             <img src="static/img/maomao.jpg" alt="">
             <div><strong>Fatima Noor</strong><span>S-2003 · 7C</span><span>Community Leadership Fellowship</span></div>
@@ -720,6 +754,7 @@
             <div><strong>Daniel Park</strong><span>S-2002 · 8A</span><span>Student Athlete Sponsorship</span></div>
             <div class="program-tag">Finance + Enrichment</div>
           </article>
+          <% } %>
         </section>
       </aside>
     </main>

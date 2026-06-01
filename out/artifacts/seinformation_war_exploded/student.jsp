@@ -44,6 +44,10 @@
     if (first instanceof ScholarshipApplication) return textOrDash(((ScholarshipApplication) first).getStatus());
     return emptyText;
   }
+
+  private String activeNav(String currentView, String expectedView) {
+    return expectedView.equals(currentView) ? "active" : "";
+  }
 %>
 <%
   Users currentUser = (Users) session.getAttribute("currentUser");
@@ -69,11 +73,13 @@
   ProfileImage profileImage = profileImageDao.findByOwner(currentUser.getUserType(), currentUser.getAccount());
   String avatarPath = profileImage == null || profileImage.getImagePath() == null ? "static/img/maomao.jpg" : profileImage.getImagePath();
   List<Map<String, Object>> classRows = dashboardDao.findStudentClasses(studentID);
+  List<Map<String, Object>> classmateRows = dashboardDao.findClassmates(studentID);
   List<Map<String, Object>> gradeRows = dashboardDao.findStudentGrades(studentID);
   List<Map<String, Object>> meetingRows = dashboardDao.findStudentMeetings(studentID);
   List<PartyApplication> partyRows = partyApplicationDao.findByStudentId(studentID);
   List<ScholarshipApplication> scholarshipRows = scholarshipApplicationDao.findByStudentID(studentID);
   String profileStatus = request.getParameter("profile");
+  String view = request.getParameter("view") == null ? "personal" : request.getParameter("view");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -145,12 +151,12 @@
     <aside class="sidebar">
       <div class="brand"><img src="static/img/favicon.ico" alt="Logo"><span>SEInformation</span></div>
       <nav class="nav">
-        <a class="active" href="#"><i class="fas fa-id-card"></i>Personal</a>
-        <a href="#"><i class="fas fa-users"></i>Class</a>
-        <a href="#"><i class="fas fa-chart-line"></i>Grades</a>
-        <a href="#"><i class="fas fa-award"></i>Scholarship</a>
-        <a href="#"><i class="fas fa-flag"></i>Party Application</a>
-        <a href="#"><i class="fas fa-calendar-check"></i>Meetings</a>
+        <a class="<%= activeNav(view, "personal") %>" href="student.jsp"><i class="fas fa-id-card"></i>Personal</a>
+        <a class="<%= activeNav(view, "class") %>" href="student.jsp?view=class"><i class="fas fa-users"></i>Class</a>
+        <a class="<%= activeNav(view, "grades") %>" href="student.jsp?view=grades"><i class="fas fa-chart-line"></i>Grades</a>
+        <a class="<%= activeNav(view, "applications") %>" href="student.jsp?view=applications"><i class="fas fa-award"></i>Scholarship</a>
+        <a class="<%= activeNav(view, "applications") %>" href="student.jsp?view=applications"><i class="fas fa-flag"></i>Party Application</a>
+        <a class="<%= activeNav(view, "meetings") %>" href="student.jsp?view=meetings"><i class="fas fa-calendar-check"></i>Meetings</a>
       </nav>
       <a class="logout" href="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </aside>
@@ -173,7 +179,8 @@
         <% } else if ("failed".equals(profileStatus)) { %>
           <div class="notice error">Personal information update failed. Please check required fields.</div>
         <% } %>
-        <article class="card span-4">
+        <% if ("personal".equals(view)) { %>
+        <article class="card span-12">
           <div class="card-head">
             <h2>Personal Info</h2>
             <button class="edit-profile" type="button" id="openProfileEditor"><i class="fas fa-pen-to-square"></i><span>Edit</span></button>
@@ -187,7 +194,9 @@
             <div class="info-row"><span>Political Status</span><strong><%= personalInfo == null ? "-" : textOrDash(personalInfo.getPoliticalStatus()) %></strong></div>
           </div>
         </article>
+        <% } %>
 
+        <% if ("class".equals(view)) { %>
         <article class="card span-4">
           <h2>Class Info</h2>
           <div class="info-list">
@@ -205,15 +214,41 @@
           </div>
         </article>
 
-        <article class="card span-4">
+          <article class="card span-8">
+            <h2>Class Detail</h2>
+            <table>
+              <thead><tr><th>Student ID</th><th>Name</th><th>Position</th><th>Gender</th><th>Class</th></tr></thead>
+              <tbody>
+                <% if (classmateRows.isEmpty()) { %>
+                  <tr><td colspan="5">No classmates found.</td></tr>
+                <% } else {
+                  for (Map<String, Object> row : classmateRows) {
+                %>
+                  <tr>
+                    <td><%= valueText(row.get("student_id")) %></td>
+                    <td><%= valueText(row.get("name")) %></td>
+                    <td><%= valueText(row.get("position")) %></td>
+                    <td><%= genderText(row.get("gender") instanceof Number ? ((Number) row.get("gender")).intValue() : null) %></td>
+                    <td><%= valueText(row.get("class_name")) %></td>
+                  </tr>
+                <% }} %>
+              </tbody>
+            </table>
+          </article>
+        <% } %>
+
+        <% if ("applications".equals(view)) { %>
+        <article class="card span-12" id="applications">
           <h2>Application Status</h2>
           <div class="info-list">
             <div class="info-row"><span>Party Application</span><span class="pill warning"><%= firstStatus(partyRows, "Not Submitted") %></span></div>
             <div class="info-row"><span>Scholarship</span><span class="pill"><%= firstStatus(scholarshipRows, "No Active Application") %></span></div>
           </div>
         </article>
+        <% } %>
 
-        <article class="card span-8">
+        <% if ("grades".equals(view)) { %>
+        <article class="card span-12" id="grades">
           <h2>Grades</h2>
           <table>
             <thead><tr><th>Course</th><th>Regular</th><th>Final</th><th>Total</th></tr></thead>
@@ -233,8 +268,10 @@
             </tbody>
           </table>
         </article>
+        <% } %>
 
-        <article class="card span-4">
+        <% if ("meetings".equals(view)) { %>
+        <article class="card span-12" id="meetings">
           <h2>Class Meetings</h2>
           <div class="info-list">
             <% if (meetingRows.isEmpty()) { %>
@@ -248,6 +285,7 @@
             <% }} %>
           </div>
         </article>
+        <% } %>
       </section>
     </main>
   </div>

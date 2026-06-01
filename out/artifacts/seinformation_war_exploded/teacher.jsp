@@ -28,6 +28,27 @@
     String text = String.valueOf(value);
     return text.trim().isEmpty() ? "-" : text;
   }
+
+  private Integer parseIntegerParam(String value) {
+    try {
+      return value == null || value.trim().isEmpty() ? null : Integer.parseInt(value);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  private int positiveInt(String value, int fallback) {
+    try {
+      int parsed = value == null ? fallback : Integer.parseInt(value);
+      return parsed < 1 ? fallback : parsed;
+    } catch (NumberFormatException e) {
+      return fallback;
+    }
+  }
+
+  private String activeNav(String currentView, String expectedView) {
+    return expectedView.equals(currentView) ? "active" : "";
+  }
 %>
 <%
   Users currentUser = (Users) session.getAttribute("currentUser");
@@ -48,6 +69,16 @@
   String avatarPath = profileImage == null || profileImage.getImagePath() == null ? "static/img/maomao.jpg" : profileImage.getImagePath();
   List<Map<String, Object>> teacherClassRows = dashboardDao.findTeacherClasses(employeeID);
   List<Map<String, Object>> teacherStudentRows = dashboardDao.findTeacherStudents(employeeID);
+  String view = request.getParameter("view") == null ? "overview" : request.getParameter("view");
+  String search = request.getParameter("q") == null ? "" : request.getParameter("q").trim();
+  Integer filterClassID = parseIntegerParam(request.getParameter("classId"));
+  int currentPage = positiveInt(request.getParameter("page"), 1);
+  int pageSize = 30;
+  int totalFilteredStudents = dashboardDao.countTeacherStudentsFiltered(employeeID, search, filterClassID);
+  int totalPages = Math.max(1, (int) Math.ceil(totalFilteredStudents / (double) pageSize));
+  if (currentPage > totalPages) currentPage = totalPages;
+  int offset = (currentPage - 1) * pageSize;
+  List<Map<String, Object>> teacherStudentPageRows = dashboardDao.findTeacherStudentsPaged(employeeID, search, filterClassID, offset, pageSize);
   int teacherCourseCount = dashboardDao.countTeacherCourses(employeeID);
   int teacherGradeCount = dashboardDao.countTeacherGradeItems(employeeID);
   String profileStatus = request.getParameter("profile");
@@ -116,6 +147,10 @@
     .secondary-btn, .primary-btn { border: 0; border-radius: 8px; height: 40px; padding: 0 16px; font-weight: 800; cursor: pointer; }
     .secondary-btn { background: var(--page); color: var(--ink); }
     .primary-btn { background: var(--pink); color: var(--ink); }
+    .list-tools { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .list-tools input, .list-tools select { height: 38px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; color: var(--ink); background: white; }
+    .list-tools button, .page-link { height: 38px; border: 0; border-radius: 8px; padding: 0 14px; background: var(--cyan); color: var(--ink); font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; }
+    .pagination { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 12px; color: var(--muted); font-size: 13px; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--line); }
     th { color: var(--muted); font-size: 12px; }
@@ -127,11 +162,13 @@
     <aside class="sidebar">
       <div class="brand"><img src="static/img/favicon.ico" alt="Logo"><span>SEInformation</span></div>
       <nav class="nav">
-        <a class="active" href="#"><i class="fas fa-chalkboard-teacher"></i>Overview</a>
-        <a href="#"><i class="fas fa-id-card"></i>Personal Info</a>
-        <a href="#"><i class="fas fa-users"></i>My Students</a>
-        <a href="#"><i class="fas fa-school"></i>My Classes</a>
-        <a href="#"><i class="fas fa-chart-line"></i>Grades</a>
+        <a class="<%= activeNav(view, "overview") %>" href="teacher.jsp"><i class="fas fa-chalkboard-teacher"></i>Overview</a>
+        <a class="<%= activeNav(view, "personal") %>" href="teacher.jsp?view=personal"><i class="fas fa-id-card"></i>Personal Info</a>
+        <a class="<%= activeNav(view, "students") %>" href="teacher.jsp?view=students"><i class="fas fa-users"></i>My Students</a>
+        <a class="<%= activeNav(view, "classes") %>" href="teacher.jsp?view=classes"><i class="fas fa-school"></i>My Classes</a>
+        <a class="<%= activeNav(view, "grades") %>" href="teacher.jsp?view=grades"><i class="fas fa-chart-line"></i>Grades</a>
+        <a href="#"><i class="fas fa-flag"></i>Party Review</a>
+        <a href="#"><i class="fas fa-award"></i>Scholarship Review</a>
         <a href="#"><i class="fas fa-calendar-check"></i>Attendance</a>
       </nav>
       <a class="logout" href="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -155,12 +192,15 @@
         <% } else if ("failed".equals(profileStatus)) { %>
           <div class="notice error">Personal information update failed. Please check required fields.</div>
         <% } %>
-        <article class="card metric featured span-3"><strong><%= teacherCourseCount %></strong><span>Courses</span></article>
-        <article class="card metric span-3"><strong><%= teacherStudentRows.size() %></strong><span>My Students</span></article>
-        <article class="card metric warning span-3"><strong><%= teacherClassRows.size() %></strong><span>Classes</span></article>
-        <article class="card metric span-3"><strong><%= teacherGradeCount %></strong><span>Grade Items</span></article>
+        <% if ("overview".equals(view)) { %>
+          <article class="card metric featured span-3"><strong><%= teacherCourseCount %></strong><span>Courses</span></article>
+          <article class="card metric span-3"><strong><%= teacherStudentRows.size() %></strong><span>My Students</span></article>
+          <article class="card metric warning span-3"><strong><%= teacherClassRows.size() %></strong><span>Classes</span></article>
+          <article class="card metric span-3"><strong><%= teacherGradeCount %></strong><span>Grade Items</span></article>
+        <% } %>
 
-        <article class="card span-4">
+        <% if ("overview".equals(view) || "personal".equals(view)) { %>
+        <article class="card <%= "personal".equals(view) ? "span-12" : "span-4" %>">
           <div class="card-head">
             <h2>Personal Info</h2>
             <button class="edit-profile" type="button" id="openProfileEditor"><i class="fas fa-pen-to-square"></i><span>Edit</span></button>
@@ -172,16 +212,31 @@
             <div class="info-row"><span>Role</span><span class="pill">Teacher</span></div>
           </div>
         </article>
+        <% } %>
 
-        <article class="card span-8">
+        <% if ("overview".equals(view) || "students".equals(view)) { %>
+        <article class="card <%= "students".equals(view) ? "span-12" : "span-8" %>">
           <h2>My Students</h2>
+          <form class="list-tools" action="teacher.jsp" method="get">
+            <input type="hidden" name="view" value="students">
+            <input type="search" name="q" value="<%= fieldValue(search) %>" placeholder="Search student">
+            <select name="classId" aria-label="Class filter">
+              <option value="">All Classes</option>
+              <% for (Map<String, Object> row : teacherClassRows) {
+                String classIdText = valueText(row.get("class_id"));
+              %>
+                <option value="<%= classIdText %>" <%= filterClassID != null && classIdText.equals(String.valueOf(filterClassID)) ? "selected" : "" %>><%= valueText(row.get("class_name")) %></option>
+              <% } %>
+            </select>
+            <button type="submit">Search</button>
+          </form>
           <table>
             <thead><tr><th>Student</th><th>Class</th><th>Latest Grade</th><th>Attendance</th><th>Status</th></tr></thead>
             <tbody>
-              <% if (teacherStudentRows.isEmpty()) { %>
+              <% if (teacherStudentPageRows.isEmpty()) { %>
                 <tr><td colspan="5">No students assigned.</td></tr>
               <% } else {
-                for (Map<String, Object> row : teacherStudentRows) {
+                for (Map<String, Object> row : teacherStudentPageRows) {
                   Object avgGrade = row.get("avg_grade");
                   boolean needsSupport = avgGrade instanceof Number && ((Number) avgGrade).doubleValue() < 75;
               %>
@@ -195,9 +250,20 @@
               <% }} %>
             </tbody>
           </table>
+          <div class="pagination">
+            <% if (currentPage > 1) { %>
+              <a class="page-link" href="teacher.jsp?view=students&q=<%= fieldValue(search) %>&classId=<%= filterClassID == null ? "" : filterClassID %>&page=<%= currentPage - 1 %>">Prev</a>
+            <% } %>
+            <span>Page <%= currentPage %> / <%= totalPages %>, Total <%= totalFilteredStudents %></span>
+            <% if (currentPage < totalPages) { %>
+              <a class="page-link" href="teacher.jsp?view=students&q=<%= fieldValue(search) %>&classId=<%= filterClassID == null ? "" : filterClassID %>&page=<%= currentPage + 1 %>">Next</a>
+            <% } %>
+          </div>
         </article>
+        <% } %>
 
-        <article class="card span-6">
+        <% if ("overview".equals(view) || "classes".equals(view)) { %>
+        <article class="card <%= "classes".equals(view) ? "span-12" : "span-6" %>" id="classes">
           <h2>My Classes</h2>
           <table>
             <thead><tr><th>Class</th><th>Course</th><th>Students</th></tr></thead>
@@ -212,8 +278,10 @@
             </tbody>
           </table>
         </article>
+        <% } %>
 
-        <article class="card span-6">
+        <% if ("overview".equals(view) || "grades".equals(view)) { %>
+        <article class="card <%= "grades".equals(view) ? "span-12" : "span-6" %>" id="grade-work">
           <h2>Grade Work</h2>
           <div class="info-list">
             <div class="info-row"><span>Grade records</span><strong><%= teacherGradeCount %></strong></div>
@@ -231,6 +299,7 @@
             </strong></div>
           </div>
         </article>
+        <% } %>
       </section>
     </main>
   </div>

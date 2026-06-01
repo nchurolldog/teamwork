@@ -40,6 +40,16 @@ public class DashboardDao {
         return query(sql, studentID);
     }
 
+    public List<Map<String, Object>> findClassmates(String studentID) {
+        String sql = "SELECT s.student_id, s.name, s.position, s.gender, ce.class_name " +
+                "FROM student_class own " +
+                "JOIN student_class sc ON own.class_id = sc.class_id " +
+                "JOIN student s ON sc.student_id = s.student_id " +
+                "JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "WHERE own.student_id = ? ORDER BY ce.class_id, s.student_id";
+        return query(sql, studentID);
+    }
+
     public List<Map<String, Object>> findTeacherClasses(String employeeID) {
         String sql = "SELECT ce.class_id, ce.class_name, COUNT(sc.student_id) AS student_count " +
                 "FROM class_entity ce LEFT JOIN student_class sc ON ce.class_id = sc.class_id " +
@@ -56,6 +66,31 @@ public class DashboardDao {
                 "WHERE ce.teacher_id = ? " +
                 "GROUP BY s.student_id, s.name, s.position, ce.class_id, ce.class_name ORDER BY ce.class_id, s.student_id";
         return query(sql, employeeID);
+    }
+
+    public List<Map<String, Object>> findTeacherStudentsPaged(String employeeID, String search, Integer classID, int offset, int limit) {
+        String sql = "SELECT s.student_id, s.name, s.position, ce.class_id, ce.class_name, ROUND(AVG(g.total_grade), 2) AS avg_grade " +
+                "FROM class_entity ce " +
+                "JOIN student_class sc ON ce.class_id = sc.class_id " +
+                "JOIN student s ON sc.student_id = s.student_id " +
+                "LEFT JOIN grade g ON s.student_id = g.student_id " +
+                "WHERE ce.teacher_id = ? AND (? IS NULL OR s.name LIKE ? OR s.student_id LIKE ?) " +
+                "AND (? IS NULL OR ce.class_id = ?) " +
+                "GROUP BY s.student_id, s.name, s.position, ce.class_id, ce.class_name " +
+                "ORDER BY ce.class_id, s.student_id LIMIT ? OFFSET ?";
+        String pattern = search == null || search.trim().isEmpty() ? null : "%" + search.trim() + "%";
+        return query(sql, employeeID, pattern, pattern, pattern, classID, classID, limit, offset);
+    }
+
+    public int countTeacherStudentsFiltered(String employeeID, String search, Integer classID) {
+        String sql = "SELECT COUNT(DISTINCT s.student_id) AS total_count " +
+                "FROM class_entity ce " +
+                "JOIN student_class sc ON ce.class_id = sc.class_id " +
+                "JOIN student s ON sc.student_id = s.student_id " +
+                "WHERE ce.teacher_id = ? AND (? IS NULL OR s.name LIKE ? OR s.student_id LIKE ?) " +
+                "AND (? IS NULL OR ce.class_id = ?)";
+        String pattern = search == null || search.trim().isEmpty() ? null : "%" + search.trim() + "%";
+        return countQuery(sql, employeeID, pattern, pattern, pattern, classID, classID);
     }
 
     public List<Map<String, Object>> findCounselorClasses(String employeeID) {
@@ -77,6 +112,32 @@ public class DashboardDao {
         return query(sql, employeeID);
     }
 
+    public List<Map<String, Object>> findCounselorStudentsPaged(String employeeID, String search, Integer classID, int offset, int limit) {
+        String sql = "SELECT s.student_id, s.name, ce.class_id, ce.class_name, " +
+                "COALESCE(pa.status, 'none') AS party_status, COALESCE(sa.status, 'none') AS scholarship_status " +
+                "FROM class_entity ce " +
+                "JOIN student_class sc ON ce.class_id = sc.class_id " +
+                "JOIN student s ON sc.student_id = s.student_id " +
+                "LEFT JOIN party_application pa ON s.student_id = pa.applicant_student_id " +
+                "LEFT JOIN scholarship_application sa ON s.student_id = sa.student_id " +
+                "WHERE ce.counselor_id = ? AND (? IS NULL OR s.name LIKE ? OR s.student_id LIKE ?) " +
+                "AND (? IS NULL OR ce.class_id = ?) " +
+                "ORDER BY ce.class_id, s.student_id LIMIT ? OFFSET ?";
+        String pattern = search == null || search.trim().isEmpty() ? null : "%" + search.trim() + "%";
+        return query(sql, employeeID, pattern, pattern, pattern, classID, classID, limit, offset);
+    }
+
+    public int countCounselorStudentsFiltered(String employeeID, String search, Integer classID) {
+        String sql = "SELECT COUNT(DISTINCT s.student_id) AS total_count " +
+                "FROM class_entity ce " +
+                "JOIN student_class sc ON ce.class_id = sc.class_id " +
+                "JOIN student s ON sc.student_id = s.student_id " +
+                "WHERE ce.counselor_id = ? AND (? IS NULL OR s.name LIKE ? OR s.student_id LIKE ?) " +
+                "AND (? IS NULL OR ce.class_id = ?)";
+        String pattern = search == null || search.trim().isEmpty() ? null : "%" + search.trim() + "%";
+        return countQuery(sql, employeeID, pattern, pattern, pattern, classID, classID);
+    }
+
     public List<Map<String, Object>> findCounselorMeetings(String employeeID) {
         String sql = "SELECT cm.meeting_theme, ce.class_name, cm.classroom " +
                 "FROM class_meeting cm JOIN class_entity ce ON cm.class_id = ce.class_id " +
@@ -92,6 +153,43 @@ public class DashboardDao {
         }
         Object count = rows.get(0).get("total_count");
         return count instanceof Number ? ((Number) count).intValue() : 0;
+    }
+
+    public List<Map<String, Object>> findAdminStudents(int limit) {
+        String sql = "SELECT s.student_id, s.name, s.position, ce.class_name, ROUND(AVG(g.total_grade), 2) AS avg_grade, " +
+                "COALESCE(pi.image_path, 'static/img/maomao.jpg') AS avatar_path " +
+                "FROM student s " +
+                "LEFT JOIN student_class sc ON s.student_id = sc.student_id " +
+                "LEFT JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "LEFT JOIN grade g ON s.student_id = g.student_id " +
+                "LEFT JOIN profile_image pi ON pi.owner_type = 3 AND pi.owner_account = s.account " +
+                "GROUP BY s.student_id, s.name, s.position, ce.class_name, pi.image_path " +
+                "ORDER BY s.student_id LIMIT ?";
+        return query(sql, limit);
+    }
+
+    public List<Map<String, Object>> findAdminPrograms(int limit) {
+        String sql = "SELECT s.student_id, s.name, ce.class_name, sa.type_code, sa.status, " +
+                "COALESCE(pi.image_path, 'static/img/maomao.jpg') AS avatar_path " +
+                "FROM scholarship_application sa " +
+                "JOIN student s ON sa.student_id = s.student_id " +
+                "LEFT JOIN student_class sc ON s.student_id = sc.student_id " +
+                "LEFT JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "LEFT JOIN profile_image pi ON pi.owner_type = 3 AND pi.owner_account = s.account " +
+                "ORDER BY sa.app_id LIMIT ?";
+        return query(sql, limit);
+    }
+
+    public int countAdminClasses() {
+        return countRows("class_entity");
+    }
+
+    public int countAdminTeachers() {
+        return countRows("teacher");
+    }
+
+    public int countAdminCounselors() {
+        return countRows("counselor");
     }
 
     public int countTeacherCourses(String employeeID) {
