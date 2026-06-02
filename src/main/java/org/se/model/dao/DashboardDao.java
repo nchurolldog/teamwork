@@ -32,12 +32,32 @@ public class DashboardDao {
     }
 
     public List<Map<String, Object>> findStudentMeetings(String studentID) {
-        String sql = "SELECT cm.meeting_theme, ce.class_name, cm.classroom " +
+        String sql = "SELECT cm.meeting_id, cm.meeting_theme, ce.class_name, cm.classroom, ce.class_id " +
                 "FROM class_meeting_association cma " +
                 "JOIN class_meeting cm ON cma.meeting_id = cm.meeting_id " +
                 "JOIN class_entity ce ON cm.class_id = ce.class_id " +
-                "WHERE cma.student_id = ? ORDER BY cm.meeting_id";
+                "WHERE cma.student_id = ? ORDER BY cm.meeting_id DESC";
         return query(sql, studentID);
+    }
+
+    public List<Map<String, Object>> findClassMeetingsByClassId(Integer classID) {
+        String sql = "SELECT cm.meeting_id, cm.meeting_theme, ce.class_name, cm.classroom, s.name AS organizer_name " +
+                "FROM class_meeting cm " +
+                "JOIN class_entity ce ON cm.class_id = ce.class_id " +
+                "LEFT JOIN class_meeting_association cma ON cm.meeting_id = cma.meeting_id " +
+                "LEFT JOIN student s ON cma.student_id = s.student_id " +
+                "WHERE cm.class_id = ? ORDER BY cm.meeting_id DESC";
+        return query(sql, classID);
+    }
+
+    public List<Map<String, Object>> findAllClassMeetings() {
+        String sql = "SELECT cm.meeting_id, cm.meeting_theme, ce.class_name, cm.classroom, s.name AS organizer_name, s.student_id AS organizer_id " +
+                "FROM class_meeting cm " +
+                "JOIN class_entity ce ON cm.class_id = ce.class_id " +
+                "LEFT JOIN class_meeting_association cma ON cm.meeting_id = cma.meeting_id " +
+                "LEFT JOIN student s ON cma.student_id = s.student_id " +
+                "ORDER BY cm.meeting_id DESC";
+        return query(sql);
     }
 
     public List<Map<String, Object>> findClassmates(String studentID) {
