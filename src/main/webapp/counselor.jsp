@@ -76,6 +76,8 @@
   String avatarPath = profileImage == null || profileImage.getImagePath() == null ? "static/img/maomao.jpg" : profileImage.getImagePath();
   ClassMeetingDAO classMeetingDAO = new ClassMeetingDAO();
   ScholarshipWorkflowDao scholarshipWorkflowDao = new ScholarshipWorkflowDao();
+  DevelopmentInspectionDao developmentInspectionDao = new DevelopmentInspectionDao();
+  PartyApprovalDao partyApprovalDao = new PartyApprovalDao();
   String editMeetingID = request.getParameter("edit");
   ClassMeeting editMeeting = editMeetingID != null ? classMeetingDAO.findById(editMeetingID) : null;
 
@@ -86,6 +88,8 @@
   int pageSize = 30;
   List<Map<String, Object>> counselorClassRows = dashboardDao.findCounselorClasses(employeeID);
   List<Map<String, Object>> counselorStudentRows = dashboardDao.findCounselorStudents(employeeID);
+  List<Map<String, Object>> developmentInspectionRows = dashboardDao.findCounselorDevelopmentInspections(employeeID);
+  List<Map<String, Object>> partyApprovalRows = dashboardDao.findCounselorPartyApprovals(employeeID);
   int totalFilteredStudents = dashboardDao.countCounselorStudentsFiltered(employeeID, search, filterClassID);
   int totalPages = Math.max(1, (int) Math.ceil(totalFilteredStudents / (double) pageSize));
   if (currentPage > totalPages) currentPage = totalPages;
@@ -190,6 +194,8 @@
         <a class="<%= activeNav(view, "students") %>" href="counselor.jsp?view=students"><i class="fas fa-users"></i>My Students</a>
         <a class="<%= activeNav(view, "classes") %>" href="counselor.jsp?view=classes"><i class="fas fa-school"></i>Classes</a>
         <a class="<%= activeNav(view, "partyReview") %>" href="counselor.jsp?view=partyReview"><i class="fas fa-flag"></i>Party Review</a>
+        <a class="<%= activeNav(view, "developmentInspection") %>" href="counselor.jsp?view=developmentInspection"><i class="fas fa-clipboard-check"></i>Development Inspection</a>
+        <a class="<%= activeNav(view, "partyApproval") %>" href="counselor.jsp?view=partyApproval"><i class="fas fa-stamp"></i>Party Approval</a>
         <a class="<%= activeNav(view, "scholarshipReview") %>" href="counselor.jsp?view=scholarshipReview"><i class="fas fa-award"></i>Scholarship</a>
         <a class="<%= activeNav(view, "meetings") %>" href="counselor.jsp?view=meetings"><i class="fas fa-calendar-check"></i>Class Meetings</a>
       </nav>
@@ -487,23 +493,111 @@ function hideCreateForm() {
 
         <% if ("partyReview".equals(view)) { %>
         <article class="card span-12">
-          <h2>Party Review</h2>
+          <h2>Party Application Review</h2>
           <table>
-            <thead><tr><th>Application</th><th>Student</th><th>Class</th><th>Reason</th><th>Status</th></tr></thead>
+            <thead><tr><th>Application</th><th>Student</th><th>Class</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
             <tbody>
-              <% if (counselorPartyRows.isEmpty()) { %>
-                <tr><td colspan="5">No party applications.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : counselorPartyRows) {
-              %>
-                <tr>
-                  <td><%= valueText(row.get("application_id")) %></td>
-                  <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(row.get("reason")) %></td>
-                  <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
-                </tr>
-              <% }} %>
+            <% if (counselorPartyRows.isEmpty()) { %>
+            <tr><td colspan="6">No party applications.</td></tr>
+            <% } else {
+              for (Map<String, Object> row : counselorPartyRows) {
+                String status = valueText(row.get("status"));
+            %>
+            <tr>
+              <td><%= valueText(row.get("application_id")) %></td>
+              <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
+              <td><%= valueText(row.get("class_name")) %></td>
+              <td><%= valueText(row.get("reason")) %></td>
+              <td><span class="pill <%= "pending".equals(status) ? "warning" : "" %>"><%= status %></span></td>
+              <td>
+                <% if ("pending".equals(status)) { %>
+                <form action="counselorPartyReview" method="post" style="display: inline-flex; gap: 8px;">
+                  <input type="hidden" name="applicationID" value="<%= valueText(row.get("application_id")) %>">
+                  <button class="small-btn" type="submit" name="action" value="approve">Approve</button>
+                  <button class="small-btn danger" type="submit" name="action" value="reject">Reject</button>
+                </form>
+                <% } else { %>
+                <span style="color: var(--muted); font-size: 13px;">Reviewed</span>
+                <% } %>
+              </td>
+            </tr>
+            <% }} %>
+            </tbody>
+          </table>
+        </article>
+        <% } %>
+
+        <% if ("developmentInspection".equals(view)) { %>
+        <article class="card span-12">
+          <h2>Development Inspection</h2>
+          <table>
+            <thead><tr><th>Inspection ID</th><th>Application</th><th>Student</th><th>Class</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+            <% if (developmentInspectionRows.isEmpty()) { %>
+            <tr><td colspan="7">No development inspection tasks.</td></tr>
+            <% } else {
+              for (Map<String, Object> row : developmentInspectionRows) {
+                String status = valueText(row.get("status"));
+            %>
+            <tr>
+              <td><%= valueText(row.get("inspection_id")) %></td>
+              <td><%= valueText(row.get("application_id")) %></td>
+              <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
+              <td><%= valueText(row.get("class_name")) %></td>
+              <td><%= valueText(row.get("reason")) %></td>
+              <td><span class="pill <%= "pending".equals(status) ? "warning" : "" %>"><%= status %></span></td>
+              <td>
+                <% if ("pending".equals(status)) { %>
+                <form action="counselorDevelopmentInspection" method="post" style="display: inline-flex; gap: 8px;">
+                  <input type="hidden" name="inspectionID" value="<%= valueText(row.get("inspection_id")) %>">
+                  <button class="small-btn" type="submit" name="action" value="approve">Approve</button>
+                  <button class="small-btn danger" type="submit" name="action" value="reject">Reject</button>
+                </form>
+                <% } else { %>
+                <span class="pill"><%= status %></span>
+                <% } %>
+              </td>
+            </tr>
+            <% }} %>
+            </tbody>
+          </table>
+        </article>
+        <% } %>
+
+        <% if ("partyApproval".equals(view)) { %>
+        <article class="card span-12">
+          <h2>Party Membership Approval</h2>
+          <table>
+            <thead><tr><th>Approval ID</th><th>Application</th><th>Student</th><th>Class</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+            <% if (partyApprovalRows.isEmpty()) { %>
+            <tr><td colspan="7">No party approval tasks.</td></tr>
+            <% } else {
+              for (Map<String, Object> row : partyApprovalRows) {
+                String status = valueText(row.get("status"));
+            %>
+            <tr>
+              <td><%= valueText(row.get("approval_id")) %></td>
+              <td><%= valueText(row.get("application_id")) %></td>
+              <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
+              <td><%= valueText(row.get("class_name")) %></td>
+              <td><%= valueText(row.get("reason")) %></td>
+              <td><span class="pill <%= "pending".equals(status) ? "warning" : "" %>"><%= status %></span></td>
+              <td>
+                <% if ("pending".equals(status)) { %>
+                <form action="counselorPartyApproval" method="post" style="display: inline-flex; gap: 8px;">
+                  <input type="hidden" name="approvalID" value="<%= valueText(row.get("approval_id")) %>">
+                  <button class="small-btn" type="submit" name="action" value="approve">Approve</button>
+                  <button class="small-btn danger" type="submit" name="action" value="reject">Reject</button>
+                </form>
+                <% } else if ("approved".equals(status)) { %>
+                <span class="pill" style="background: #d4edda; color: #155724;">Approved - Student is now a Party Member</span>
+                <% } else { %>
+                <span class="pill"><%= status %></span>
+                <% } %>
+              </td>
+            </tr>
+            <% }} %>
             </tbody>
           </table>
         </article>

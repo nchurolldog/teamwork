@@ -290,4 +290,41 @@ public class TeacherDAO {
             }
         }
     }
+
+    public Teacher findByClassId(Integer classId) {
+        String sql = "SELECT t.employee_id, t.account, t.name, t.gender FROM teacher t " +
+                "JOIN class_entity ce ON t.employee_id = ce.teacher_id " +
+                "WHERE ce.class_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, classId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                Teacher teacher = new Teacher();
+                teacher.setEmployeeID(rs.getString("employee_id"));
+                teacher.setAccount(rs.getString("account"));
+                teacher.setName(rs.getString("name"));
+                teacher.setGender(rs.getInt("gender"));
+                return teacher;
+            }
+            return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

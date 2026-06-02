@@ -294,6 +294,38 @@ public class DashboardDao {
         return countQuery(sql, employeeID);
     }
 
+    public List<Map<String, Object>> findTeacherPartyReviews(String employeeID) {
+        String sql = "SELECT dr.review_id, pa.application_id, s.student_id, s.name, ce.class_name, pa.reason, dr.status " +
+                "FROM democratic_review dr " +
+                "JOIN party_application pa ON dr.application_id = pa.application_id " +
+                "JOIN student s ON pa.applicant_student_id = s.student_id " +
+                "JOIN student_class sc ON s.student_id = sc.student_id " +
+                "JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "WHERE dr.organizer_employee_id = ? ORDER BY dr.review_id DESC";
+        return query(sql, employeeID);
+    }
+
+    public List<Map<String, Object>> findCounselorDevelopmentInspections(String employeeID) {
+        String sql = "SELECT di.inspection_id, pa.application_id, s.student_id, s.name, ce.class_name, pa.reason, di.status " +
+                "FROM development_inspection di " +
+                "JOIN party_application pa ON di.application_id = pa.application_id " +
+                "JOIN student s ON pa.applicant_student_id = s.student_id " +
+                "JOIN student_class sc ON s.student_id = sc.student_id " +
+                "JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "WHERE di.inspector_employee_id = ? ORDER BY di.inspection_id DESC";
+        return query(sql, employeeID);
+    }
+
+    public List<Map<String, Object>> findCounselorPartyApprovals(String employeeID) {
+        String sql = "SELECT pa_approval.approval_id, pa_app.application_id, s.student_id, s.name, ce.class_name, pa_app.reason, pa_approval.status " +
+                "FROM party_approval pa_approval " +
+                "JOIN party_application pa_app ON pa_approval.application_id = pa_app.application_id " +
+                "JOIN student s ON pa_app.applicant_student_id = s.student_id " +
+                "JOIN student_class sc ON s.student_id = sc.student_id " +
+                "JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "WHERE pa_approval.approver_employee_id = ? ORDER BY pa_approval.approval_id DESC";
+        return query(sql, employeeID);
+    }
     private int countQuery(String sql, Object... params) {
         List<Map<String, Object>> rows = query(sql, params);
         if (rows.isEmpty()) {
