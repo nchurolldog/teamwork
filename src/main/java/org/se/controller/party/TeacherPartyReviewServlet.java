@@ -66,16 +66,20 @@ public class TeacherPartyReviewServlet extends HttpServlet {
             response.sendRedirect("teacher.jsp?view=partyReview&status=started&reviewId=" + reviewID);
         } else if ("finish".equals(action)) {
             List<DemocraticReviewParticipant> participants = participantDao.findByReviewId(reviewID);
-            int totalVoters = participants.size();
+            int totalParticipants = participants.size();
             int agreeCount = 0;
+            int votedCount = 0;
 
             for (DemocraticReviewParticipant participant : participants) {
-                if (Boolean.TRUE.equals(participant.getAccess())) {
-                    agreeCount++;
+                if (participant.getAccess() != null) {
+                    votedCount++;
+                    if (Boolean.TRUE.equals(participant.getAccess())) {
+                        agreeCount++;
+                    }
                 }
             }
 
-            double agreeRate = totalVoters > 0 ? (double) agreeCount / totalVoters : 0;
+            double agreeRate = totalParticipants > 0 ? (double) agreeCount / totalParticipants : 0;
             boolean passed = agreeRate >= 0.6;
 
             review.setStatus(passed ? "passed" : "failed");
@@ -95,7 +99,7 @@ public class TeacherPartyReviewServlet extends HttpServlet {
                 partyApplicationDao.update(application);
             }
 
-            response.sendRedirect("teacher.jsp?view=partyReview&status=" + (passed ? "passed" : "failed") + "&reviewId=" + reviewID + "&agreeRate=" + Math.round(agreeRate * 100));
+            response.sendRedirect("teacher.jsp?view=partyReview&status=" + (passed ? "passed" : "failed") + "&reviewId=" + reviewID + "&agreeRate=" + Math.round(agreeRate * 100) + "&votedCount=" + votedCount + "&totalParticipants=" + totalParticipants);
         } else {
             response.sendRedirect("teacher.jsp?view=partyReview&status=failed");
         }

@@ -34,28 +34,35 @@ public class StudentPartyVoteServlet extends HttpServlet {
         String vote = trimToNull(request.getParameter("vote"));
 
         if (reviewID == null || vote == null || (!"agree".equals(vote) && !"disagree".equals(vote))) {
-            response.sendRedirect("student.jsp?view=partyVote&status=failed");
+            response.sendRedirect("student.jsp?view=party&status=failed");
             return;
         }
 
         String studentID = currentUser.getAccount();
         DemocraticReviewParticipant participant = participantDao.findById(reviewID, studentID);
 
-        if (participant == null || !Boolean.TRUE.equals(participant.getAccess())) {
-            response.sendRedirect("student.jsp?view=partyVote&status=failed");
+        if (participant == null) {
+            response.sendRedirect("student.jsp?view=party&status=failed");
             return;
         }
 
         DemocraticReview review = democraticReviewDao.findById(reviewID);
         if (review == null || !"voting".equals(review.getStatus())) {
-            response.sendRedirect("student.jsp?view=partyVote&status=failed");
+            response.sendRedirect("student.jsp?view=party&status=failed");
             return;
         }
 
-        participant.setAccess("agree".equals(vote));
+        if (participant.getAccess() != null) {
+            response.sendRedirect("student.jsp?view=party&status=duplicate");
+            return;
+        }
+
+        Boolean voteValue = "agree".equals(vote);
+
+        participant.setAccess(voteValue);
         participantDao.update(participant);
 
-        response.sendRedirect("student.jsp?view=partyVote&status=voted&reviewId=" + reviewID);
+        response.sendRedirect("student.jsp?view=party&status=voted&reviewId=" + reviewID);
     }
 
     private String trimToNull(String value) {
@@ -66,3 +73,4 @@ public class StudentPartyVoteServlet extends HttpServlet {
         return trimmed.isEmpty() ? null : trimmed;
     }
 }
+

@@ -1,5 +1,15 @@
 ﻿<% if ("party".equals(view)) { %>
 
+<% if ("voted".equals(request.getParameter("status"))) { %>
+<div class="notice" style="margin-bottom: 16px; background: #d4edda; color: #155724;">
+  Your vote has been submitted successfully. Thank you for participating in the democratic review!
+</div>
+<% } else if ("failed".equals(request.getParameter("status"))) { %>
+<div class="notice error" style="margin-bottom: 16px;">
+  Vote submission failed. Please try again or contact your counselor.
+</div>
+<% } %>
+
 <article class="card span-12">
   <h2>Submit Party Application</h2>
   <p style="color: var(--muted); font-size: 14px; margin-bottom: 16px;">
@@ -158,61 +168,92 @@
   </div>
 </article>
 
-  <article class="card span-12" style="margin-top: 18px;">
-          <h2>Democratic Review Tasks</h2>
-          <table>
-            <thead><tr><th>Review ID</th><th>Applicant</th><th>Status</th><th>Your Vote</th><th>Action</th></tr></thead>
-            <tbody>
-            <%
-              boolean hasPartyVoteTasks = false;
-              if (partyVoteTasks != null && !partyVoteTasks.isEmpty()) {
-                for (DemocraticReviewParticipant task : partyVoteTasks) {
-                  DemocraticReview review = democraticReviewDao.findById(task.getReviewID());
-                  if (review != null) {
-                    PartyApplication app = partyApplicationDao.findById(review.getApplicationID());
-                    Student applicant = app != null ? studentDAO.findById(app.getApplicantStudentID()) : null;
-                    hasPartyVoteTasks = true;
-            %>
-            <tr>
-              <td><%= textOrDash(task.getReviewID()) %></td>
-              <td><%= applicant == null ? "-" : textOrDash(applicant.getName()) %> (<%= applicant == null ? "-" : textOrDash(applicant.getStudentID()) %>)</td>
-              <td><span class="pill"><%= review != null ? textOrDash(review.getStatus()) : "-" %></span></td>
-              <td>
-                <% if (task.getAccess() != null && task.getAccess()) { %>
-                <span class="pill" style="background: #d4edda; color: #155724;">Agreed</span>
-                <% } else if (task.getAccess() != null && !task.getAccess()) { %>
-                <span class="pill" style="background: #f8d7da; color: #721c24;">Disagreed</span>
-                <% } else { %>
-                <span class="pill warning">Not Voted</span>
-                <% } %>
-              </td>
-              <td>
-                <% if (review != null && "voting".equals(review.getStatus()) && task.getAccess() == null) { %>
-                <form action="studentPartyVote" method="post" style="display: inline-flex; gap: 8px; align-items: center;">
-                  <input type="hidden" name="reviewID" value="<%= task.getReviewID() %>">
-                  <select name="vote" required style="height: 34px; border: 1px solid var(--line); border-radius: 6px; padding: 0 8px;">
-                    <option value="">Select</option>
-                    <option value="agree">Agree</option>
-                    <option value="disagree">Disagree</option>
-                  </select>
-                  <button class="primary-btn" type="submit" style="font-size: 12px; padding: 5px 10px; height: auto;">Submit Vote</button>
-                </form>
-                <% } else if (review != null && "voting".equals(review.getStatus())) { %>
-                <span style="color: var(--muted); font-size: 13px;">Voted</span>
-                <% } else { %>
-                <span style="color: var(--muted); font-size: 13px;">Review <%= review != null ? review.getStatus() : "unknown" %></span>
-                <% } %>
-              </td>
-            </tr>
-            <%
-                  }
-                }
+<article class="card span-12" style="margin-top: 18px;">
+  <h2>Democratic Review Tasks - Online Voting</h2>
+  <p style="color: var(--muted); font-size: 14px; margin-bottom: 16px;">
+    As a classmate, you can participate in democratic reviews by voting on your classmates' party applications.
+    Your vote is anonymous and helps ensure fair evaluation.
+  </p>
+  <table>
+    <thead><tr><th>Review ID</th><th>Applicant</th><th>Class</th><th>Review Status</th><th>Your Vote</th><th>Action</th></tr></thead>
+    <tbody>
+    <%
+      boolean hasPartyVoteTasks = false;
+      if (partyVoteTasks != null && !partyVoteTasks.isEmpty()) {
+        for (DemocraticReviewParticipant task : partyVoteTasks) {
+          DemocraticReview review = democraticReviewDao.findById(task.getReviewID());
+          if (review != null) {
+            PartyApplication app = partyApplicationDao.findById(review.getApplicationID());
+            Student applicant = app != null ? studentDAO.findById(app.getApplicantStudentID()) : null;
+
+            String className = "-";
+            if (applicant != null) {
+              List<Map<String, Object>> classes = dashboardDao.findStudentClasses(applicant.getStudentID());
+              if (!classes.isEmpty()) {
+                className = valueText(classes.get(0).get("class_name"));
               }
-              if (!hasPartyVoteTasks) {
-            %>
-            <tr><td colspan="5">No democratic review tasks.</td></tr>
-            <% } %>
-            </tbody>
-          </table>
-        </article>
+            }
+
+            hasPartyVoteTasks = true;
+    %>
+    <tr>
+      <td><%= textOrDash(task.getReviewID()) %></td>
+      <td><%= applicant == null ? "-" : textOrDash(applicant.getName()) %> (<%= applicant == null ? "-" : textOrDash(applicant.getStudentID()) %>)</td>
+      <td><%= className %></td>
+      <td>
+        <% if ("pending".equals(review.getStatus())) { %>
+        <span class="pill warning">Not Started</span>
+        <% } else if ("voting".equals(review.getStatus())) { %>
+        <span class="pill" style="background: #cce5ff; color: #004085;">Voting in Progress</span>
+        <% } else if ("passed".equals(review.getStatus())) { %>
+        <span class="pill" style="background: #d4edda; color: #155724;">Passed</span>
+        <% } else if ("failed".equals(review.getStatus())) { %>
+        <span class="pill" style="background: #f8d7da; color: #721c24;">Failed</span>
+        <% } else { %>
+        <span class="pill"><%= textOrDash(review.getStatus()) %></span>
         <% } %>
+      </td>
+      <td>
+        <% if (task.getAccess() != null && task.getAccess()) { %>
+        <span class="pill" style="background: #d4edda; color: #155724;">✓ Agreed</span>
+        <% } else if (task.getAccess() != null && !task.getAccess()) { %>
+        <span class="pill" style="background: #f8d7da; color: #721c24;">✗ Disagreed</span>
+        <% } else { %>
+        <span class="pill warning">Not Voted</span>
+        <% } %>
+      </td>
+      <td>
+        <% if (review != null && "voting".equals(review.getStatus()) && task.getAccess() == null) { %>
+        <form action="studentPartyVote" method="post" style="display: inline-flex; gap: 8px; align-items: center;">
+          <input type="hidden" name="reviewID" value="<%= task.getReviewID() %>">
+          <select name="vote" required style="height: 34px; border: 1px solid var(--line); border-radius: 6px; padding: 0 8px; font-size: 13px;">
+            <option value="">Select Vote</option>
+            <option value="agree">✓ Agree</option>
+            <option value="disagree">✗ Disagree</option>
+          </select>
+          <button class="primary-btn" type="submit" style="font-size: 12px; padding: 5px 12px; height: auto;" onclick="return confirm('Are you sure to submit your vote? This action cannot be undone.')">Submit Vote</button>
+        </form>
+        <% } else if (task.getAccess() != null) { %>
+        <span style="color: var(--muted); font-size: 13px;">Vote Submitted</span>
+        <% } else if ("pending".equals(review.getStatus())) { %>
+        <span style="color: var(--muted); font-size: 13px;">Waiting for teacher to start</span>
+        <% } else if ("passed".equals(review.getStatus()) || "failed".equals(review.getStatus())) { %>
+        <span style="color: var(--muted); font-size: 13px;">Review completed</span>
+        <% } else { %>
+        <span style="color: var(--muted); font-size: 13px;">Review <%= textOrDash(review.getStatus()) %></span>
+        <% } %>
+      </td>
+    </tr>
+    <%
+          }
+        }
+      }
+      if (!hasPartyVoteTasks) {
+    %>
+    <tr><td colspan="6">No democratic review tasks. You will see tasks when your classmates apply for party membership.</td></tr>
+    <% } %>
+    </tbody>
+  </table>
+</article>
+<% } %>
+
