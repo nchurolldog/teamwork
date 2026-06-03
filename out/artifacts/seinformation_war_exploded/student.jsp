@@ -171,6 +171,8 @@
     .info-row strong { color: var(--ink); }
     .pill { display: inline-flex; padding: 5px 10px; border-radius: 999px; background: var(--cyan); color: var(--navy); font-size: 12px; font-weight: 800; }
     .pill.warning { background: var(--pink); }
+    .pill.success { background: #d4edda; color: #155724; }
+    .pill.error { background: #f8d7da; color: #721c24; }
     .notice { grid-column: span 12; padding: 12px 14px; border-radius: 8px; font-size: 13px; background: #e6f8f0; color: #177a59; }
     .notice.error { background: #ffe7ee; color: #9b2849; }
     .modal-mask { position: fixed; inset: 0; background: rgba(18, 52, 90, .36); display: none; align-items: center; justify-content: center; padding: 22px; z-index: 10; }
