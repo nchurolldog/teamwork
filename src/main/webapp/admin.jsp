@@ -11,6 +11,10 @@
     String text = String.valueOf(value);
     return text.trim().isEmpty() ? "-" : text;
   }
+
+  private String activeNav(String currentView, String expectedView) {
+    return expectedView.equals(currentView) ? "active" : "";
+  }
 %>
 <%
   Users currentUser = (Users) session.getAttribute("currentUser");
@@ -36,10 +40,23 @@
   int scholarshipCount = dashboardDao.countRows("scholarship_application");
   int meetingCount = dashboardDao.countRows("class_meeting");
   List<Map<String, Object>> adminStudents = dashboardDao.findAdminStudents(8);
-  List<Map<String, Object>> adminPrograms = dashboardDao.findAdminPrograms(6);
   List<Map<String, Object>> allMeetings = dashboardDao.findAllClassMeetings();
+  List<Map<String, Object>> roleSummaryRows = dashboardDao.findAdminRoleSummary();
+  List<Map<String, Object>> applicationSummaryRows = dashboardDao.findAdminApplicationSummary();
+  List<Map<String, Object>> classSummaryRows = dashboardDao.findAdminClassSummary();
+  List<Map<String, Object>> gradeSummaryRows = dashboardDao.findAdminGradeSummary();
+  List<Map<String, Object>> recentScholarshipRows = dashboardDao.findAdminRecentScholarshipApplications(6);
+  List<Map<String, Object>> recentPartyRows = dashboardDao.findAdminRecentPartyApplications(6);
 
   String meetingStatus = request.getParameter("meetingStatus");
+  String view = request.getParameter("view") == null ? "dashboard" : request.getParameter("view");
+  String pageTitle = "dashboard".equals(view) ? "Admin Dashboard"
+      : "accounts".equals(view) ? "Account Management"
+      : "students".equals(view) ? "Student Management"
+      : "classes".equals(view) ? "Class Management"
+      : "applications".equals(view) ? "Application Statistics"
+      : "meetings".equals(view) ? "Class Meetings"
+      : "Admin Dashboard";
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,6 +123,7 @@
     .selectionlink {
       border-radius: 8px;
       color: #536271;
+      text-decoration: none;
     }
 
     .selectionlink.active {
@@ -143,6 +161,10 @@
       grid-template-columns: minmax(0, 1.45fr) minmax(320px, .75fr);
       gap: 20px;
       min-height: 0;
+    }
+
+    .main.single {
+      grid-template-columns: 1fr;
     }
 
     .dashboard-left,
@@ -475,6 +497,20 @@
       white-space: nowrap;
     }
 
+    .cardtext a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 7px;
+      background: var(--pink);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
     .copyright {
       min-height: 50px;
       height: auto;
@@ -544,24 +580,21 @@
     </div>
     <div class="maincontent">
       <div class="links">
-        <div class="selectionlink"><i class="fas fa-home"></i><span>Dashboard</span></div>
-        <div class="selectionlink"><i class="fas fa-inbox"></i><span>Inbox</span></div>
-        <div class="selectionlink"><i class="fas fa-calendar"></i><span>Calendar</span></div>
-        <div class="selectionlink"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></div>
-        <div class="selectionlink active"><i class="fas fa-user-graduate"></i><span>Students</span></div>
-        <div class="selectionlink"><i class="fas fa-calendar-check"></i><span>Attendance</span></div>
-        <div class="selectionlink"><i class="fas fa-coins"></i><span>Scholarship</span></div>
-        <div class="selectionlink"><i class="fas fa-users"></i><span>Community</span></div>
-        <div class="selectionlink" onclick="showClassMeetingsSection()"><i class="fas fa-calendar-alt"></i><span>Class Meetings</span></div>
+        <a class="selectionlink <%= activeNav(view, "dashboard") %>" href="admin.jsp"><i class="fas fa-home"></i><span>Dashboard</span></a>
+        <a class="selectionlink <%= activeNav(view, "accounts") %>" href="admin.jsp?view=accounts"><i class="fas fa-user-shield"></i><span>Accounts</span></a>
+        <a class="selectionlink <%= activeNav(view, "students") %>" href="admin.jsp?view=students"><i class="fas fa-user-graduate"></i><span>Students</span></a>
+        <a class="selectionlink <%= activeNav(view, "classes") %>" href="admin.jsp?view=classes"><i class="fas fa-school"></i><span>Classes</span></a>
+        <a class="selectionlink <%= activeNav(view, "applications") %>" href="admin.jsp?view=applications"><i class="fas fa-clipboard-check"></i><span>Applications</span></a>
+        <a class="selectionlink <%= activeNav(view, "meetings") %>" href="admin.jsp?view=meetings"><i class="fas fa-calendar-alt"></i><span>Class Meetings</span></a>
       </div>
     </div>
     <div class="cardandlogout">
       <div class="card">
         <div class="cardicon"><img src="static/img/money.png" alt="Card Icon"></div>
         <div class="cardtext">
-          <h1>New Tools Available</h1>
-          <p>Smarter updates for easier school management</p>
-          <button type="button">See Updates</button>
+          <h1>System Snapshot</h1>
+          <p><%= studentCount %> students, <%= classCount %> classes</p>
+          <a href="admin.jsp?view=applications">Review Data</a>
         </div>
       </div>
       <div class="logout">
@@ -573,16 +606,10 @@
   <div class="right">
     <div class="headinfor">
       <div class="currentpage">
-        <div class="page-title">Students</div>
-        <div class="page-breadcrumb">Dashboard / Students</div>
+        <div class="page-title"><%= pageTitle %></div>
+        <div class="page-breadcrumb">Admin / <%= pageTitle %></div>
       </div>
       <div class="userprofile">
-        <div class="searchbar">
-          <label for="search"><i class="fas fa-search"></i></label>
-          <input type="text" id="search" placeholder="Search anything">
-        </div>
-        <button class="normalbutton" type="button" aria-label="Settings"><i class="fas fa-cog"></i></button>
-        <button class="normalbutton" type="button" aria-label="Notifications"><i class="fas fa-bell"></i></button>
         <div class="photoandname">
           <div class="photo"><img src="static/img/maomao.jpg" alt="Profile Photo"></div>
           <div class="nameandposition">
@@ -593,305 +620,39 @@
       </div>
     </div>
 
-    <main class="main">
+    <main class="main <%= "meetings".equals(view) ? "single" : "" %>">
       <section class="dashboard-left">
-        <div class="metrics">
-          <article class="metric-card featured">
-            <div class="metric-icon"><i class="fas fa-users"></i></div>
-            <strong><%= studentCount %></strong>
-            <span>Total Students</span>
-          </article>
-          <article class="metric-card">
-            <div class="metric-icon"><i class="fas fa-compass"></i></div>
-            <strong><%= teacherCount %></strong>
-            <span>Total Teachers</span>
-          </article>
-          <article class="metric-card">
-            <div class="metric-icon"><i class="fas fa-award"></i></div>
-            <strong><%= counselorCount %></strong>
-            <span>Total Counselors</span>
-          </article>
-          <article class="metric-card">
-            <div class="metric-icon"><i class="fas fa-lightbulb"></i></div>
-            <strong><%= classCount %></strong>
-            <span>Total Classes</span>
-          </article>
-        </div>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div class="panel-title">Create Staff Account</div>
-            <span class="pill">Admin Only</span>
-          </div>
-          <form action="adminCreateUser" method="post" class="table-tools" style="flex-wrap: wrap;">
-            <input type="text" name="account" placeholder="Account" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <select name="userType" aria-label="User role" required>
-              <option value="1">Teacher</option>
-              <option value="2">Counselor</option>
-              <option value="0">Administrator</option>
-            </select>
-            <button class="add-student" type="submit">+ Create Account</button>
-          </form>
-          <p style="margin: 12px 0 0; color: #708092; font-size: 12px;">Students create their own accounts from the login page. Teacher, counselor, and administrator accounts can only be created here.</p>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div class="panel-title">Academic Performance</div>
-            <select aria-label="Performance period">
-              <option>Last Semester</option>
-            </select>
-          </div>
-          <div class="chart-grid" aria-label="Academic performance chart">
-            <div class="bar-group" data-month="Jul"><span class="bar" style="height: 88%"></span><span class="bar alt" style="height: 76%"></span></div>
-            <div class="bar-group" data-month="Aug"><span class="bar" style="height: 84%"></span><span class="bar alt" style="height: 72%"></span></div>
-            <div class="bar-group" data-month="Sep"><span class="bar" style="height: 79%"></span><span class="bar alt" style="height: 68%"></span></div>
-            <div class="bar-group" data-month="Oct"><span class="bar" style="height: 83%"></span><span class="bar alt" style="height: 77%"></span></div>
-            <div class="bar-group" data-month="Nov"><span class="bar" style="height: 90%"></span><span class="bar alt" style="height: 82%"></span></div>
-            <div class="bar-group" data-month="Dec"><span class="bar" style="height: 95%"></span><span class="bar alt" style="height: 88%"></span></div>
-          </div>
-        </section>
-
-        <section class="student-table">
-          <div class="table-head">
-            <div class="table-title">Students</div>
-            <div class="table-tools">
-              <input type="search" placeholder="Search for a student">
-              <select aria-label="Student status">
-                <option>All Status</option>
-              </select>
-              <button class="add-student" type="button">+ Add Student</button>
-            </div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Student</th>
-                <th>Class</th>
-                <th>GPA</th>
-                <th>Performance</th>
-                <th>Attendance</th>
-                <th>Position</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if (adminStudents.isEmpty()) { %>
-                <tr><td colspan="6">No students found.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : adminStudents) {
-                  Object avgGrade = row.get("avg_grade");
-                  boolean needsSupport = avgGrade instanceof Number && ((Number) avgGrade).doubleValue() < 75;
-              %>
-                <tr>
-                  <td><div class="student-name"><img class="avatar" src="<%= valueText(row.get("avatar_path")) %>" alt=""><%= valueText(row.get("name")) %></div></td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(avgGrade) %></td>
-                  <td><span class="pill"><%= needsSupport ? "Needs Support" : "Good" %></span></td>
-                  <td>-</td>
-                  <td>
-                    <%
-                      String position = valueText(row.get("position"));
-                      String positionClass = "班长".equals(position) ? "position-monitor" : ("学习委员".equals(position) ? "position-study" : "position-student");
-                    %>
-                    <span class="pill <%= positionClass %>"><%= position %></span>
-                  </td>
-                </tr>
-              <% }} %>
-            </tbody>
-          </table>
-        </section>
-
-        <section class="panel" id="classMeetingsPanel" style="display: none;">
-          <div class="panel-head">
-            <div class="panel-title">Class Meetings Management</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <button class="primary-btn" type="button" onclick="showCreateForm()" style="font-size: 12px; padding: 5px 10px; height: auto; border: 0; border-radius: 8px; background: var(--pink); color: var(--ink); cursor: pointer; font-weight: 800;">+ Create Meeting</button>
-              <span class="pill">Total: <%= meetingCount %></span>
-            </div>
-          </div>
-
-          <% if ("created".equals(meetingStatus)) { %>
-            <div class="notice" style="padding: 12px 14px; border-radius: 8px; font-size: 13px; background: #e6f8f0; color: #177a59; margin-bottom: 14px;">Meeting created successfully!</div>
-          <% } else if ("updated".equals(meetingStatus)) { %>
-            <div class="notice" style="padding: 12px 14px; border-radius: 8px; font-size: 13px; background: #e6f8f0; color: #177a59; margin-bottom: 14px;">Meeting updated successfully!</div>
-          <% } else if ("deleted".equals(meetingStatus)) { %>
-            <div class="notice" style="padding: 12px 14px; border-radius: 8px; font-size: 13px; background: #e6f8f0; color: #177a59; margin-bottom: 14px;">Meeting deleted successfully!</div>
-          <% } else if ("error".equals(meetingStatus)) { %>
-            <div class="notice error" style="padding: 12px 14px; border-radius: 8px; font-size: 13px; background: #ffe7ee; color: #9b2849; margin-bottom: 14px;">Operation failed. Please try again.</div>
-          <% } %>
-
-          <% if (editMeeting != null) { %>
-          <div class="application-card" style="border: 1px solid var(--line); border-radius: 8px; padding: 16px; background: #fbfdfe; margin-bottom: 18px;">
-            <h3 style="margin: 0 0 14px 0; font-size: 16px;">Edit Meeting</h3>
-            <form action="manageClassMeeting" method="post" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-              <input type="hidden" name="action" value="update">
-              <input type="hidden" name="meetingID" value="<%= editMeeting.getMeetingID() %>">
-              <label style="display: grid; gap: 6px;">
-                Meeting ID
-                <input type="text" value="<%= editMeeting.getMeetingID() %>" readonly style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px; background: #f5f5f5;">
-              </label>
-              <label style="display: grid; gap: 6px;">
-                Class ID
-                <input type="number" name="classID" value="<%= editMeeting.getClassID() %>" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-              </label>
-              <label style="grid-column: 1 / -1; display: grid; gap: 6px;">
-                Theme
-                <input type="text" name="meetingTheme" value="<%= editMeeting.getMeetingTheme() %>" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-              </label>
-              <label style="grid-column: 1 / -1; display: grid; gap: 6px;">
-                Classroom
-                <input type="text" name="classroom" value="<%= editMeeting.getClassroom() %>" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-              </label>
-              <div style="grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end;">
-                <a href="admin.jsp" class="secondary-btn" style="font-size: 12px; padding: 5px 10px; height: auto; text-decoration: none; display: inline-flex; align-items: center;">Cancel</a>
-                <button class="primary-btn" type="submit" style="font-size: 12px; padding: 5px 10px; height: auto;">Update</button>
-              </div>
-            </form>
-          </div>
-          <% } %>
-
-          <div class="application-card" id="createForm" style="display: none; margin-bottom: 18px;">
-            <h3 style="margin: 0 0 14px 0; font-size: 16px;">Create New Meeting</h3>
-            <form action="manageClassMeeting" method="post" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-              <input type="hidden" name="action" value="create">
-              <label style="display: grid; gap: 6px;">
-                Meeting ID
-                <input type="text" name="meetingID" placeholder="e.g., CM004" required>
-              </label>
-              <label style="display: grid; gap: 6px;">
-                Class ID
-                <input type="number" name="classID" placeholder="e.g., 1" required>
-              </label>
-              <label style="grid-column: 1 / -1; display: grid; gap: 6px;">
-                Theme
-                <input type="text" name="meetingTheme" placeholder="Meeting theme" required>
-              </label>
-              <label style="grid-column: 1 / -1; display: grid; gap: 6px;">
-                Classroom
-                <input type="text" name="classroom" placeholder="e.g., A101" required>
-              </label>
-              <div style="grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end;">
-                <button type="button" onclick="hideCreateForm()" class="secondary-btn" style="border: 0; border-radius: 8px; height: 40px; padding: 0 16px; font-weight: 800; cursor: pointer; font-size: 12px; background: var(--page); color: var(--ink);">Cancel</button>
-                <button type="submit" class="primary-btn" style="border: 0; border-radius: 8px; height: 40px; padding: 0 16px; font-weight: 800; cursor: pointer; font-size: 12px; background: var(--pink); color: var(--ink);">Create</button>
-              </div>
-            </form>
-          </div>
-
-          <table>
-            <thead>
-              <tr>
-                <th>Meeting ID</th>
-                <th>Theme</th>
-                <th>Class</th>
-                <th>Classroom</th>
-                <th>Organizer</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if (allMeetings.isEmpty()) { %>
-                <tr><td colspan="6">No meetings found.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : allMeetings) {
-                  String organizerName = valueText(row.get("organizer_name"));
-                  String organizerId = valueText(row.get("organizer_id"));
-                  // 如果组织者信息为空或无效，显示为 "-"
-                  String displayOrganizer = "-";
-                  if (!"-".equals(organizerName) && !organizerName.trim().isEmpty()) {
-                    displayOrganizer = organizerName + " (" + organizerId + ")";
-                  }
-              %>
-                <tr>
-                  <td><%= valueText(row.get("meeting_id")) %></td>
-                  <td><%= valueText(row.get("meeting_theme")) %></td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(row.get("classroom")) %></td>
-                  <td><%= displayOrganizer %></td>
-                  <td>
-                    <a href="admin.jsp?edit=<%= valueText(row.get("meeting_id")) %>" style="color: var(--navy); font-weight: 700; text-decoration: none; margin-right: 8px; font-size: 12px;">Edit</a>
-                    <a href="manageClassMeeting?action=delete&meetingID=<%= valueText(row.get("meeting_id")) %>"
-                       onclick="return confirm('Are you sure you want to delete this meeting?')"
-                       style="color: #c9302c; font-weight: 700; text-decoration: none; font-size: 12px;">Delete</a>
-                  </td>
-                </tr>
-              <% }} %>
-            </tbody>
-          </table>
-        </section>
+        <% if ("dashboard".equals(view)) { %>
+          <%@ include file="admin/metrics.jsp" %>
+          <%@ include file="admin/management-summary.jsp" %>
+          <%@ include file="admin/recent-applications.jsp" %>
+          <%@ include file="admin/class-summary.jsp" %>
+        <% } else if ("accounts".equals(view)) { %>
+          <%@ include file="admin/create-account.jsp" %>
+          <%@ include file="admin/management-summary.jsp" %>
+        <% } else if ("students".equals(view)) { %>
+          <%@ include file="admin/students.jsp" %>
+          <%@ include file="admin/performance.jsp" %>
+        <% } else if ("classes".equals(view)) { %>
+          <%@ include file="admin/class-summary.jsp" %>
+        <% } else if ("applications".equals(view)) { %>
+          <%@ include file="admin/management-summary.jsp" %>
+          <%@ include file="admin/recent-applications.jsp" %>
+        <% } else if ("meetings".equals(view)) { %>
+          <%@ include file="admin/class-meetings.jsp" %>
+        <% } %>
       </section>
 
+      <% if (!"meetings".equals(view)) { %>
       <aside class="dashboard-right">
-        <section class="panel">
-          <div class="panel-head">
-            <div class="panel-title">Enrollment Trends</div>
-            <select aria-label="Trend period">
-              <option>Last 5 Years</option>
-            </select>
-          </div>
-          <div class="trend">
-            <svg viewBox="0 0 420 210" role="img" aria-label="Enrollment trend line">
-              <path d="M15 150 C70 152 92 118 126 126 C172 142 174 178 212 176 C250 170 238 48 290 50 C330 52 332 126 368 126 C386 126 398 112 410 108" fill="none" stroke="#0d4a78" stroke-width="5" stroke-linecap="round"/>
-              <circle cx="126" cy="126" r="6" fill="#0d4a78"/>
-              <text x="105" y="104" fill="#12345a" font-size="15" font-weight="700">8,015</text>
-            </svg>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div class="panel-title">Attendance Overview</div>
-            <select aria-label="Attendance period">
-              <option>This Week</option>
-            </select>
-          </div>
-          <div class="attendance-bars">
-            <div class="attendance-item"><div class="attendance-bar" data-value="1,180" style="--h: 82%"></div><span>Mon</span></div>
-            <div class="attendance-item"><div class="attendance-bar" data-value="1,085" style="--h: 70%"></div><span>Tue</span></div>
-            <div class="attendance-item"><div class="attendance-bar" data-value="1,230" style="--h: 88%"></div><span>Wed</span></div>
-            <div class="attendance-item"><div class="attendance-bar" data-value="1,102" style="--h: 74%"></div><span>Thu</span></div>
-            <div class="attendance-item"><div class="attendance-bar" data-value="1,200" style="--h: 84%"></div><span>Fri</span></div>
-          </div>
-        </section>
-
-        <section class="program-list">
-          <div class="program-head">
-            <div class="program-title">Special Programs</div>
-            <span class="pill"><%= scholarshipCount %> Scholarship / <%= partyCount %> Party</span>
-            <i class="fas fa-ellipsis-h"></i>
-          </div>
-          <% if (!adminPrograms.isEmpty()) {
-            for (Map<String, Object> row : adminPrograms) {
-          %>
-            <article class="program-card">
-              <img src="<%= valueText(row.get("avatar_path")) %>" alt="">
-              <div><strong><%= valueText(row.get("name")) %></strong><span><%= valueText(row.get("student_id")) %> · <%= valueText(row.get("class_name")) %></span><span><%= valueText(row.get("type_code")) %></span></div>
-              <div class="program-tag"><%= valueText(row.get("status")) %></div>
-            </article>
-          <% }} else { %>
-          <article class="program-card">
-            <img src="static/img/maomao.jpg" alt="">
-            <div><strong>Fatima Noor</strong><span>S-2003 · 7C</span><span>Community Leadership Fellowship</span></div>
-            <div class="program-tag">Enrichment</div>
-          </article>
-          <article class="program-card">
-            <img src="static/img/left-ilu.png" alt="">
-            <div><strong>Alicia Gomez</strong><span>S-2001 · 9B</span><span>National Science Scholarship</span></div>
-            <div class="program-tag">Academic Support</div>
-          </article>
-          <article class="program-card">
-            <img src="static/img/right-ilu.webp" alt="">
-            <div><strong>Daniel Park</strong><span>S-2002 · 8A</span><span>Student Athlete Sponsorship</span></div>
-            <div class="program-tag">Finance + Enrichment</div>
-          </article>
-          <% } %>
-        </section>
+        <%@ include file="admin/performance.jsp" %>
       </aside>
+      <% } %>
     </main>
 
     <div class="copyright">
       <div class="copyrightleft">
-        <span>Copyright © 2026 SEInformation. All rights reserved.</span>
+        <span>Copyright &copy; 2026 SEInformation. All rights reserved.</span>
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
       </div>
@@ -905,15 +666,6 @@
   </div>
 
   <script>
-    document.querySelectorAll('.selectionlink').forEach(function(link) {
-      link.addEventListener('click', function() {
-        document.querySelectorAll('.selectionlink').forEach(function(item) {
-          item.classList.remove('active');
-        });
-        link.classList.add('active');
-      });
-    });
-
     var logout = document.querySelector('.logout');
     if (logout) {
       logout.addEventListener('click', function() {
@@ -921,37 +673,19 @@
       });
     }
 
-    function showClassMeetingsSection() {
-      document.getElementById('classMeetingsPanel').style.display = 'block';
-      document.querySelector('.student-table').style.display = 'none';
-      document.querySelector('.metrics').style.display = 'none';
-      document.querySelector('.dashboard-left > .panel:nth-child(2)').style.display = 'none';
-      document.querySelector('.dashboard-left > .panel:nth-child(3)').style.display = 'none';
-    }
-
-    function showOverview() {
-      document.getElementById('classMeetingsPanel').style.display = 'none';
-      document.querySelector('.student-table').style.display = 'block';
-      document.querySelector('.metrics').style.display = 'grid';
-      document.querySelector('.dashboard-left > .panel:nth-child(2)').style.display = 'block';
-      document.querySelector('.dashboard-left > .panel:nth-child(3)').style.display = 'block';
-    }
-
     function showCreateForm() {
-      document.getElementById('createForm').style.display = 'block';
+      var form = document.getElementById('createForm');
+      if (form) {
+        form.style.display = 'block';
+      }
     }
 
     function hideCreateForm() {
-      document.getElementById('createForm').style.display = 'none';
-    }
-
-    // 如果URL中有edit参数或meetingStatus参数，自动显示班会管理面板
-    window.addEventListener('DOMContentLoaded', function() {
-      var urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('edit') || urlParams.has('meetingStatus')) {
-        showClassMeetingsSection();
+      var form = document.getElementById('createForm');
+      if (form) {
+        form.style.display = 'none';
       }
-    });
+    }
   </script>
 </body>
 </html>

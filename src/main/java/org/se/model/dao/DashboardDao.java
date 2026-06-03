@@ -254,6 +254,59 @@ public class DashboardDao {
         return query(sql, limit);
     }
 
+    public List<Map<String, Object>> findAdminRoleSummary() {
+        String sql = "SELECT CASE user_type WHEN 0 THEN 'Admin' WHEN 1 THEN 'Teacher' WHEN 2 THEN 'Counselor' WHEN 3 THEN 'Student' ELSE 'Unknown' END AS role_name, " +
+                "COUNT(*) AS total_count FROM users GROUP BY user_type ORDER BY user_type";
+        return query(sql);
+    }
+
+    public List<Map<String, Object>> findAdminApplicationSummary() {
+        String sql = "SELECT 'Scholarship' AS module_name, status, COUNT(*) AS total_count FROM scholarship_application GROUP BY status " +
+                "UNION ALL " +
+                "SELECT 'Party' AS module_name, status, COUNT(*) AS total_count FROM party_application GROUP BY status " +
+                "ORDER BY module_name, status";
+        return query(sql);
+    }
+
+    public List<Map<String, Object>> findAdminClassSummary() {
+        String sql = "SELECT ce.class_id, ce.class_name, t.name AS teacher_name, c.name AS counselor_name, COUNT(sc.student_id) AS student_count " +
+                "FROM class_entity ce " +
+                "LEFT JOIN teacher t ON ce.teacher_id = t.employee_id " +
+                "LEFT JOIN counselor c ON ce.counselor_id = c.employee_id " +
+                "LEFT JOIN student_class sc ON ce.class_id = sc.class_id " +
+                "GROUP BY ce.class_id, ce.class_name, t.name, c.name " +
+                "ORDER BY ce.class_id";
+        return query(sql);
+    }
+
+    public List<Map<String, Object>> findAdminGradeSummary() {
+        String sql = "SELECT co.course_name, COUNT(g.student_id) AS record_count, ROUND(AVG(g.total_grade), 2) AS avg_grade, " +
+                "MIN(g.total_grade) AS min_grade, MAX(g.total_grade) AS max_grade " +
+                "FROM course co LEFT JOIN grade g ON co.course_id = g.course_id " +
+                "GROUP BY co.course_id, co.course_name ORDER BY co.course_name";
+        return query(sql);
+    }
+
+    public List<Map<String, Object>> findAdminRecentScholarshipApplications(int limit) {
+        String sql = "SELECT sa.app_id, s.student_id, s.name, ce.class_name, sa.type_code, sa.amount, sa.status " +
+                "FROM scholarship_application sa " +
+                "JOIN student s ON sa.student_id = s.student_id " +
+                "LEFT JOIN student_class sc ON s.student_id = sc.student_id " +
+                "LEFT JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "ORDER BY sa.app_id DESC LIMIT ?";
+        return query(sql, limit);
+    }
+
+    public List<Map<String, Object>> findAdminRecentPartyApplications(int limit) {
+        String sql = "SELECT pa.application_id, s.student_id, s.name, ce.class_name, pa.status " +
+                "FROM party_application pa " +
+                "JOIN student s ON pa.applicant_student_id = s.student_id " +
+                "LEFT JOIN student_class sc ON s.student_id = sc.student_id " +
+                "LEFT JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "ORDER BY pa.application_id DESC LIMIT ?";
+        return query(sql, limit);
+    }
+
     public int countAdminClasses() {
         return countRows("class_entity");
     }

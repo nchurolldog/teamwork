@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="org.se.model.entity.Users" %>
 <%@ page import="org.se.model.entity.Teacher" %>
 <%@ page import="org.se.model.entity.ProfileImage" %>
@@ -79,6 +79,7 @@
   String avatarPath = profileImage == null || profileImage.getImagePath() == null ? "static/img/maomao.jpg" : profileImage.getImagePath();
   List<Map<String, Object>> teacherClassRows = dashboardDao.findTeacherClasses(employeeID);
   List<Map<String, Object>> teacherStudentRows = dashboardDao.findTeacherStudents(employeeID);
+  List<Map<String, Object>> teacherPartyReviewRows = dashboardDao.findTeacherPartyReviews(employeeID);
   String view = request.getParameter("view") == null ? "overview" : request.getParameter("view");
   String search = request.getParameter("q") == null ? "" : request.getParameter("q").trim();
   Integer filterClassID = parseIntegerParam(request.getParameter("classId"));
@@ -183,7 +184,7 @@
         <a class="<%= activeNav(view, "students") %>" href="teacher.jsp?view=students"><i class="fas fa-users"></i>My Students</a>
         <a class="<%= activeNav(view, "classes") %>" href="teacher.jsp?view=classes"><i class="fas fa-school"></i>My Classes</a>
         <a class="<%= activeNav(view, "grades") %>" href="teacher.jsp?view=grades"><i class="fas fa-chart-line"></i>Grades</a>
-        <a href="#"><i class="fas fa-flag"></i>Party Review</a>
+        <a class="<%= activeNav(view, "partyReview") %>" href="teacher.jsp?view=partyReview"><i class="fas fa-flag"></i>Party Review</a>
         <a class="<%= activeNav(view, "scholarshipReview") %>" href="teacher.jsp?view=scholarshipReview"><i class="fas fa-award"></i>Scholarship Review</a>
         <a href="#"><i class="fas fa-calendar-check"></i>Attendance</a>
       </nav>
@@ -213,201 +214,13 @@
         <% } else if ("failed".equals(manageStatus)) { %>
           <div class="notice error">Student management failed. Check student ID and class ownership.</div>
         <% } %>
-        <% if ("overview".equals(view)) { %>
-          <article class="card metric featured span-3"><strong><%= teacherCourseCount %></strong><span>Courses</span></article>
-          <article class="card metric span-3"><strong><%= teacherStudentRows.size() %></strong><span>My Students</span></article>
-          <article class="card metric warning span-3"><strong><%= teacherClassRows.size() %></strong><span>Classes</span></article>
-          <article class="card metric span-3"><strong><%= teacherGradeCount %></strong><span>Grade Items</span></article>
-        <% } %>
-
-        <% if ("overview".equals(view) || "personal".equals(view)) { %>
-        <article class="card <%= "personal".equals(view) ? "span-12" : "span-4" %>">
-          <div class="card-head">
-            <h2>Personal Info</h2>
-            <button class="edit-profile" type="button" id="openProfileEditor"><i class="fas fa-pen-to-square"></i><span>Edit</span></button>
-          </div>
-          <div class="info-list">
-            <div class="info-row"><span>Employee ID</span><strong><%= textOrDash(employeeID) %></strong></div>
-            <div class="info-row"><span>Name</span><strong><%= teacher == null ? "Waiting for teacher profile" : textOrDash(teacher.getName()) %></strong></div>
-            <div class="info-row"><span>Gender</span><strong><%= teacher == null ? "-" : genderText(teacher.getGender()) %></strong></div>
-            <div class="info-row"><span>Role</span><span class="pill">Teacher</span></div>
-          </div>
-        </article>
-        <% } %>
-
-        <% if ("overview".equals(view) || "students".equals(view)) { %>
-        <article class="card <%= "students".equals(view) ? "span-12" : "span-8" %>">
-          <h2>My Students</h2>
-          <% if ("students".equals(view)) { %>
-            <form class="list-tools" action="manageClassStudent" method="post">
-              <input type="hidden" name="action" value="add">
-              <input type="text" name="studentID" placeholder="Student ID" required>
-              <select name="classId" required>
-                <option value="">Class</option>
-                <% for (Map<String, Object> row : teacherClassRows) { %>
-                  <option value="<%= valueText(row.get("class_id")) %>"><%= valueText(row.get("class_name")) %></option>
-                <% } %>
-              </select>
-              <select name="position">
-                <option value="学生">学生</option>
-                <option value="班长">班长</option>
-                <option value="学习委员">学习委员</option>
-              </select>
-              <button type="submit">Add Student</button>
-            </form>
-          <% } %>
-          <form class="list-tools" action="teacher.jsp" method="get">
-            <input type="hidden" name="view" value="students">
-            <input type="search" name="q" value="<%= fieldValue(search) %>" placeholder="Search student">
-            <select name="classId" aria-label="Class filter">
-              <option value="">All Classes</option>
-              <% for (Map<String, Object> row : teacherClassRows) {
-                String classIdText = valueText(row.get("class_id"));
-              %>
-                <option value="<%= classIdText %>" <%= filterClassID != null && classIdText.equals(String.valueOf(filterClassID)) ? "selected" : "" %>><%= valueText(row.get("class_name")) %></option>
-              <% } %>
-            </select>
-            <button type="submit">Search</button>
-          </form>
-          <table>
-            <thead><tr><th>Student</th><th>Class</th><th>Position</th><th>Latest Grade</th><th>Attendance</th><th>Status</th><% if ("students".equals(view)) { %><th>Manage</th><% } %></tr></thead>
-            <tbody>
-              <% if (teacherStudentPageRows.isEmpty()) { %>
-                <tr><td colspan="<%= "students".equals(view) ? 7 : 6 %>">No students assigned.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : teacherStudentPageRows) {
-                  Object avgGrade = row.get("avg_grade");
-                  boolean needsSupport = avgGrade instanceof Number && ((Number) avgGrade).doubleValue() < 75;
-              %>
-                <tr>
-                  <td><%= valueText(row.get("name")) %></td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(row.get("position")) %></td>
-                  <td><%= valueText(avgGrade) %></td>
-                  <td>-</td>
-                  <td><span class="pill <%= needsSupport ? "warning" : "" %>"><%= needsSupport ? "Needs Support" : "Good" %></span></td>
-                  <% if ("students".equals(view)) { %>
-                    <td>
-                      <form class="inline-form" action="manageClassStudent" method="post">
-                        <input type="hidden" name="studentID" value="<%= valueText(row.get("student_id")) %>">
-                        <input type="hidden" name="classId" value="<%= valueText(row.get("class_id")) %>">
-                        <select name="position">
-                          <option value="学生" <%= "学生".equals(valueText(row.get("position"))) ? "selected" : "" %>>学生</option>
-                          <option value="班长" <%= "班长".equals(valueText(row.get("position"))) ? "selected" : "" %>>班长</option>
-                          <option value="学习委员" <%= "学习委员".equals(valueText(row.get("position"))) ? "selected" : "" %>>学习委员</option>
-                        </select>
-                        <button class="small-btn" type="submit" name="action" value="position">Save</button>
-                        <button class="small-btn danger" type="submit" name="action" value="delete">Delete</button>
-                      </form>
-                    </td>
-                  <% } %>
-                </tr>
-              <% }} %>
-            </tbody>
-          </table>
-          <div class="pagination">
-            <% if (currentPage > 1) { %>
-              <a class="page-link" href="teacher.jsp?view=students&q=<%= fieldValue(search) %>&classId=<%= filterClassID == null ? "" : filterClassID %>&page=<%= currentPage - 1 %>">Prev</a>
-            <% } %>
-            <span>Page <%= currentPage %> / <%= totalPages %>, Total <%= totalFilteredStudents %></span>
-            <% if (currentPage < totalPages) { %>
-              <a class="page-link" href="teacher.jsp?view=students&q=<%= fieldValue(search) %>&classId=<%= filterClassID == null ? "" : filterClassID %>&page=<%= currentPage + 1 %>">Next</a>
-            <% } %>
-          </div>
-        </article>
-        <% } %>
-
-        <% if ("overview".equals(view) || "classes".equals(view)) { %>
-        <article class="card <%= "classes".equals(view) ? "span-12" : "span-6" %>" id="classes">
-          <h2>My Classes</h2>
-          <table>
-            <thead><tr><th>Class</th><th>Course</th><th>Students</th></tr></thead>
-            <tbody>
-              <% if (teacherClassRows.isEmpty()) { %>
-                <tr><td colspan="3">No classes assigned.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : teacherClassRows) {
-              %>
-                <tr><td><%= valueText(row.get("class_name")) %></td><td>-</td><td><%= valueText(row.get("student_count")) %></td></tr>
-              <% }} %>
-            </tbody>
-          </table>
-        </article>
-        <% } %>
-
-        <% if ("overview".equals(view) || "grades".equals(view)) { %>
-        <article class="card <%= "grades".equals(view) ? "span-12" : "span-6" %>" id="grade-work">
-          <h2>Grade Work</h2>
-          <div class="info-list">
-            <div class="info-row"><span>Grade records</span><strong><%= teacherGradeCount %></strong></div>
-            <div class="info-row"><span>Courses with updates</span><strong><%= teacherCourseCount %></strong></div>
-            <div class="info-row"><span>Students needing attention</span><strong>
-              <%
-                int supportCount = 0;
-                for (Map<String, Object> row : teacherStudentRows) {
-                  Object avgGrade = row.get("avg_grade");
-                  if (avgGrade instanceof Number && ((Number) avgGrade).doubleValue() < 75) {
-                    supportCount++;
-                  }
-                }
-              %><%= supportCount %>
-            </strong></div>
-          </div>
-        </article>
-        <% } %>
-
-        <% if ("scholarshipReview".equals(view)) { %>
-        <article class="card span-12">
-          <h2>Scholarship Review</h2>
-          <table>
-            <thead><tr><th>Application</th><th>Student</th><th>Class</th><th>Type</th><th>Detail</th><th>Status</th><th>Review</th></tr></thead>
-            <tbody>
-              <% if (teacherScholarshipReviewRows.isEmpty()) { %>
-                <tr><td colspan="7">No scholarship review tasks.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : teacherScholarshipReviewRows) {
-              %>
-                <tr>
-                  <td><%= valueText(row.get("app_id")) %></td>
-                  <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(row.get("type_code")) %></td>
-                  <td>
-                    <button class="small-btn js-detail" type="button"
-                      data-title="Teacher Review Detail"
-                      data-application="<%= attrValue(row.get("app_id")) %>"
-                      data-applicant="<%= attrValue(row.get("name")) %> (<%= attrValue(row.get("student_id")) %>)"
-                      data-class="<%= attrValue(row.get("class_name")) %>"
-                      data-scholarship="<%= attrValue(row.get("type_code")) %>"
-                      data-status="<%= attrValue(row.get("status")) %>"
-                      data-amount="<%= attrValue(row.get("requested_amount")) %>"
-                      data-family="<%= attrValue(row.get("family_situation")) %>"
-                      data-score="<%= attrValue(row.get("academic_score")) %>"
-                      data-conduct="<%= attrValue(row.get("conduct_evaluation")) %>"
-                      data-honors="<%= attrValue(row.get("honors")) %>"
-                      data-reason="<%= attrValue(row.get("application_reason")) %>"
-                      data-materials="<%= attrValue(row.get("supporting_materials")) %>">View Detail</button>
-                  </td>
-                  <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
-                  <td>
-                    <% if ("pending".equals(valueText(row.get("status")))) { %>
-                      <form class="inline-form" action="scholarshipTeacherReview" method="post">
-                        <input type="hidden" name="reviewID" value="<%= valueText(row.get("review_id")) %>">
-                        <input type="hidden" name="appID" value="<%= valueText(row.get("app_id")) %>">
-                        <input type="text" name="comment" placeholder="Comment">
-                        <button class="small-btn" type="submit" name="decision" value="agree">Agree</button>
-                        <button class="small-btn danger" type="submit" name="decision" value="disagree">Reject</button>
-                      </form>
-                    <% } else { %>
-                      <span class="pill"><%= valueText(row.get("comment")) %></span>
-                    <% } %>
-                  </td>
-                </tr>
-              <% }} %>
-            </tbody>
-          </table>
-        </article>
-        <% } %>
+        <%@ include file="teacher/overview.jsp" %>
+        <%@ include file="teacher/personalinfo.jsp" %>
+        <%@ include file="teacher/students.jsp" %>
+        <%@ include file="teacher/classes.jsp" %>
+        <%@ include file="teacher/grades.jsp" %>
+        <%@ include file="teacher/scholarship-review.jsp" %>
+        <%@ include file="teacher/party-review.jsp" %>
       </section>
     </main>
   </div>
