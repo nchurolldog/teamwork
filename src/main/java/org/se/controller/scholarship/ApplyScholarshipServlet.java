@@ -19,7 +19,6 @@ import org.se.model.entity.Users;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @WebServlet("/applyScholarship")
 public class ApplyScholarshipServlet extends HttpServlet {
@@ -67,7 +66,7 @@ public class ApplyScholarshipServlet extends HttpServlet {
         }
 
         String appID = "SA" + System.currentTimeMillis();
-        ScholarshipApplication application = new ScholarshipApplication(appID, student.getStudentID(), typeCode, amount, reason, "democratic_review");
+        ScholarshipApplication application = new ScholarshipApplication(appID, student.getStudentID(), typeCode, amount, reason, "counselor_review");
         ScholarshipApplicationDetail detail = new ScholarshipApplicationDetail(
                 appID,
                 amount,
@@ -81,19 +80,9 @@ public class ApplyScholarshipServlet extends HttpServlet {
         );
         boolean success = scholarshipApplicationDao.insert(application) && scholarshipApplicationDetailDao.insert(detail);
         if (success) {
-            String reviewID = "SDR" + System.currentTimeMillis();
-            success = scholarshipWorkflowDao.createDemocraticReview(reviewID, appID);
-            List<Map<String, Object>> voters = scholarshipWorkflowDao.findEligibleVoters(appID);
-            for (Map<String, Object> voter : voters) {
-                scholarshipWorkflowDao.addVoter(reviewID, String.valueOf(voter.get("student_id")));
-            }
-            if (voters.isEmpty()) {
-                String counselorID = scholarshipWorkflowDao.findCounselorEmployeeByAppID(appID);
-                success = counselorID != null
-                        && scholarshipWorkflowDao.updateDemocraticReviewStatus(reviewID, "passed")
-                        && scholarshipWorkflowDao.updateApplicationStatus(appID, "counselor_review")
-                        && scholarshipWorkflowDao.createCounselorReview("SCR" + System.currentTimeMillis(), appID, counselorID);
-            }
+            String counselorID = scholarshipWorkflowDao.findCounselorEmployeeByAppID(appID);
+            success = counselorID != null
+                    && scholarshipWorkflowDao.createCounselorReview("SCR" + System.currentTimeMillis(), appID, counselorID);
         }
         response.sendRedirect("student.jsp?view=scholarship&scholarship=" + (success ? "saved" : "failed") + "&appId=" + appID);
     }

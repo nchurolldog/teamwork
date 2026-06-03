@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="org.se.model.entity.Users" %>
 <%@ page import="org.se.model.entity.Counselor" %>
 <%@ page import="org.se.model.entity.ProfileImage" %>
@@ -76,6 +76,8 @@
   String avatarPath = profileImage == null || profileImage.getImagePath() == null ? "static/img/maomao.jpg" : profileImage.getImagePath();
   ClassMeetingDAO classMeetingDAO = new ClassMeetingDAO();
   ScholarshipWorkflowDao scholarshipWorkflowDao = new ScholarshipWorkflowDao();
+  DevelopmentInspectionDao developmentInspectionDao = new DevelopmentInspectionDao();
+  PartyApprovalDao partyApprovalDao = new PartyApprovalDao();
   String editMeetingID = request.getParameter("edit");
   ClassMeeting editMeeting = editMeetingID != null ? classMeetingDAO.findById(editMeetingID) : null;
 
@@ -86,6 +88,8 @@
   int pageSize = 30;
   List<Map<String, Object>> counselorClassRows = dashboardDao.findCounselorClasses(employeeID);
   List<Map<String, Object>> counselorStudentRows = dashboardDao.findCounselorStudents(employeeID);
+  List<Map<String, Object>> developmentInspectionRows = dashboardDao.findCounselorDevelopmentInspections(employeeID);
+  List<Map<String, Object>> partyApprovalRows = dashboardDao.findCounselorPartyApprovals(employeeID);
   int totalFilteredStudents = dashboardDao.countCounselorStudentsFiltered(employeeID, search, filterClassID);
   int totalPages = Math.max(1, (int) Math.ceil(totalFilteredStudents / (double) pageSize));
   if (currentPage > totalPages) currentPage = totalPages;
@@ -190,6 +194,8 @@
         <a class="<%= activeNav(view, "students") %>" href="counselor.jsp?view=students"><i class="fas fa-users"></i>My Students</a>
         <a class="<%= activeNav(view, "classes") %>" href="counselor.jsp?view=classes"><i class="fas fa-school"></i>Classes</a>
         <a class="<%= activeNav(view, "partyReview") %>" href="counselor.jsp?view=partyReview"><i class="fas fa-flag"></i>Party Review</a>
+        <a class="<%= activeNav(view, "developmentInspection") %>" href="counselor.jsp?view=developmentInspection"><i class="fas fa-clipboard-check"></i>Development Inspection</a>
+        <a class="<%= activeNav(view, "partyApproval") %>" href="counselor.jsp?view=partyApproval"><i class="fas fa-stamp"></i>Party Approval</a>
         <a class="<%= activeNav(view, "scholarshipReview") %>" href="counselor.jsp?view=scholarshipReview"><i class="fas fa-award"></i>Scholarship</a>
         <a class="<%= activeNav(view, "meetings") %>" href="counselor.jsp?view=meetings"><i class="fas fa-calendar-check"></i>Class Meetings</a>
       </nav>
@@ -219,374 +225,14 @@
         <% } else if ("failed".equals(manageStatus)) { %>
           <div class="notice error">Student management failed. Check student ID and class ownership.</div>
         <% } %>
-        <% if ("overview".equals(view)) { %>
-          <article class="card metric featured span-3"><strong><%= counselorClassRows.size() %></strong><span>Managed Classes</span></article>
-          <article class="card metric span-3"><strong><%= counselorStudentRows.size() %></strong><span>My Students</span></article>
-          <article class="card metric warning span-3"><strong><%= partyApplicationCount %></strong><span>Party Applications</span></article>
-          <article class="card metric span-3"><strong><%= scholarshipApplicationCount %></strong><span>Scholarship Reviews</span></article>
-        <% } %>
-
-        <% if ("overview".equals(view) || "personal".equals(view)) { %>
-        <article class="card <%= "personal".equals(view) ? "span-12" : "span-4" %>">
-          <div class="card-head">
-            <h2>Personal Info</h2>
-            <button class="edit-profile" type="button" id="openProfileEditor"><i class="fas fa-pen-to-square"></i><span>Edit</span></button>
-          </div>
-          <div class="info-list">
-            <div class="info-row"><span>Employee ID</span><strong><%= textOrDash(employeeID) %></strong></div>
-            <div class="info-row"><span>Name</span><strong><%= counselor == null ? "Waiting for counselor profile" : textOrDash(counselor.getName()) %></strong></div>
-            <div class="info-row"><span>Gender</span><strong><%= counselor == null ? "-" : genderText(counselor.getGender()) %></strong></div>
-            <div class="info-row"><span>Role</span><span class="pill">Counselor</span></div>
-          </div>
-        </article>
-        <% } %>
-
-        <% if ("overview".equals(view) || "students".equals(view)) { %>
-        <article class="card <%= "students".equals(view) ? "span-12" : "span-8" %>">
-          <h2>My Students</h2>
-          <% if ("students".equals(view)) { %>
-            <form class="list-tools" action="manageClassStudent" method="post">
-              <input type="hidden" name="action" value="add">
-              <input type="text" name="studentID" placeholder="Student ID" required>
-              <select name="classId" required>
-                <option value="">Class</option>
-                <% for (Map<String, Object> row : counselorClassRows) { %>
-                  <option value="<%= valueText(row.get("class_id")) %>"><%= valueText(row.get("class_name")) %></option>
-                <% } %>
-              </select>
-              <select name="position">
-                <option value="学生">学生</option>
-                <option value="班长">班长</option>
-                <option value="学习委员">学习委员</option>
-              </select>
-              <button type="submit">Add Student</button>
-            </form>
-          <% } %>
-          <form class="list-tools" action="counselor.jsp" method="get">
-            <input type="hidden" name="view" value="students">
-            <input type="search" name="q" value="<%= fieldValue(search) %>" placeholder="Search student">
-            <select name="classId" aria-label="Class filter">
-              <option value="">All Classes</option>
-              <% for (Map<String, Object> row : counselorClassRows) {
-                String classIdText = valueText(row.get("class_id"));
-              %>
-                <option value="<%= classIdText %>" <%= filterClassID != null && classIdText.equals(String.valueOf(filterClassID)) ? "selected" : "" %>><%= valueText(row.get("class_name")) %></option>
-              <% } %>
-            </select>
-            <button type="submit">Search</button>
-          </form>
-          <table>
-            <thead><tr><th>Student</th><th>Class</th><th>Position</th><th>Party Application</th><th>Scholarship</th><th>Attention</th><% if ("students".equals(view)) { %><th>Manage</th><% } %></tr></thead>
-            <tbody>
-              <% if (counselorStudentPageRows.isEmpty()) { %>
-                <tr><td colspan="<%= "students".equals(view) ? 7 : 6 %>">No students assigned.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : counselorStudentPageRows) {
-                  boolean pending = "pending".equalsIgnoreCase(valueText(row.get("party_status")))
-                          || "pending".equalsIgnoreCase(valueText(row.get("scholarship_status")));
-              %>
-                <tr>
-                  <td><%= valueText(row.get("name")) %></td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(row.get("position")) %></td>
-                  <td><span class="pill <%= pending ? "warning" : "" %>"><%= valueText(row.get("party_status")) %></span></td>
-                  <td><span class="pill"><%= valueText(row.get("scholarship_status")) %></span></td>
-                  <td><%= pending ? "Needs review" : "Normal" %></td>
-                  <% if ("students".equals(view)) { %>
-                    <td>
-                      <form class="inline-form" action="manageClassStudent" method="post">
-                        <input type="hidden" name="studentID" value="<%= valueText(row.get("student_id")) %>">
-                        <input type="hidden" name="classId" value="<%= valueText(row.get("class_id")) %>">
-                        <select name="position">
-                          <option value="学生" <%= "学生".equals(valueText(row.get("position"))) ? "selected" : "" %>>学生</option>
-                          <option value="班长" <%= "班长".equals(valueText(row.get("position"))) ? "selected" : "" %>>班长</option>
-                          <option value="学习委员" <%= "学习委员".equals(valueText(row.get("position"))) ? "selected" : "" %>>学习委员</option>
-                        </select>
-                        <button class="small-btn" type="submit" name="action" value="position">Save</button>
-                        <button class="small-btn danger" type="submit" name="action" value="delete">Delete</button>
-                      </form>
-                    </td>
-                  <% } %>
-                </tr>
-              <% }} %>
-            </tbody>
-          </table>
-          <div class="pagination">
-            <% if (currentPage > 1) { %>
-              <a class="page-link" href="counselor.jsp?view=students&q=<%= fieldValue(search) %>&classId=<%= filterClassID == null ? "" : filterClassID %>&page=<%= currentPage - 1 %>">Prev</a>
-            <% } %>
-            <span>Page <%= currentPage %> / <%= totalPages %>, Total <%= totalFilteredStudents %></span>
-            <% if (currentPage < totalPages) { %>
-              <a class="page-link" href="counselor.jsp?view=students&q=<%= fieldValue(search) %>&classId=<%= filterClassID == null ? "" : filterClassID %>&page=<%= currentPage + 1 %>">Next</a>
-            <% } %>
-          </div>
-        </article>
-        <% } %>
-
-        <% if ("classes".equals(view)) { %>
-        <article class="card span-12" id="classes">
-          <h2>Managed Classes</h2>
-          <table>
-            <thead><tr><th>Class</th><th>Students</th></tr></thead>
-            <tbody>
-              <% if (counselorClassRows.isEmpty()) { %>
-                <tr><td colspan="2">No classes assigned.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : counselorClassRows) {
-              %>
-                <tr><td><%= valueText(row.get("class_name")) %></td><td><%= valueText(row.get("student_count")) %></td></tr>
-              <% }} %>
-            </tbody>
-          </table>
-        </article>
-        <% } %>
-
-        <% if ("overview".equals(view) || "meetings".equals(view)) { %>
-<article class="card <%= "meetings".equals(view) ? "span-12" : "span-6" %>">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <h2 style="margin: 0;">Class Meetings</h2>
-    <div>
-      <a href="counselor.jsp?view=meetings" class="pill" style="text-decoration: none; margin-right: 8px;">View All</a>
-      <button class="primary-btn" type="button" onclick="showCreateForm()" style="font-size: 12px; padding: 5px 10px; height: auto;">+ Create Meeting</button>
-    </div>
-  </div>
-
-  <% if ("created".equals(request.getParameter("meetingStatus"))) { %>
-    <div class="notice">Meeting created successfully!</div>
-  <% } else if ("updated".equals(request.getParameter("meetingStatus"))) { %>
-    <div class="notice">Meeting updated successfully!</div>
-  <% } else if ("deleted".equals(request.getParameter("meetingStatus"))) { %>
-    <div class="notice">Meeting deleted successfully!</div>
-  <% } else if ("error".equals(request.getParameter("meetingStatus"))) { %>
-    <div class="notice error">Operation failed. Please try again.</div>
-  <% } %>
-
-  <div class="application-card" id="createForm" style="display: none; margin-bottom: 18px;">
-    <h3 style="margin: 0 0 14px 0;">Create New Meeting</h3>
-    <form action="manageClassMeeting" method="post" class="application-form">
-      <input type="hidden" name="action" value="create">
-      <label>
-        Meeting ID
-        <input type="text" name="meetingID" placeholder="e.g., CM004" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-      </label>
-      <label>
-        Class ID
-        <input type="number" name="classID" placeholder="e.g., 1" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-      </label>
-      <label class="full">
-        Theme
-        <input type="text" name="meetingTheme" placeholder="Meeting theme" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-      </label>
-      <label class="full">
-        Classroom
-        <input type="text" name="classroom" placeholder="e.g., A101" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-      </label>
-      <div class="apply-actions" style="display: flex; gap: 8px; justify-content: flex-end;">
-        <button class="secondary-btn" type="button" onclick="hideCreateForm()" style="font-size: 12px; padding: 5px 10px; height: auto;">Cancel</button>
-        <button class="primary-btn" type="submit" style="font-size: 12px; padding: 5px 10px; height: auto;">Create</button>
-      </div>
-    </form>
-  </div>
-
-  <table>
-    <thead><tr><th>Meeting ID</th><th>Theme</th><th>Class</th><th>Classroom</th><th>Organizer</th><th>Actions</th></tr></thead>
-    <tbody>
-      <%
-        List<Map<String, Object>> displayMeetings = "meetings".equals(view) ? allMeetings : counselorMeetingRows;
-        if (displayMeetings.isEmpty()) {
-      %>
-        <tr><td colspan="6">No class meetings.</td></tr>
-      <% } else {
-        for (Map<String, Object> row : displayMeetings) {
-          String organizerName = valueText(row.get("organizer_name"));
-          String organizerId = valueText(row.get("organizer_id"));
-          // 如果组织者信息为空或无效，显示为 "-"
-          String displayOrganizer = "-";
-          if (!"-".equals(organizerName) && !organizerName.trim().isEmpty()) {
-            displayOrganizer = organizerName + " (" + organizerId + ")";
-          }
-      %>
-        <tr>
-          <td><%= valueText(row.get("meeting_id")) %></td>
-          <td><%= valueText(row.get("meeting_theme")) %></td>
-          <td><%= valueText(row.get("class_name")) %></td>
-          <td><%= valueText(row.get("classroom")) %></td>
-          <td><%= displayOrganizer %></td>
-          <td>
-            <a href="counselor.jsp?view=meetings&edit=<%= valueText(row.get("meeting_id")) %>" style="color: var(--navy); font-weight: 700; text-decoration: none; margin-right: 8px; font-size: 12px;">Edit</a>
-            <a href="manageClassMeeting?action=delete&meetingID=<%= valueText(row.get("meeting_id")) %>"
-               onclick="return confirm('Are you sure you want to delete this meeting?')"
-               style="color: #c9302c; font-weight: 700; text-decoration: none; font-size: 12px;">Delete</a>
-          </td>
-        </tr>
-      <% }} %>
-    </tbody>
-  </table>
-</article>
-
-<% if (editMeeting != null) { %>
-<article class="card span-12" style="margin-top: 18px;">
-  <h2>Edit Meeting</h2>
-  <form action="manageClassMeeting" method="post" class="application-form" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-    <input type="hidden" name="action" value="update">
-    <input type="hidden" name="meetingID" value="<%= editMeeting.getMeetingID() %>">
-    <label style="display: grid; gap: 6px;">
-      Meeting ID
-      <input type="text" name="meetingID_display" value="<%= editMeeting.getMeetingID() %>" readonly style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px; background: #f5f5f5;">
-    </label>
-    <label style="display: grid; gap: 6px;">
-      Class ID
-      <input type="number" name="classID" value="<%= editMeeting.getClassID() %>" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-    </label>
-    <label class="full" style="grid-column: 1 / -1; display: grid; gap: 6px;">
-      Theme
-      <input type="text" name="meetingTheme" value="<%= editMeeting.getMeetingTheme() %>" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-    </label>
-    <label class="full" style="grid-column: 1 / -1; display: grid; gap: 6px;">
-      Classroom
-      <input type="text" name="classroom" value="<%= editMeeting.getClassroom() %>" required style="width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px;">
-    </label>
-    <div class="apply-actions" style="grid-column: 1 / -1; display: flex; gap: 8px; justify-content: flex-end;">
-      <a href="counselor.jsp?view=meetings" class="secondary-btn" style="font-size: 12px; padding: 5px 10px; height: auto; text-decoration: none; display: inline-flex; align-items: center;">Cancel</a>
-      <button class="primary-btn" type="submit" style="font-size: 12px; padding: 5px 10px; height: auto;">Update</button>
-    </div>
-  </form>
-</article>
-<% } %>
-
-<script>
-function showCreateForm() {
-  document.getElementById('createForm').style.display = 'block';
-}
-function hideCreateForm() {
-  document.getElementById('createForm').style.display = 'none';
-}
-</script>
-<% } %>
-
-        <% if ("overview".equals(view)) { %>
-        <article class="card span-6">
-          <h2>Review Queue</h2>
-          <div class="info-list">
-            <div class="info-row"><span>Scholarship waiting</span><strong><%= scholarshipApplicationCount %></strong></div>
-            <div class="info-row"><span>Party applications waiting</span><strong><%= partyApplicationCount %></strong></div>
-            <div class="info-row"><span>Students needing attention</span><strong>
-              <%
-                int attentionCount = 0;
-                for (Map<String, Object> row : counselorStudentRows) {
-                  if ("pending".equalsIgnoreCase(valueText(row.get("party_status")))
-                          || "pending".equalsIgnoreCase(valueText(row.get("scholarship_status")))) {
-                    attentionCount++;
-                  }
-                }
-              %><%= attentionCount %>
-            </strong></div>
-          </div>
-        </article>
-        <% } %>
-
-        <% if ("partyReview".equals(view)) { %>
-        <article class="card span-12">
-          <h2>Party Review</h2>
-          <table>
-            <thead><tr><th>Application</th><th>Student</th><th>Class</th><th>Reason</th><th>Status</th></tr></thead>
-            <tbody>
-              <% if (counselorPartyRows.isEmpty()) { %>
-                <tr><td colspan="5">No party applications.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : counselorPartyRows) {
-              %>
-                <tr>
-                  <td><%= valueText(row.get("application_id")) %></td>
-                  <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(row.get("reason")) %></td>
-                  <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
-                </tr>
-              <% }} %>
-            </tbody>
-          </table>
-        </article>
-        <% } %>
-
-        <% if ("scholarshipReview".equals(view)) { %>
-        <article class="card span-12">
-          <h2>Scholarship Review</h2>
-          <table>
-            <thead><tr><th>Application</th><th>Student</th><th>Class</th><th>Type</th><th>Detail</th><th>Status</th><th>Review</th></tr></thead>
-            <tbody>
-              <% for (Map<String, Object> row : counselorScholarshipReviewRows) { %>
-                <tr>
-                  <td><%= valueText(row.get("app_id")) %></td>
-                  <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(row.get("type_code")) %></td>
-                  <td>
-                    <button class="small-btn js-detail" type="button"
-                      data-title="Counselor Review Detail"
-                      data-application="<%= attrValue(row.get("app_id")) %>"
-                      data-applicant="<%= attrValue(row.get("name")) %> (<%= attrValue(row.get("student_id")) %>)"
-                      data-class="<%= attrValue(row.get("class_name")) %>"
-                      data-scholarship="<%= attrValue(row.get("type_code")) %>"
-                      data-status="<%= attrValue(row.get("status")) %>"
-                      data-amount="<%= attrValue(row.get("requested_amount")) %>"
-                      data-family="<%= attrValue(row.get("family_situation")) %>"
-                      data-score="<%= attrValue(row.get("academic_score")) %>"
-                      data-conduct="<%= attrValue(row.get("conduct_evaluation")) %>"
-                      data-honors="<%= attrValue(row.get("honors")) %>"
-                      data-reason="<%= attrValue(row.get("application_reason")) %>"
-                      data-materials="<%= attrValue(row.get("supporting_materials")) %>">View Detail</button>
-                  </td>
-                  <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
-                  <td>
-                    <% if ("pending".equals(valueText(row.get("status")))) { %>
-                      <form class="inline-form" action="scholarshipCounselorReview" method="post">
-                        <input type="hidden" name="reviewID" value="<%= valueText(row.get("review_id")) %>">
-                        <input type="hidden" name="appID" value="<%= valueText(row.get("app_id")) %>">
-                        <input type="text" name="comment" placeholder="Comment">
-                        <button class="small-btn" type="submit" name="decision" value="agree">Agree</button>
-                        <button class="small-btn danger" type="submit" name="decision" value="disagree">Reject</button>
-                      </form>
-                    <% } else { %>
-                      <span class="pill"><%= valueText(row.get("status")) %></span>
-                    <% } %>
-                  </td>
-                </tr>
-              <% } %>
-              <% if (counselorScholarshipRows.isEmpty()) { %>
-                <tr><td colspan="7">No scholarship applications.</td></tr>
-              <% } else {
-                for (Map<String, Object> row : counselorScholarshipRows) {
-              %>
-                <tr>
-                  <td><%= valueText(row.get("app_id")) %></td>
-                  <td><%= valueText(row.get("name")) %> (<%= valueText(row.get("student_id")) %>)</td>
-                  <td><%= valueText(row.get("class_name")) %></td>
-                  <td><%= valueText(row.get("type_code")) %></td>
-                  <td>
-                    <button class="small-btn js-detail" type="button"
-                      data-title="Scholarship Application Detail"
-                      data-application="<%= attrValue(row.get("app_id")) %>"
-                      data-applicant="<%= attrValue(row.get("name")) %> (<%= attrValue(row.get("student_id")) %>)"
-                      data-class="<%= attrValue(row.get("class_name")) %>"
-                      data-scholarship="<%= attrValue(row.get("type_code")) %>"
-                      data-status="<%= attrValue(row.get("status")) %>"
-                      data-amount="<%= attrValue(row.get("requested_amount")) %>"
-                      data-family="<%= attrValue(row.get("family_situation")) %>"
-                      data-score="<%= attrValue(row.get("academic_score")) %>"
-                      data-conduct="<%= attrValue(row.get("conduct_evaluation")) %>"
-                      data-honors="<%= attrValue(row.get("honors")) %>"
-                      data-reason="<%= attrValue(row.get("reason")) %>"
-                      data-materials="<%= attrValue(row.get("supporting_materials")) %>">View Detail</button>
-                  </td>
-                  <td><span class="pill"><%= valueText(row.get("status")) %></span></td>
-                  <td><span class="pill">Recorded</span></td>
-                </tr>
-              <% }} %>
-            </tbody>
-          </table>
-        </article>
-        <% } %>
+        <%@ include file="counselor/overview.jsp" %>
+        <%@ include file="counselor/personalinfo.jsp" %>
+        <%@ include file="counselor/students.jsp" %>
+        <%@ include file="counselor/classes.jsp" %>
+        <%@ include file="counselor/meetings.jsp" %>
+        <%@ include file="counselor/review-queue.jsp" %>
+        <%@ include file="counselor/party-review.jsp" %>
+        <%@ include file="counselor/scholarship-review.jsp" %>
       </section>
     </main>
   </div>

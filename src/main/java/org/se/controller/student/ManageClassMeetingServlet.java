@@ -54,7 +54,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
             } else if (userType == 2) {
                 response.sendRedirect("counselor.jsp?view=meetings");
             } else {
-                response.sendRedirect("admin-class-meetings.jsp");
+                response.sendRedirect("admin.jsp?view=meetings");
             }
         }
     }
@@ -88,7 +88,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
             } else if (userType == 2) {
                 response.sendRedirect("counselor.jsp?view=meetings");
             } else {
-                response.sendRedirect("admin-class-meetings.jsp");
+                response.sendRedirect("admin.jsp?view=meetings");
             }
         }
     }
@@ -122,7 +122,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
                 response.sendRedirect("counselor.jsp?view=meetings&meetingStatus=created");
             } else {
                 // 管理员创建会议，不保存关联记录
-                response.sendRedirect("admin.jsp?meetingStatus=created");
+                response.sendRedirect("admin.jsp?view=meetings&meetingStatus=created");
             }
         } else {
             Integer userType = currentUser.getUserType();
@@ -131,7 +131,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
             } else if (userType == 2) {
                 response.sendRedirect("counselor.jsp?view=meetings&meetingStatus=error");
             } else {
-                response.sendRedirect("admin.jsp?meetingStatus=error");
+                response.sendRedirect("admin.jsp?view=meetings&meetingStatus=error");
             }
         }
     }
@@ -152,7 +152,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
             } else if (userType == 2) {
                 response.sendRedirect("counselor.jsp?view=meetings&meetingStatus=updated");
             } else {
-                response.sendRedirect("admin.jsp?meetingStatus=updated");
+                response.sendRedirect("admin.jsp?view=meetings&meetingStatus=updated");
             }
         } else {
             Integer userType = currentUser.getUserType();
@@ -161,7 +161,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
             } else if (userType == 2) {
                 response.sendRedirect("counselor.jsp?view=meetings&meetingStatus=error");
             } else {
-                response.sendRedirect("admin.jsp?meetingStatus=error");
+                response.sendRedirect("admin.jsp?view=meetings&meetingStatus=error");
             }
         }
     }
@@ -179,7 +179,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
             } else if (userType == 2) {
                 response.sendRedirect("counselor.jsp?view=meetings&meetingStatus=deleted");
             } else {
-                response.sendRedirect("admin.jsp?meetingStatus=deleted");
+                response.sendRedirect("admin.jsp?view=meetings&meetingStatus=deleted");
             }
         } else {
             Integer userType = currentUser.getUserType();
@@ -188,7 +188,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
             } else if (userType == 2) {
                 response.sendRedirect("counselor.jsp?view=meetings&meetingStatus=error");
             } else {
-                response.sendRedirect("admin.jsp?meetingStatus=error");
+                response.sendRedirect("admin.jsp?view=meetings&meetingStatus=error");
             }
         }
     }
@@ -202,7 +202,7 @@ public class ManageClassMeetingServlet extends HttpServlet {
         } else if (userType == 2) {
             response.sendRedirect("counselor.jsp?view=meetings&edit=" + meetingID);
         } else {
-            response.sendRedirect("admin.jsp?edit=" + meetingID);
+            response.sendRedirect("admin.jsp?view=meetings&edit=" + meetingID);
         }
     }
 }
