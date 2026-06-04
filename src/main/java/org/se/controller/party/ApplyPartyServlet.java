@@ -36,14 +36,14 @@ public class ApplyPartyServlet extends HttpServlet {
         String promise = trimToNull(request.getParameter("promise"));
 
         if (student == null || reason == null || !"true".equals(promise)) {
-            response.sendRedirect("student.jsp?view=party&status=failed");
+            response.sendRedirect("student.jsp?view=party&applicationStatus=failed");
             return;
         }
 
         List<PartyApplication> applications = partyApplicationDao.findByStudentId(student.getStudentID());
         for (PartyApplication application : applications) {
             if ("pending".equals(application.getStatus()) || "counselor_review".equals(application.getStatus())) {
-                response.sendRedirect("student.jsp?view=party&status=duplicate&appId=" + application.getApplicationID());
+                response.sendRedirect("student.jsp?view=party&applicationStatus=duplicate&appId=" + application.getApplicationID());
                 return;
             }
         }
@@ -54,9 +54,9 @@ public class ApplyPartyServlet extends HttpServlet {
         boolean success = partyApplicationDao.insert(application);
 
         if (success) {
-            response.sendRedirect("student.jsp?view=party&status=saved&appId=" + applicationID);
+            response.sendRedirect("student.jsp?view=party&applicationStatus=saved&appId=" + applicationID);
         } else {
-            response.sendRedirect("student.jsp?view=party&status=failed");
+            response.sendRedirect("student.jsp?view=party&applicationStatus=failed");
         }
     }
 

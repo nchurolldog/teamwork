@@ -16,14 +16,18 @@ public class DemocraticReviewParticipantDao {
         String sql = "INSERT INTO democratic_review_participant (review_id, participant_student_id, access) VALUES (?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, participant.getReviewID());
             pstmt.setString(2, participant.getParticipantStudentID());
-            pstmt.setBoolean(3, Boolean.TRUE.equals(participant.getAccess()));
-            
+            if (participant.getAccess() != null) {
+                pstmt.setInt(3, participant.getAccess());
+            } else {
+                pstmt.setNull(3, java.sql.Types.INTEGER);
+            }
+
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -42,14 +46,18 @@ public class DemocraticReviewParticipantDao {
         String sql = "UPDATE democratic_review_participant SET access = ? WHERE review_id = ? AND participant_student_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setBoolean(1, Boolean.TRUE.equals(participant.getAccess()));
+            if (participant.getAccess() != null) {
+                pstmt.setInt(1, participant.getAccess());
+            } else {
+                pstmt.setNull(1, java.sql.Types.INTEGER);
+            }
             pstmt.setString(2, participant.getReviewID());
             pstmt.setString(3, participant.getParticipantStudentID());
-            
+
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,19 +102,20 @@ public class DemocraticReviewParticipantDao {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, reviewID);
             pstmt.setString(2, participantStudentID);
             rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 DemocraticReviewParticipant participant = new DemocraticReviewParticipant();
                 participant.setReviewID(rs.getString("review_id"));
                 participant.setParticipantStudentID(rs.getString("participant_student_id"));
-                participant.setAccess(rs.getBoolean("access"));
+                int accessValue = rs.getInt("access");
+                participant.setAccess(rs.wasNull() ? null : accessValue);
                 return participant;
             }
             return null;
@@ -129,19 +138,20 @@ public class DemocraticReviewParticipantDao {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, reviewID);
             rs = pstmt.executeQuery();
-            
+
             List<DemocraticReviewParticipant> list = new ArrayList<>();
             while (rs.next()) {
                 DemocraticReviewParticipant participant = new DemocraticReviewParticipant();
                 participant.setReviewID(rs.getString("review_id"));
                 participant.setParticipantStudentID(rs.getString("participant_student_id"));
-                participant.setAccess(rs.getBoolean("access"));
+                int accessValue = rs.getInt("access");
+                participant.setAccess(rs.wasNull() ? null : accessValue);
                 list.add(participant);
             }
             return list;
@@ -164,19 +174,20 @@ public class DemocraticReviewParticipantDao {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, studentID);
             rs = pstmt.executeQuery();
-            
+
             List<DemocraticReviewParticipant> list = new ArrayList<>();
             while (rs.next()) {
                 DemocraticReviewParticipant participant = new DemocraticReviewParticipant();
                 participant.setReviewID(rs.getString("review_id"));
                 participant.setParticipantStudentID(rs.getString("participant_student_id"));
-                participant.setAccess(rs.getBoolean("access"));
+                int accessValue = rs.getInt("access");
+                participant.setAccess(rs.wasNull() ? null : accessValue);
                 list.add(participant);
             }
             return list;

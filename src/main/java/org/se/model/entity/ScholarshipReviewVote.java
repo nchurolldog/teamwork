@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class ScholarshipReviewVote {
     private String reviewID;
     private String voterStudentID;
-    private Boolean agree;
+    private Integer agree;
     private String comment;
 }

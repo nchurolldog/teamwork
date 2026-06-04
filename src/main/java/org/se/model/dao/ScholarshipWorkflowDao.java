@@ -24,7 +24,7 @@ public class ScholarshipWorkflowDao {
         return update(sql, reviewID, studentID);
     }
 
-    public boolean saveVote(String reviewID, String voterStudentID, Boolean agree, String comment) {
+    public boolean saveVote(String reviewID, String voterStudentID, Integer agree, String comment) {
         String sql = "UPDATE scholarship_review_vote SET agree = ?, comment = ? WHERE review_id = ? AND voter_student_id = ?";
         return update(sql, agree, comment, reviewID, voterStudentID);
     }
@@ -89,8 +89,9 @@ public class ScholarshipWorkflowDao {
 
     public Map<String, Object> findVoteSummary(String reviewID) {
         String sql = "SELECT COUNT(*) AS total_count, SUM(CASE WHEN agree IS NOT NULL THEN 1 ELSE 0 END) AS voted_count, " +
-                "SUM(CASE WHEN agree = TRUE THEN 1 ELSE 0 END) AS agree_count, " +
-                "SUM(CASE WHEN agree = FALSE THEN 1 ELSE 0 END) AS disagree_count " +
+                "SUM(CASE WHEN agree = 1 THEN 1 ELSE 0 END) AS agree_count, " +
+                "SUM(CASE WHEN agree = -1 THEN 1 ELSE 0 END) AS disagree_count, " +
+                "SUM(CASE WHEN agree = 0 THEN 1 ELSE 0 END) AS abstain_count " +
                 "FROM scholarship_review_vote WHERE review_id = ?";
         List<Map<String, Object>> rows = query(sql, reviewID);
         return rows.isEmpty() ? new HashMap<>() : rows.get(0);

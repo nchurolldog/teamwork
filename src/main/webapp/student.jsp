@@ -363,10 +363,10 @@
     function openScholarshipDetail(button) {
       scholarshipDetailTitle.textContent = button.dataset.title || 'Application Detail';
       scholarshipDetailBody.innerHTML = Object.keys(detailLabels)
-        .filter(function(key) { return button.dataset[key]; })
-        .map(function(key) {
-          return '<div class="info-row"><span>' + detailLabels[key] + '</span><strong>' + escapeHtml(button.dataset[key]) + '</strong></div>';
-        }).join('');
+              .filter(function(key) { return button.dataset[key]; })
+              .map(function(key) {
+                return '<div class="info-row"><span>' + detailLabels[key] + '</span><strong>' + escapeHtml(button.dataset[key]) + '</strong></div>';
+              }).join('');
       scholarshipDetailMask.classList.add('show');
       scholarshipDetailMask.setAttribute('aria-hidden', 'false');
     }
@@ -385,12 +385,16 @@
     document.querySelectorAll('.js-detail').forEach(function(button) {
       button.addEventListener('click', function() { openScholarshipDetail(button); });
     });
-    closeScholarshipDetail.addEventListener('click', closeScholarshipDetailModal);
-    scholarshipDetailMask.addEventListener('click', function(event) {
-      if (event.target === scholarshipDetailMask) {
-        closeScholarshipDetailModal();
-      }
-    });
+    if (closeScholarshipDetail) {
+      closeScholarshipDetail.addEventListener('click', closeScholarshipDetailModal);
+    }
+    if (scholarshipDetailMask) {
+      scholarshipDetailMask.addEventListener('click', function(event) {
+        if (event.target === scholarshipDetailMask) {
+          closeScholarshipDetailModal();
+        }
+      });
+    }
 
     const profileMask = document.getElementById('profileEditorMask');
     const openProfileEditor = document.getElementById('openProfileEditor');
@@ -407,14 +411,22 @@
       profileMask.setAttribute('aria-hidden', 'true');
     }
 
-    openProfileEditor.addEventListener('click', openEditor);
-    closeProfileEditor.addEventListener('click', closeEditor);
-    cancelProfileEditor.addEventListener('click', closeEditor);
-    profileMask.addEventListener('click', function(event) {
-      if (event.target === profileMask) {
-        closeEditor();
-      }
-    });
+    if (openProfileEditor) {
+      openProfileEditor.addEventListener('click', openEditor);
+    }
+    if (closeProfileEditor) {
+      closeProfileEditor.addEventListener('click', closeEditor);
+    }
+    if (cancelProfileEditor) {
+      cancelProfileEditor.addEventListener('click', closeEditor);
+    }
+    if (profileMask) {
+      profileMask.addEventListener('click', function(event) {
+        if (event.target === profileMask) {
+          closeEditor();
+        }
+      });
+    }
   </script>
 </body>
 </html>

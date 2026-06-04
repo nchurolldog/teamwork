@@ -359,15 +359,19 @@ public class DashboardDao {
     }
 
     public List<Map<String, Object>> findCounselorDevelopmentInspections(String employeeID) {
-        String sql = "SELECT di.inspection_id, pa.application_id, s.student_id, s.name, ce.class_name, pa.reason, di.status " +
+        String sql = "SELECT di.inspection_id, pa.application_id, s.student_id, s.name, ce.class_name, pa.reason, di.status, di.inspector_employee_id " +
                 "FROM development_inspection di " +
                 "JOIN party_application pa ON di.application_id = pa.application_id " +
                 "JOIN student s ON pa.applicant_student_id = s.student_id " +
-                "JOIN student_class sc ON s.student_id = sc.student_id " +
-                "JOIN class_entity ce ON sc.class_id = ce.class_id " +
+                "LEFT JOIN student_class sc ON s.student_id = sc.student_id " +
+                "LEFT JOIN class_entity ce ON sc.class_id = ce.class_id " +
                 "WHERE di.inspector_employee_id = ? ORDER BY di.inspection_id DESC";
-        return query(sql, employeeID);
+        System.out.println("[DEBUG DashboardDao] Querying development inspections for employeeID: '" + employeeID + "'");
+        List<Map<String, Object>> result = query(sql, employeeID);
+        System.out.println("[DEBUG DashboardDao] Found " + (result != null ? result.size() : 0) + " records");
+        return result;
     }
+
 
     public List<Map<String, Object>> findCounselorPartyApprovals(String employeeID) {
         String sql = "SELECT pa_approval.approval_id, pa_app.application_id, s.student_id, s.name, ce.class_name, pa_app.reason, pa_approval.status " +

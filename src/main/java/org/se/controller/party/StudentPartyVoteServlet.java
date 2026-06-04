@@ -33,7 +33,7 @@ public class StudentPartyVoteServlet extends HttpServlet {
         String reviewID = trimToNull(request.getParameter("reviewID"));
         String vote = trimToNull(request.getParameter("vote"));
 
-        if (reviewID == null || vote == null || (!"agree".equals(vote) && !"disagree".equals(vote))) {
+        if (reviewID == null || vote == null || (!"agree".equals(vote) && !"disagree".equals(vote) && !"abstain".equals(vote))) {
             response.sendRedirect("student.jsp?view=party&status=failed");
             return;
         }
@@ -57,7 +57,14 @@ public class StudentPartyVoteServlet extends HttpServlet {
             return;
         }
 
-        Boolean voteValue = "agree".equals(vote);
+        Integer voteValue;
+        if ("agree".equals(vote)) {
+            voteValue = 1;
+        } else if ("disagree".equals(vote)) {
+            voteValue = -1;
+        } else {
+            voteValue = 0;
+        }
 
         participant.setAccess(voteValue);
         participantDao.update(participant);

@@ -171,8 +171,6 @@
     .info-row strong { color: var(--ink); }
     .pill { display: inline-flex; padding: 5px 10px; border-radius: 999px; background: var(--cyan); color: var(--navy); font-size: 12px; font-weight: 800; }
     .pill.warning { background: var(--pink); }
-    .pill.success { background: #d4edda; color: #155724; }
-    .pill.error { background: #f8d7da; color: #721c24; }
     .notice { grid-column: span 12; padding: 12px 14px; border-radius: 8px; font-size: 13px; background: #e6f8f0; color: #177a59; }
     .notice.error { background: #ffe7ee; color: #9b2849; }
     .modal-mask { position: fixed; inset: 0; background: rgba(18, 52, 90, .36); display: none; align-items: center; justify-content: center; padding: 22px; z-index: 10; }
@@ -365,10 +363,10 @@
     function openScholarshipDetail(button) {
       scholarshipDetailTitle.textContent = button.dataset.title || 'Application Detail';
       scholarshipDetailBody.innerHTML = Object.keys(detailLabels)
-        .filter(function(key) { return button.dataset[key]; })
-        .map(function(key) {
-          return '<div class="info-row"><span>' + detailLabels[key] + '</span><strong>' + escapeHtml(button.dataset[key]) + '</strong></div>';
-        }).join('');
+              .filter(function(key) { return button.dataset[key]; })
+              .map(function(key) {
+                return '<div class="info-row"><span>' + detailLabels[key] + '</span><strong>' + escapeHtml(button.dataset[key]) + '</strong></div>';
+              }).join('');
       scholarshipDetailMask.classList.add('show');
       scholarshipDetailMask.setAttribute('aria-hidden', 'false');
     }
@@ -387,12 +385,16 @@
     document.querySelectorAll('.js-detail').forEach(function(button) {
       button.addEventListener('click', function() { openScholarshipDetail(button); });
     });
-    closeScholarshipDetail.addEventListener('click', closeScholarshipDetailModal);
-    scholarshipDetailMask.addEventListener('click', function(event) {
-      if (event.target === scholarshipDetailMask) {
-        closeScholarshipDetailModal();
-      }
-    });
+    if (closeScholarshipDetail) {
+      closeScholarshipDetail.addEventListener('click', closeScholarshipDetailModal);
+    }
+    if (scholarshipDetailMask) {
+      scholarshipDetailMask.addEventListener('click', function(event) {
+        if (event.target === scholarshipDetailMask) {
+          closeScholarshipDetailModal();
+        }
+      });
+    }
 
     const profileMask = document.getElementById('profileEditorMask');
     const openProfileEditor = document.getElementById('openProfileEditor');
@@ -409,14 +411,22 @@
       profileMask.setAttribute('aria-hidden', 'true');
     }
 
-    openProfileEditor.addEventListener('click', openEditor);
-    closeProfileEditor.addEventListener('click', closeEditor);
-    cancelProfileEditor.addEventListener('click', closeEditor);
-    profileMask.addEventListener('click', function(event) {
-      if (event.target === profileMask) {
-        closeEditor();
-      }
-    });
+    if (openProfileEditor) {
+      openProfileEditor.addEventListener('click', openEditor);
+    }
+    if (closeProfileEditor) {
+      closeProfileEditor.addEventListener('click', closeEditor);
+    }
+    if (cancelProfileEditor) {
+      cancelProfileEditor.addEventListener('click', closeEditor);
+    }
+    if (profileMask) {
+      profileMask.addEventListener('click', function(event) {
+        if (event.target === profileMask) {
+          closeEditor();
+        }
+      });
+    }
   </script>
 </body>
 </html>

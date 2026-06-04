@@ -55,7 +55,7 @@ public class CounselorPartyReviewServlet extends HttpServlet {
             application.setStatus("counselor_approved");
             partyApplicationDao.update(application);
 
-            CounselorApproval approval = new CounselorApproval(applicationID, counselorID, true);
+            CounselorApproval approval = new CounselorApproval(applicationID, counselorID, Boolean.TRUE);
             counselorApprovalDao.insert(approval);
 
             Student applicant = studentDAO.findById(application.getApplicantStudentID());
@@ -74,7 +74,7 @@ public class CounselorPartyReviewServlet extends HttpServlet {
                         for (Map<String, Object> classmate : classmates) {
                             String classmateID = String.valueOf(classmate.get("student_id"));
                             if (!classmateID.equals(applicant.getStudentID())) {
-                                DemocraticReviewParticipant participant = new DemocraticReviewParticipant(reviewID, classmateID, false);
+                                DemocraticReviewParticipant participant = new DemocraticReviewParticipant(reviewID, classmateID, 0);
                                 participantDao.insert(participant);
                             }
                         }
@@ -87,7 +87,7 @@ public class CounselorPartyReviewServlet extends HttpServlet {
             application.setStatus("rejected");
             partyApplicationDao.update(application);
 
-            CounselorApproval approval = new CounselorApproval(applicationID, counselorID, false);
+            CounselorApproval approval = new CounselorApproval(applicationID, counselorID, Boolean.FALSE);
             counselorApprovalDao.insert(approval);
 
             response.sendRedirect("counselor.jsp?view=partyReview&status=rejected&appId=" + applicationID);

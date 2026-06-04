@@ -38,8 +38,15 @@ public class ScholarshipVoteServlet extends HttpServlet {
             return;
         }
 
-        boolean agree = "agree".equals(vote);
-        boolean saved = workflowDao.saveVote(reviewID, voter.getStudentID(), agree, comment);
+        Integer agreeValue;
+        if ("agree".equals(vote)) {
+            agreeValue = 1;
+        } else if ("disagree".equals(vote)) {
+            agreeValue = -1;
+        } else {
+            agreeValue = 0;
+        }
+        boolean saved = workflowDao.saveVote(reviewID, voter.getStudentID(), agreeValue, comment);
         if (saved) {
             evaluateReview(reviewID);
         }

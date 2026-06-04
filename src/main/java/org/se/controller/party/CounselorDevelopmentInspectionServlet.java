@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.se.model.dao.CounselorDAO;
 import org.se.model.dao.DevelopmentInspectionDao;
 import org.se.model.dao.PartyApprovalDao;
 import org.se.model.dao.PartyApplicationDao;
+import org.se.model.entity.Counselor;
 import org.se.model.entity.DevelopmentInspection;
 import org.se.model.entity.PartyApproval;
 import org.se.model.entity.PartyApplication;
@@ -21,6 +23,7 @@ public class CounselorDevelopmentInspectionServlet extends HttpServlet {
     private final DevelopmentInspectionDao developmentInspectionDao = new DevelopmentInspectionDao();
     private final PartyApplicationDao partyApplicationDao = new PartyApplicationDao();
     private final PartyApprovalDao partyApprovalDao = new PartyApprovalDao();
+    private final CounselorDAO counselorDAO = new CounselorDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -56,8 +59,11 @@ public class CounselorDevelopmentInspectionServlet extends HttpServlet {
                 application.setStatus("inspection_approved");
                 partyApplicationDao.update(application);
 
+                Counselor counselor = counselorDAO.findByAccount(currentUser.getAccount());
+                String approverEmployeeID = counselor != null ? counselor.getEmployeeID() : currentUser.getAccount();
+
                 String approvalID = "PA" + System.currentTimeMillis();
-                PartyApproval approval = new PartyApproval(approvalID, application.getApplicationID(), currentUser.getAccount(), "pending");
+                PartyApproval approval = new PartyApproval(approvalID, application.getApplicationID(), approverEmployeeID, "pending");
                 partyApprovalDao.insert(approval);
             }
 
@@ -86,4 +92,3 @@ public class CounselorDevelopmentInspectionServlet extends HttpServlet {
         return trimmed.isEmpty() ? null : trimmed;
     }
 }
-

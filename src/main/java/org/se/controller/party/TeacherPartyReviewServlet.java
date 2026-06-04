@@ -6,15 +6,19 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.se.model.dao.CounselorDAO;
 import org.se.model.dao.DashboardDao;
 import org.se.model.dao.DemocraticReviewDao;
 import org.se.model.dao.DemocraticReviewParticipantDao;
 import org.se.model.dao.DevelopmentInspectionDao;
 import org.se.model.dao.PartyApplicationDao;
+import org.se.model.dao.StudentClassDao;
+import org.se.model.entity.Counselor;
 import org.se.model.entity.DemocraticReview;
 import org.se.model.entity.DemocraticReviewParticipant;
 import org.se.model.entity.DevelopmentInspection;
 import org.se.model.entity.PartyApplication;
+import org.se.model.entity.StudentClass;
 import org.se.model.entity.Users;
 
 import java.io.IOException;
@@ -27,6 +31,8 @@ public class TeacherPartyReviewServlet extends HttpServlet {
     private final PartyApplicationDao partyApplicationDao = new PartyApplicationDao();
     private final DevelopmentInspectionDao developmentInspectionDao = new DevelopmentInspectionDao();
     private final DashboardDao dashboardDao = new DashboardDao();
+    private final CounselorDAO counselorDAO = new CounselorDAO();
+    private final StudentClassDao studentClassDao = new StudentClassDao();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -59,7 +65,7 @@ public class TeacherPartyReviewServlet extends HttpServlet {
 
             List<DemocraticReviewParticipant> participants = participantDao.findByReviewId(reviewID);
             for (DemocraticReviewParticipant participant : participants) {
-                participant.setAccess(true);
+                participant.setAccess(null);
                 participantDao.update(participant);
             }
 
@@ -73,7 +79,7 @@ public class TeacherPartyReviewServlet extends HttpServlet {
             for (DemocraticReviewParticipant participant : participants) {
                 if (participant.getAccess() != null) {
                     votedCount++;
-                    if (Boolean.TRUE.equals(participant.getAccess())) {
+                    if (Integer.valueOf(1).equals(participant.getAccess())) {
                         agreeCount++;
                     }
                 }
@@ -90,8 +96,11 @@ public class TeacherPartyReviewServlet extends HttpServlet {
                 if (passed) {
                     application.setStatus("review_passed");
 
+                    String applicantStudentID = application.getApplicantStudentID();
+                    String counselorID = findCounselorForStudent(applicantStudentID);
+
                     String inspectionID = "DI" + System.currentTimeMillis();
-                    DevelopmentInspection inspection = new DevelopmentInspection(inspectionID, application.getApplicationID(), currentUser.getAccount(), "pending");
+                    DevelopmentInspection inspection = new DevelopmentInspection(inspectionID, application.getApplicationID(), counselorID, "pending");
                     developmentInspectionDao.insert(inspection);
                 } else {
                     application.setStatus("review_failed");
@@ -104,6 +113,38 @@ public class TeacherPartyReviewServlet extends HttpServlet {
             response.sendRedirect("teacher.jsp?view=partyReview&status=failed");
         }
     }
+
+    private String findCounselorForStudent(String studentID) {
+        try {
+            List<StudentClass> studentClasses = studentClassDao.findByStudentID(studentID);
+            if (!studentClasses.isEmpty()) {
+                Integer classId = studentClasses.get(0).getClassID();
+                Counselor counselor = counselorDAO.findByClassId(classId);
+                if (counselor != null) {
+                    String counselorEmployeeID = counselor.getEmployeeID();
+                    System.out.println("[DEBUG] Found counselor for student " + studentID +
+                            ", classId=" + classId +
+                            ", counselor.employeeID=" + counselorEmployeeID +
+                            ", counselor.account=" + counselor.getAccount());
+
+                    if (counselorEmployeeID != null && !counselorEmployeeID.isEmpty()) {
+                        return counselorEmployeeID;
+                    }
+
+                    System.out.println("[ERROR] Counselor employeeID is null or empty!");
+                }
+                System.out.println("[WARN] No counselor found for classId=" + classId);
+            } else {
+                System.out.println("[WARN] Student " + studentID + " is not in any class");
+            }
+        } catch (Exception e) {
+            System.err.println("[ERROR] Failed to find counselor for student: " + studentID);
+            e.printStackTrace();
+        }
+        System.out.println("[WARN] Returning null counselor for student: " + studentID);
+        return null;
+    }
+
 
     private String trimToNull(String value) {
         if (value == null) {

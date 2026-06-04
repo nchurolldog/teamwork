@@ -4,9 +4,27 @@
 <div class="notice" style="margin-bottom: 16px; background: #d4edda; color: #155724;">
   Your vote has been submitted successfully. Thank you for participating in the democratic review!
 </div>
+<% } else if ("duplicate".equals(request.getParameter("status"))) { %>
+<div class="notice error" style="margin-bottom: 16px;">
+  You have already voted for this review. Each student can only vote once.
+</div>
 <% } else if ("failed".equals(request.getParameter("status"))) { %>
 <div class="notice error" style="margin-bottom: 16px;">
   Vote submission failed. Please try again or contact your counselor.
+</div>
+<% } %>
+
+<% if ("saved".equals(request.getParameter("applicationStatus"))) { %>
+<div class="notice" style="margin-bottom: 16px; background: #d4edda; color: #155724;">
+  Your party application has been submitted successfully. It will be reviewed by your counselor.
+</div>
+<% } else if ("duplicate".equals(request.getParameter("applicationStatus"))) { %>
+<div class="notice error" style="margin-bottom: 16px;">
+  You already have a pending application. Please wait for counselor review before submitting a new one.
+</div>
+<% } else if ("failed".equals(request.getParameter("applicationStatus"))) { %>
+<div class="notice error" style="margin-bottom: 16px;">
+  Application submission failed. Please check that all required fields are filled correctly and try again.
 </div>
 <% } %>
 
@@ -52,8 +70,8 @@
                 style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer;"
         >
         <span style="font-size: 14px; color: var(--ink); line-height: 1.5;">
-                  I solemnly promise that all the information provided is true and accurate. I understand the responsibilities and obligations of party membership, and I am willing to actively participate in party activities and accept organizational supervision.
-                </span>
+          I solemnly promise that all the information provided is true and accurate. I understand the responsibilities and obligations of party membership, and I am willing to actively participate in party activities and accept organizational supervision.
+        </span>
       </label>
 
       <div style="display: flex; justify-content: flex-end; gap: 12px;">
@@ -91,8 +109,8 @@
                 style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer;"
         >
         <span style="font-size: 14px; color: var(--ink); line-height: 1.5;">
-                  I solemnly promise that all the information provided is true and accurate. I understand the responsibilities and obligations of party membership, and I am willing to actively participate in party activities and accept organizational supervision.
-                </span>
+          I solemnly promise that all the information provided is true and accurate. I understand the responsibilities and obligations of party membership, and I am willing to actively participate in party activities and accept organizational supervision.
+        </span>
       </label>
 
       <div style="display: flex; justify-content: flex-end; gap: 12px;">
@@ -214,10 +232,10 @@
         <% } %>
       </td>
       <td>
-        <% if (task.getAccess() != null && task.getAccess()) { %>
-        <span class="pill" style="background: #d4edda; color: #155724;">✓ Agreed</span>
-        <% } else if (task.getAccess() != null && !task.getAccess()) { %>
-        <span class="pill" style="background: #f8d7da; color: #721c24;">✗ Disagreed</span>
+        <% if (task.getAccess() != null && task.getAccess() == 1) { %>
+        <span class="pill" style="background: #d4edda; color: #155724;">✓ Agreed (1)</span>
+        <% } else if (task.getAccess() != null && task.getAccess() == -1) { %>
+        <span class="pill" style="background: #f8d7da; color: #721c24;">✗ Disagreed (-1)</span>
         <% } else { %>
         <span class="pill warning">Not Voted</span>
         <% } %>
@@ -228,8 +246,8 @@
           <input type="hidden" name="reviewID" value="<%= task.getReviewID() %>">
           <select name="vote" required style="height: 34px; border: 1px solid var(--line); border-radius: 6px; padding: 0 8px; font-size: 13px;">
             <option value="">Select Vote</option>
-            <option value="agree">✓ Agree</option>
-            <option value="disagree">✗ Disagree</option>
+            <option value="agree">✓ Agree (1)</option>
+            <option value="disagree">✗ Disagree (0)</option>
           </select>
           <button class="primary-btn" type="submit" style="font-size: 12px; padding: 5px 12px; height: auto;" onclick="return confirm('Are you sure to submit your vote? This action cannot be undone.')">Submit Vote</button>
         </form>
@@ -256,4 +274,3 @@
   </table>
 </article>
 <% } %>
-

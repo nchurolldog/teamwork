@@ -290,4 +290,40 @@ public class CounselorDAO {
             }
         }
     }
+
+    public Counselor findByClassId(Integer classId) {
+        String sql = "SELECT c.* FROM counselor c JOIN class_entity ce ON c.employee_id = ce.counselor_id WHERE ce.class_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, classId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                Counselor counselor = new Counselor();
+                counselor.setEmployeeID(rs.getString("employee_id"));
+                counselor.setAccount(rs.getString("account"));
+                counselor.setName(rs.getString("name"));
+                counselor.setGender(rs.getInt("gender"));
+                return counselor;
+            }
+            return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
+
