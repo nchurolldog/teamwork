@@ -2,48 +2,48 @@
 
 <% if ("started".equals(request.getParameter("status"))) { %>
 <div class="notice" style="margin-bottom: 16px; background: #d4edda; color: #155724;">
-  Democratic review started. Students can now vote.
+  民主评议已开始。学生现在可以投票。
 </div>
 <% } else if ("passed".equals(request.getParameter("status"))) { %>
 <div class="notice" style="margin-bottom: 16px; background: #d4edda; color: #155724;">
-  Democratic review passed! Agree rate: <%= request.getParameter("agreeRate") %>%
+  民主评议通过！同意率: <%= request.getParameter("agreeRate") %>%
 </div>
 <% } else if ("failed".equals(request.getParameter("status"))) { %>
 <div class="notice error" style="margin-bottom: 16px;">
-  Democratic review failed. Agree rate: <%= request.getParameter("agreeRate") %>% (minimum 60% required)
+  民主评议未通过。同意率: <%= request.getParameter("agreeRate") %>%（需要至少60%）
 </div>
 <% } else if ("failed".equals(request.getParameter("status")) && request.getParameter("status") != null) { %>
 <div class="notice error" style="margin-bottom: 16px;">
-  Operation failed. Please try again.
+  操作失败。请重试。
 </div>
 <% } %>
 
 <article class="card span-12">
-  <h2>Party Democratic Review Management</h2>
+  <h2>入党民主评议管理</h2>
   <p style="color: var(--muted); font-size: 14px; margin-bottom: 16px;">
-    Manage democratic reviews for party applications. Start voting to allow students to vote, then finish to calculate results (pass rate ≥ 60%).
+    管理入党申请的民主评议。开始投票让学生参与投票，然后结束以计算结果（通过率 ≥ 60%）。
   </p>
   <table>
-    <thead><tr><th>Review ID</th><th>Application</th><th>Student</th><th>Class</th><th>Detail</th><th>Status</th><th>Action</th></tr></thead>
+    <thead><tr><th>评议ID</th><th>申请</th><th>学生</th><th>班级</th><th>详情</th><th>状态</th><th>操作</th></tr></thead>
     <tbody>
     <% if (teacherPartyReviewRows.isEmpty()) { %>
-    <tr><td colspan="7">No party review tasks.</td></tr>
+    <tr><td colspan="7">无入党评议任务。</td></tr>
     <% } else {
       for (Map<String, Object> row : teacherPartyReviewRows) {
         String status = valueText(row.get("status"));
         String statusDisplay = "";
         String statusClass = "";
         if ("pending".equals(status)) {
-          statusDisplay = "Not Started";
+          statusDisplay = "未开始";
           statusClass = "warning";
         } else if ("voting".equals(status)) {
-          statusDisplay = "Voting in Progress";
+          statusDisplay = "投票进行中";
           statusClass = "";
         } else if ("passed".equals(status)) {
-          statusDisplay = "Passed";
+          statusDisplay = "已通过";
           statusClass = "";
         } else if ("failed".equals(status)) {
-          statusDisplay = "Failed";
+          statusDisplay = "未通过";
           statusClass = "warning";
         } else {
           statusDisplay = status;
@@ -57,30 +57,30 @@
       <td><%= valueText(row.get("class_name")) %></td>
       <td>
         <button class="small-btn js-party-detail" type="button"
-                data-title="Party Application & Review Detail"
+                data-title="入党申请与评议详情"
                 data-application="<%= attrValue(row.get("application_id")) %>"
                 data-review="<%= attrValue(row.get("review_id")) %>"
                 data-applicant="<%= attrValue(row.get("name")) %> (<%= attrValue(row.get("student_id")) %>)"
                 data-class="<%= attrValue(row.get("class_name")) %>"
                 data-status="<%= attrValue(statusDisplay) %>"
-                data-reason="<%= attrValue(row.get("reason")) %>">View Detail</button>
+                data-reason="<%= attrValue(row.get("reason")) %>">查看详情</button>
       </td>
       <td><span class="pill <%= statusClass %>"><%= statusDisplay %></span></td>
       <td>
         <% if ("pending".equals(status)) { %>
         <form action="teacherPartyReview" method="post" style="display: inline-flex; gap: 8px;">
           <input type="hidden" name="reviewID" value="<%= valueText(row.get("review_id")) %>">
-          <button class="small-btn" type="submit" name="action" value="start" onclick="return confirm('Start democratic review? Students will be able to vote.')">Start Voting</button>
+          <button class="small-btn" type="submit" name="action" value="start" onclick="return confirm('开始民主评议？学生将能够投票。')">开始投票</button>
         </form>
         <% } else if ("voting".equals(status)) { %>
         <form action="teacherPartyReview" method="post" style="display: inline-flex; gap: 8px;">
           <input type="hidden" name="reviewID" value="<%= valueText(row.get("review_id")) %>">
-          <button class="small-btn danger" type="submit" name="action" value="finish" onclick="return confirm('Finish democratic review? The result will be calculated based on votes (pass rate ≥ 60%).')">Finish & Calculate</button>
+          <button class="small-btn danger" type="submit" name="action" value="finish" onclick="return confirm('结束民主评议？将根据投票计算结果（通过率 ≥ 60%）。')">结束并计算</button>
         </form>
         <% } else if ("passed".equals(status)) { %>
-        <span class="pill" style="background: #d4edda; color: #155724;">Passed - Ready for Inspection</span>
+        <span class="pill" style="background: #d4edda; color: #155724;">已通过 - 可进行考察</span>
         <% } else if ("failed".equals(status)) { %>
-        <span class="pill" style="background: #f8d7da; color: #721c24;">Failed - Review Not Passed</span>
+        <span class="pill" style="background: #f8d7da; color: #721c24;">未通过 - 评议不通过</span>
         <% } else { %>
         <span class="pill"><%= statusDisplay %></span>
         <% } %>
@@ -94,7 +94,7 @@
 <div class="modal-mask" id="partyDetailMask" aria-hidden="true">
   <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="partyDetailTitle">
     <div class="modal-head">
-      <h2 id="partyDetailTitle">Application Detail</h2>
+      <h2 id="partyDetailTitle">申请详情</h2>
       <button class="close-modal" type="button" id="closePartyDetail" aria-label="Close"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="info-list" id="partyDetailBody"></div>
@@ -109,15 +109,15 @@
     const closePartyDetail = document.getElementById('closePartyDetail');
 
     function openPartyDetail(button) {
-      partyDetailTitle.textContent = button.dataset.title || 'Application Detail';
+      partyDetailTitle.textContent = button.dataset.title || '申请详情';
 
       const fields = [
-        { label: 'Application ID', value: button.dataset.application },
-        { label: 'Review ID', value: button.dataset.review },
-        { label: 'Applicant', value: button.dataset.applicant },
-        { label: 'Class', value: button.dataset.class },
-        { label: 'Status', value: button.dataset.status },
-        { label: 'Application Reason', value: button.dataset.reason, full: true }
+        { label: '申请ID', value: button.dataset.application },
+        { label: '评议ID', value: button.dataset.review },
+        { label: '申请人', value: button.dataset.applicant },
+        { label: '班级', value: button.dataset.class },
+        { label: '状态', value: button.dataset.status },
+        { label: '申请理由', value: button.dataset.reason, full: true }
       ];
 
       partyDetailBody.innerHTML = fields.map(function(field) {

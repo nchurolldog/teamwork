@@ -255,15 +255,15 @@ public class DashboardDao {
     }
 
     public List<Map<String, Object>> findAdminRoleSummary() {
-        String sql = "SELECT CASE user_type WHEN 0 THEN 'Admin' WHEN 1 THEN 'Teacher' WHEN 2 THEN 'Counselor' WHEN 3 THEN 'Student' ELSE 'Unknown' END AS role_name, " +
+        String sql = "SELECT CASE user_type WHEN 0 THEN '管理员' WHEN 1 THEN '教师' WHEN 2 THEN '辅导员' WHEN 3 THEN '学生' ELSE '未知' END AS role_name, " +
                 "COUNT(*) AS total_count FROM users GROUP BY user_type ORDER BY user_type";
         return query(sql);
     }
 
     public List<Map<String, Object>> findAdminApplicationSummary() {
-        String sql = "SELECT 'Scholarship' AS module_name, status, COUNT(*) AS total_count FROM scholarship_application GROUP BY status " +
+        String sql = "SELECT '奖学金' AS module_name, status, COUNT(*) AS total_count FROM scholarship_application GROUP BY status " +
                 "UNION ALL " +
-                "SELECT 'Party' AS module_name, status, COUNT(*) AS total_count FROM party_application GROUP BY status " +
+                "SELECT '入党' AS module_name, status, COUNT(*) AS total_count FROM party_application GROUP BY status " +
                 "ORDER BY module_name, status";
         return query(sql);
     }

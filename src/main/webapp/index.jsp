@@ -26,7 +26,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SEInformation - Login</title>
+  <title>SEInformation - 登录</title>
   <script src="https://kit.fontawesome.com/b81ce93c93.js" crossorigin="anonymous"></script>
   <link rel="shortcut icon" href="static/img/favicon.ico" type="image/x-icon">
   <style>
@@ -322,8 +322,8 @@
         <span>SEInformation</span>
       </div>
 
-      <h1>Hello,<br>Welcome Back</h1>
-      <p class="tips">Sign in to enter your role workspace.</p>
+      <h1>你好,<br>欢迎回来</h1>
+      <p class="tips">请登录以进入您的工作空间.</p>
 
       <% if ("invalid".equals(error)) { %>
         <div class="message error">账号或密码错误，请重新输入。</div>
@@ -347,24 +347,24 @@
         <div class="form-row">
           <label class="remember">
             <input type="checkbox" name="remember">
-            <span>Remember me</span>
+            <span>记住我</span>
           </label>
-          <a href="#">Forgot password?</a>
+          <a href="#">忘记密码?</a>
         </div>
-        <button class="primary-button" type="submit">Sign in</button>
+        <button class="primary-button" type="submit">登录</button>
       </form>
 
-      <p class="switch-copy">Student without an account? <a href="#" id="showSignup">Create student account</a></p>
-      <p class="role-note">Teacher, counselor, and administrator accounts are created by administrators only.</p>
+      <p class="switch-copy">没有学生账号? <a href="#" id="showSignup">创建学生账号</a></p>
+      <p class="role-note">教师、辅导员和管理员账号只能由管理员创建。</p>
     </section>
 
     <section class="visual-pane">
       <div class="preview-card">
         <img src="static/img/template_small.jpg" alt="Student dashboard preview">
         <div class="mini-stats">
-          <div class="mini-stat"><strong>1,245</strong><span>Total Students</span></div>
-          <div class="mini-stat"><strong>410</strong><span>Grade 7</span></div>
-          <div class="mini-stat"><strong>97%</strong><span>Attendance</span></div>
+          <div class="mini-stat"><strong>1,245</strong><span>学生总数</span></div>
+          <div class="mini-stat"><strong>410</strong><span>大一</span></div>
+          <div class="mini-stat"><strong>97%</strong><span>出勤率</span></div>
         </div>
       </div>
     </section>
@@ -387,26 +387,26 @@
           <span>SEInformation</span>
         </div>
 
-        <h1>Create<br>Student Account</h1>
-        <p class="tips">Only students can register here. Other roles must be created by administrators.</p>
+        <h1>创建<br>学生账号</h1>
+        <p class="tips">只有学生可以在此注册。其他角色由管理员创建。</p>
 
         <form action="studentRegister" method="post">
           <label class="field">
             <i class="fas fa-user"></i>
-            <input type="text" name="account" placeholder="Student account" required>
+            <input type="text" name="account" placeholder="学生账号" required>
           </label>
           <label class="field">
             <i class="fas fa-lock"></i>
-            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="password" placeholder="密码" required>
           </label>
           <label class="field">
             <i class="fas fa-shield-alt"></i>
-            <input type="password" name="confirmPassword" placeholder="Confirm password" required>
+            <input type="password" name="confirmPassword" placeholder="确认密码" required>
           </label>
-          <button class="primary-button" type="submit">Create student account</button>
+          <button class="primary-button" type="submit">创建学生账号</button>
         </form>
 
-        <p class="switch-copy">Already have an account? <a href="#" id="showLogin">Sign in</a></p>
+        <p class="switch-copy">已有账号? <a href="#" id="showLogin">登录</a></p>
       </section>
     </section>
   </main>

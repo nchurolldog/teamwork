@@ -50,20 +50,20 @@
 
   String meetingStatus = request.getParameter("meetingStatus");
   String view = request.getParameter("view") == null ? "dashboard" : request.getParameter("view");
-  String pageTitle = "dashboard".equals(view) ? "Admin Dashboard"
-      : "accounts".equals(view) ? "Account Management"
-      : "students".equals(view) ? "Student Management"
-      : "classes".equals(view) ? "Class Management"
-      : "applications".equals(view) ? "Application Statistics"
-      : "meetings".equals(view) ? "Class Meetings"
-      : "Admin Dashboard";
+  String pageTitle = "dashboard".equals(view) ? "管理员仪表板"
+          : "accounts".equals(view) ? "账号管理"
+            : "students".equals(view) ? "学生管理"
+              : "classes".equals(view) ? "班级管理"
+                : "applications".equals(view) ? "申请统计"
+                  : "meetings".equals(view) ? "班级会议"
+                    : "管理员仪表板";
 %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SEInformation - Admin</title>
+  <title>SEInformation - 管理员</title>
   <script src="https://kit.fontawesome.com/b81ce93c93.js" crossorigin="anonymous"></script>
   <link rel="shortcut icon" href="static/img/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="static/css/templatetest.css">
@@ -580,25 +580,25 @@
     </div>
     <div class="maincontent">
       <div class="links">
-        <a class="selectionlink <%= activeNav(view, "dashboard") %>" href="admin.jsp"><i class="fas fa-home"></i><span>Dashboard</span></a>
-        <a class="selectionlink <%= activeNav(view, "accounts") %>" href="admin.jsp?view=accounts"><i class="fas fa-user-shield"></i><span>Accounts</span></a>
-        <a class="selectionlink <%= activeNav(view, "students") %>" href="admin.jsp?view=students"><i class="fas fa-user-graduate"></i><span>Students</span></a>
-        <a class="selectionlink <%= activeNav(view, "classes") %>" href="admin.jsp?view=classes"><i class="fas fa-school"></i><span>Classes</span></a>
-        <a class="selectionlink <%= activeNav(view, "applications") %>" href="admin.jsp?view=applications"><i class="fas fa-clipboard-check"></i><span>Applications</span></a>
-        <a class="selectionlink <%= activeNav(view, "meetings") %>" href="admin.jsp?view=meetings"><i class="fas fa-calendar-alt"></i><span>Class Meetings</span></a>
+        <a class="selectionlink <%= activeNav(view, "dashboard") %>" href="admin.jsp"><i class="fas fa-home"></i><span>仪表板</span></a>
+        <a class="selectionlink <%= activeNav(view, "accounts") %>" href="admin.jsp?view=accounts"><i class="fas fa-user-shield"></i><span>账号管理</span></a>
+        <a class="selectionlink <%= activeNav(view, "students") %>" href="admin.jsp?view=students"><i class="fas fa-user-graduate"></i><span>学生管理</span></a>
+        <a class="selectionlink <%= activeNav(view, "classes") %>" href="admin.jsp?view=classes"><i class="fas fa-school"></i><span>班级管理</span></a>
+        <a class="selectionlink <%= activeNav(view, "applications") %>" href="admin.jsp?view=applications"><i class="fas fa-clipboard-check"></i><span>申请统计</span></a>
+        <a class="selectionlink <%= activeNav(view, "meetings") %>" href="admin.jsp?view=meetings"><i class="fas fa-calendar-alt"></i><span>班级会议</span></a>
       </div>
     </div>
     <div class="cardandlogout">
       <div class="card">
         <div class="cardicon"><img src="static/img/money.png" alt="Card Icon"></div>
         <div class="cardtext">
-          <h1>System Snapshot</h1>
-          <p><%= studentCount %> students, <%= classCount %> classes</p>
-          <a href="admin.jsp?view=applications">Review Data</a>
+          <h1>系统概览</h1>
+          <p><%= studentCount %> 名学生, <%= classCount %> 个班级</p>
+          <a href="admin.jsp?view=applications">查看数据</a>
         </div>
       </div>
       <div class="logout">
-        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        <i class="fas fa-sign-out-alt"></i><span>退出登录</span>
       </div>
     </div>
   </div>
@@ -607,14 +607,14 @@
     <div class="headinfor">
       <div class="currentpage">
         <div class="page-title"><%= pageTitle %></div>
-        <div class="page-breadcrumb">Admin / <%= pageTitle %></div>
+        <div class="page-breadcrumb">管理员 / <%= pageTitle %></div>
       </div>
       <div class="userprofile">
         <div class="photoandname">
           <div class="photo"><img src="static/img/maomao.jpg" alt="Profile Photo"></div>
           <div class="nameandposition">
             <div class="name"><%= currentUser.getAccount() %></div>
-            <div class="position">Administrator</div>
+            <div class="position">管理员</div>
           </div>
         </div>
       </div>
@@ -652,9 +652,9 @@
 
     <div class="copyright">
       <div class="copyrightleft">
-        <span>Copyright &copy; 2026 SEInformation. All rights reserved.</span>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
+        <span>版权所有 &copy; 2026 SEInformation. 保留所有权利。</span>
+        <a href="#">隐私政策</a>
+        <a href="#">服务条款</a>
       </div>
       <div class="contactwithus">
         <i class="fab fa-facebook"></i>
