@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.se.model.dao.UsersDAO;
 import org.se.model.entity.Users;
-
+import org.se.util.OnlineUserManager;
 import java.io.IOException;
 
 @WebServlet("/login")
@@ -29,6 +29,7 @@ public class LoginServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         session.setAttribute("currentUser", user);
+        OnlineUserManager.increaseOnlineCount(getServletContext());
         response.sendRedirect(resolveHome(user));
     }
 
