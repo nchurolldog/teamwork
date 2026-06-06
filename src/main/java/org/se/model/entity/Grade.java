@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class Grade {
     public String studentID;
     public String courseID;
+    public BigDecimal regularWeight;
     public BigDecimal regularGrade;
     public BigDecimal finalGrade;
     public BigDecimal totalGrade;

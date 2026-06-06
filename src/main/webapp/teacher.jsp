@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿﻿﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="org.se.model.entity.Users" %>
 <%@ page import="org.se.model.entity.Teacher" %>
 <%@ page import="org.se.model.entity.ProfileImage" %>
@@ -93,8 +93,13 @@
   int teacherCourseCount = dashboardDao.countTeacherCourses(employeeID);
   int teacherGradeCount = dashboardDao.countTeacherGradeItems(employeeID);
   List<Map<String, Object>> teacherScholarshipReviewRows = scholarshipWorkflowDao.findTeacherReviewTasks(employeeID);
+  List<Map<String, Object>> teacherCourseGrades = dashboardDao.findTeacherCourseGrades(employeeID);
+  List<Map<String, Object>> teacherClassStudents = dashboardDao.findTeacherClassStudents(employeeID);
+  List<Map<String, Object>> teacherCourses = dashboardDao.findTeacherCourses(employeeID);
   String profileStatus = request.getParameter("profile");
   String manageStatus = request.getParameter("manage");
+  String gradeStatus = request.getParameter("status");
+  String gradeError = request.getParameter("error");
 %>
 <!DOCTYPE html>
 <html lang="zh-CN">

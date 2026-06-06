@@ -13,14 +13,15 @@ import java.util.List;
 public class GradeDao {
 
     public boolean insert(Grade grade) {
-        String sql = "INSERT INTO grade (student_id, course_id, regular_grade, final_grade, total_grade) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO grade (student_id, course_id, regular_weight, regular_grade, final_grade, total_grade) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, grade.getStudentID());
             pstmt.setString(2, grade.getCourseID());
-            pstmt.setBigDecimal(3, grade.getRegularGrade());
-            pstmt.setBigDecimal(4, grade.getFinalGrade());
-            pstmt.setBigDecimal(5, grade.getTotalGrade());
+            pstmt.setBigDecimal(3, grade.getRegularWeight());
+            pstmt.setBigDecimal(4, grade.getRegularGrade());
+            pstmt.setBigDecimal(5, grade.getFinalGrade());
+            pstmt.setBigDecimal(6, grade.getTotalGrade());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -29,14 +30,15 @@ public class GradeDao {
     }
 
     public boolean update(Grade grade) {
-        String sql = "UPDATE grade SET regular_grade = ?, final_grade = ?, total_grade = ? WHERE student_id = ? AND course_id = ?";
+        String sql = "UPDATE grade SET regular_weight = ?, regular_grade = ?, final_grade = ?, total_grade = ? WHERE student_id = ? AND course_id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setBigDecimal(1, grade.getRegularGrade());
-            pstmt.setBigDecimal(2, grade.getFinalGrade());
-            pstmt.setBigDecimal(3, grade.getTotalGrade());
-            pstmt.setString(4, grade.getStudentID());
-            pstmt.setString(5, grade.getCourseID());
+            pstmt.setBigDecimal(1, grade.getRegularWeight());
+            pstmt.setBigDecimal(2, grade.getRegularGrade());
+            pstmt.setBigDecimal(3, grade.getFinalGrade());
+            pstmt.setBigDecimal(4, grade.getTotalGrade());
+            pstmt.setString(5, grade.getStudentID());
+            pstmt.setString(6, grade.getCourseID());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,6 +70,7 @@ public class GradeDao {
                     Grade grade = new Grade();
                     grade.setStudentID(rs.getString("student_id"));
                     grade.setCourseID(rs.getString("course_id"));
+                    grade.setRegularWeight(rs.getBigDecimal("regular_weight"));
                     grade.setRegularGrade(rs.getBigDecimal("regular_grade"));
                     grade.setFinalGrade(rs.getBigDecimal("final_grade"));
                     grade.setTotalGrade(rs.getBigDecimal("total_grade"));
@@ -90,6 +93,7 @@ public class GradeDao {
                 Grade grade = new Grade();
                 grade.setStudentID(rs.getString("student_id"));
                 grade.setCourseID(rs.getString("course_id"));
+                grade.setRegularWeight(rs.getBigDecimal("regular_weight"));
                 grade.setRegularGrade(rs.getBigDecimal("regular_grade"));
                 grade.setFinalGrade(rs.getBigDecimal("final_grade"));
                 grade.setTotalGrade(rs.getBigDecimal("total_grade"));
@@ -112,6 +116,7 @@ public class GradeDao {
                     Grade grade = new Grade();
                     grade.setStudentID(rs.getString("student_id"));
                     grade.setCourseID(rs.getString("course_id"));
+                    grade.setRegularWeight(rs.getBigDecimal("regular_weight"));
                     grade.setRegularGrade(rs.getBigDecimal("regular_grade"));
                     grade.setFinalGrade(rs.getBigDecimal("final_grade"));
                     grade.setTotalGrade(rs.getBigDecimal("total_grade"));
@@ -135,6 +140,7 @@ public class GradeDao {
                     Grade grade = new Grade();
                     grade.setStudentID(rs.getString("student_id"));
                     grade.setCourseID(rs.getString("course_id"));
+                    grade.setRegularWeight(rs.getBigDecimal("regular_weight"));
                     grade.setRegularGrade(rs.getBigDecimal("regular_grade"));
                     grade.setFinalGrade(rs.getBigDecimal("final_grade"));
                     grade.setTotalGrade(rs.getBigDecimal("total_grade"));

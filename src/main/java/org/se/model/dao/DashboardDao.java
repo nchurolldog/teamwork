@@ -333,6 +333,41 @@ public class DashboardDao {
         return countQuery(sql, employeeID);
     }
 
+    public List<Map<String, Object>> findTeacherCourseGrades(String employeeID) {
+        String sql = "SELECT c.course_id, c.course_name, s.student_id, s.name AS student_name, " +
+                "ce.class_name, g.regular_weight, g.regular_grade, g.final_grade, g.total_grade " +
+                "FROM class_entity ce " +
+                "JOIN student_class sc ON ce.class_id = sc.class_id " +
+                "JOIN student s ON sc.student_id = s.student_id " +
+                "JOIN enrollment e ON s.student_id = e.student_id " +
+                "JOIN course c ON e.course_id = c.course_id " +
+                "LEFT JOIN grade g ON s.student_id = g.student_id AND c.course_id = g.course_id " +
+                "WHERE ce.teacher_id = ? " +
+                "ORDER BY c.course_id, s.student_id";
+        return query(sql, employeeID);
+    }
+
+    public List<Map<String, Object>> findTeacherClassStudents(String employeeID) {
+        String sql = "SELECT DISTINCT s.student_id, s.name, ce.class_id, ce.class_name " +
+                "FROM class_entity ce " +
+                "JOIN student_class sc ON ce.class_id = sc.class_id " +
+                "JOIN student s ON sc.student_id = s.student_id " +
+                "WHERE ce.teacher_id = ? " +
+                "ORDER BY ce.class_name, s.student_id";
+        return query(sql, employeeID);
+    }
+
+    public List<Map<String, Object>> findTeacherCourses(String employeeID) {
+        String sql = "SELECT DISTINCT c.course_id, c.course_name " +
+                "FROM class_entity ce " +
+                "JOIN student_class sc ON ce.class_id = sc.class_id " +
+                "JOIN enrollment e ON sc.student_id = e.student_id " +
+                "JOIN course c ON e.course_id = c.course_id " +
+                "WHERE ce.teacher_id = ? " +
+                "ORDER BY c.course_id";
+        return query(sql, employeeID);
+    }
+
     public int countCounselorPartyApplications(String employeeID) {
         String sql = "SELECT COUNT(*) AS total_count FROM party_application pa " +
                 "JOIN student_class sc ON pa.applicant_student_id = sc.student_id " +
