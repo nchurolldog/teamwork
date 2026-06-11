@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿﻿﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="org.se.model.entity.Users" %>
 <%@ page import="org.se.model.entity.Counselor" %>
 <%@ page import="org.se.model.entity.ProfileImage" %>
@@ -30,10 +30,10 @@
 
   private String attrValue(Object value) {
     return valueText(value)
-        .replace("&", "&amp;")
-        .replace("\"", "&quot;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;");
+            .replace("&", "&amp;")
+            .replace("\"", "&quot;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;");
   }
 
   private Integer parseIntegerParam(String value) {
@@ -185,190 +185,192 @@
   </style>
 </head>
 <body>
-  <div class="shell">
-    <aside class="sidebar">
-      <div class="brand"><img src="static/img/favicon.ico" alt="Logo"><span>SEInformation</span></div>
-      <nav class="nav">
-        <a class="<%= activeNav(view, "overview") %>" href="counselor.jsp"><i class="fas fa-user-friends"></i>概览</a>
-        <a class="<%= activeNav(view, "personal") %>" href="counselor.jsp?view=personal"><i class="fas fa-id-card"></i>个人信息</a>
-        <a class="<%= activeNav(view, "students") %>" href="counselor.jsp?view=students"><i class="fas fa-users"></i>我的学生</a>
-        <a class="<%= activeNav(view, "classes") %>" href="counselor.jsp?view=classes"><i class="fas fa-school"></i>班级</a>
-        <a class="<%= activeNav(view, "partyReview") %>" href="counselor.jsp?view=partyReview"><i class="fas fa-flag"></i>入党审核</a>
-        <a class="<%= activeNav(view, "developmentInspection") %>" href="counselor.jsp?view=developmentInspection"><i class="fas fa-clipboard-check"></i>发展考察</a>
-        <a class="<%= activeNav(view, "partyApproval") %>" href="counselor.jsp?view=partyApproval"><i class="fas fa-stamp"></i>入党审批</a>
-        <a class="<%= activeNav(view, "scholarshipReview") %>" href="counselor.jsp?view=scholarshipReview"><i class="fas fa-award"></i>奖学金</a>
-        <a class="<%= activeNav(view, "meetings") %>" href="counselor.jsp?view=meetings"><i class="fas fa-calendar-check"></i>班级会议</a>
-      </nav>
-      <a class="logout" href="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </aside>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><img src="static/img/favicon.ico" alt="Logo"><span>SEInformation</span></div>
+    <nav class="nav">
+      <a class="<%= activeNav(view, "overview") %>" href="counselor.jsp"><i class="fas fa-user-friends"></i>概览</a>
+      <a class="<%= activeNav(view, "personal") %>" href="counselor.jsp?view=personal"><i class="fas fa-id-card"></i>个人信息</a>
+      <a class="<%= activeNav(view, "students") %>" href="counselor.jsp?view=students"><i class="fas fa-users"></i>我的学生</a>
+      <a class="<%= activeNav(view, "classes") %>" href="counselor.jsp?view=classes"><i class="fas fa-school"></i>班级</a>
+      <a class="<%= activeNav(view, "partyReview") %>" href="counselor.jsp?view=partyReview"><i class="fas fa-flag"></i>入党审核</a>
+      <a class="<%= activeNav(view, "developmentInspection") %>" href="counselor.jsp?view=developmentInspection"><i class="fas fa-clipboard-check"></i>发展考察</a>
+      <a class="<%= activeNav(view, "partyApproval") %>" href="counselor.jsp?view=partyApproval"><i class="fas fa-stamp"></i>入党审批</a>
+      <a class="<%= activeNav(view, "scholarshipReview") %>" href="counselor.jsp?view=scholarshipReview"><i class="fas fa-award"></i>奖学金</a>
+      <a class="<%= activeNav(view, "meetings") %>" href="counselor.jsp?view=meetings"><i class="fas fa-calendar-check"></i>班级会议</a>
+      <a class="<%= activeNav(view, "attendance") %>" href="counselor.jsp?view=attendance"><i class="fas fa-clipboard-list"></i>考勤管理</a>
+    </nav>
+    <a class="logout" href="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </aside>
 
-    <main class="content">
-      <div class="top">
-        <div>
-          <h1>辅导员工作空间</h1>
-          <div class="account">账号: <%= currentUser.getAccount() %></div>
-        </div>
-        <div class="top-actions">
-          <img class="avatar" src="<%= avatarPath %>" alt="Avatar">
-          <span class="pill">辅导员</span>
-        </div>
+  <main class="content">
+    <div class="top">
+      <div>
+        <h1>辅导员工作空间</h1>
+        <div class="account">账号: <%= currentUser.getAccount() %></div>
       </div>
+      <div class="top-actions">
+        <img class="avatar" src="<%= avatarPath %>" alt="Avatar">
+        <span class="pill">辅导员</span>
+      </div>
+    </div>
 
-      <section class="grid">
-        <% if ("saved".equals(profileStatus)) { %>
-          <div class="notice">个人信息已更新。</div>
-        <% } else if ("failed".equals(profileStatus)) { %>
-          <div class="notice error">个人信息更新失败。请检查必填字段。</div>
-        <% } %>
-        <% if ("saved".equals(manageStatus)) { %>
-          <div class="notice">学生管理已更新。</div>
-        <% } else if ("failed".equals(manageStatus)) { %>
-          <div class="notice error">学生管理失败。请检查学生ID和班级归属。</div>
-        <% } %>
-        <%@ include file="counselor/overview.jsp" %>
-        <%@ include file="counselor/personalinfo.jsp" %>
-        <%@ include file="counselor/students.jsp" %>
-        <%@ include file="counselor/classes.jsp" %>
-        <%@ include file="counselor/meetings.jsp" %>
-        <%@ include file="counselor/review-queue.jsp" %>
-        <%@ include file="counselor/party-review.jsp" %>
-        <%@ include file="counselor/scholarship-review.jsp" %>
-      </section>
-    </main>
-  </div>
-  <div class="modal-mask" id="scholarshipDetailMask" aria-hidden="true">
-    <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="scholarshipDetailTitle">
-      <div class="modal-head">
-        <h2 id="scholarshipDetailTitle">申请详情</h2>
-        <button class="close-modal" type="button" id="closeScholarshipDetail" aria-label="Close"><i class="fas fa-xmark"></i></button>
-      </div>
-      <div class="info-list" id="scholarshipDetailBody"></div>
+    <section class="grid">
+      <% if ("saved".equals(profileStatus)) { %>
+      <div class="notice">个人信息已更新。</div>
+      <% } else if ("failed".equals(profileStatus)) { %>
+      <div class="notice error">个人信息更新失败。请检查必填字段。</div>
+      <% } %>
+      <% if ("saved".equals(manageStatus)) { %>
+      <div class="notice">学生管理已更新。</div>
+      <% } else if ("failed".equals(manageStatus)) { %>
+      <div class="notice error">学生管理失败。请检查学生ID和班级归属。</div>
+      <% } %>
+      <%@ include file="counselor/overview.jsp" %>
+      <%@ include file="counselor/attendance.jsp" %>
+      <%@ include file="counselor/personalinfo.jsp" %>
+      <%@ include file="counselor/students.jsp" %>
+      <%@ include file="counselor/classes.jsp" %>
+      <%@ include file="counselor/meetings.jsp" %>
+      <%@ include file="counselor/review-queue.jsp" %>
+      <%@ include file="counselor/party-review.jsp" %>
+      <%@ include file="counselor/scholarship-review.jsp" %>
     </section>
-  </div>
-  <div class="modal-mask" id="profileEditorMask" aria-hidden="true">
-    <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileEditorTitle">
-      <div class="modal-head">
-        <h2 id="profileEditorTitle">编辑个人信息</h2>
-        <button class="close-modal" type="button" id="closeProfileEditor" aria-label="Close"><i class="fas fa-xmark"></i></button>
+  </main>
+</div>
+<div class="modal-mask" id="scholarshipDetailMask" aria-hidden="true">
+  <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="scholarshipDetailTitle">
+    <div class="modal-head">
+      <h2 id="scholarshipDetailTitle">申请详情</h2>
+      <button class="close-modal" type="button" id="closeScholarshipDetail" aria-label="Close"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="info-list" id="scholarshipDetailBody"></div>
+  </section>
+</div>
+<div class="modal-mask" id="profileEditorMask" aria-hidden="true">
+  <section class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileEditorTitle">
+    <div class="modal-head">
+      <h2 id="profileEditorTitle">编辑个人信息</h2>
+      <button class="close-modal" type="button" id="closeProfileEditor" aria-label="Close"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form action="updateCounselorProfile" method="post" enctype="multipart/form-data">
+      <div class="form-grid">
+        <label class="form-field full">
+          头像
+          <input type="file" name="avatar" accept="image/*">
+        </label>
+        <label class="form-field">
+          辅导员ID
+          <input type="text" name="employeeID" value="<%= fieldValue(employeeID) %>" required <%= counselor == null ? "" : "readonly" %>>
+        </label>
+        <label class="form-field">
+          姓名
+          <input type="text" name="name" value="<%= counselor == null ? "" : fieldValue(counselor.getName()) %>" required>
+        </label>
+        <label class="form-field">
+          性别
+          <select name="gender">
+            <option value="0" <%= counselor == null || counselor.getGender() == null || counselor.getGender() == 0 ? "selected" : "" %>>未知</option>
+            <option value="1" <%= counselor != null && counselor.getGender() != null && counselor.getGender() == 1 ? "selected" : "" %>>男</option>
+            <option value="2" <%= counselor != null && counselor.getGender() != null && counselor.getGender() == 2 ? "selected" : "" %>>女</option>
+          </select>
+        </label>
       </div>
-      <form action="updateCounselorProfile" method="post" enctype="multipart/form-data">
-        <div class="form-grid">
-          <label class="form-field full">
-            头像
-            <input type="file" name="avatar" accept="image/*">
-          </label>
-          <label class="form-field">
-            辅导员ID
-            <input type="text" name="employeeID" value="<%= fieldValue(employeeID) %>" required <%= counselor == null ? "" : "readonly" %>>
-          </label>
-          <label class="form-field">
-            姓名
-            <input type="text" name="name" value="<%= counselor == null ? "" : fieldValue(counselor.getName()) %>" required>
-          </label>
-          <label class="form-field">
-            性别
-            <select name="gender">
-              <option value="0" <%= counselor == null || counselor.getGender() == null || counselor.getGender() == 0 ? "selected" : "" %>>未知</option>
-              <option value="1" <%= counselor != null && counselor.getGender() != null && counselor.getGender() == 1 ? "selected" : "" %>>男</option>
-              <option value="2" <%= counselor != null && counselor.getGender() != null && counselor.getGender() == 2 ? "selected" : "" %>>女</option>
-            </select>
-          </label>
-        </div>
-        <div class="form-actions">
-          <button class="secondary-btn" type="button" id="cancelProfileEditor">取消</button>
-          <button class="primary-btn" type="submit">保存</button>
-        </div>
-      </form>
-    </section>
-  </div>
-  <script>
-    const scholarshipDetailMask = document.getElementById('scholarshipDetailMask');
-    const scholarshipDetailBody = document.getElementById('scholarshipDetailBody');
-    const scholarshipDetailTitle = document.getElementById('scholarshipDetailTitle');
-    const closeScholarshipDetail = document.getElementById('closeScholarshipDetail');
-    const detailLabels = {
-      application: '申请',
-      applicant: '申请人',
-      class: '班级',
-      scholarship: '奖学金',
-      status: '状态',
-      amount: '申请金额',
-      family: '家庭情况',
-      score: '学业成绩',
-      conduct: '品行表现',
-      honors: '荣誉奖项',
-      reason: '申请理由',
-      materials: '申请材料'
-    };
+      <div class="form-actions">
+        <button class="secondary-btn" type="button" id="cancelProfileEditor">取消</button>
+        <button class="primary-btn" type="submit">保存</button>
+      </div>
+    </form>
+  </section>
+</div>
+<script>
+  const scholarshipDetailMask = document.getElementById('scholarshipDetailMask');
+  const scholarshipDetailBody = document.getElementById('scholarshipDetailBody');
+  const scholarshipDetailTitle = document.getElementById('scholarshipDetailTitle');
+  const closeScholarshipDetail = document.getElementById('closeScholarshipDetail');
+  const detailLabels = {
+    application: '申请',
+    applicant: '申请人',
+    class: '班级',
+    scholarship: '奖学金',
+    status: '状态',
+    amount: '申请金额',
+    family: '家庭情况',
+    score: '学业成绩',
+    conduct: '品行表现',
+    honors: '荣誉奖项',
+    reason: '申请理由',
+    materials: '申请材料'
+  };
 
-    function openScholarshipDetail(button) {
-      scholarshipDetailTitle.textContent = button.dataset.title || '申请详情';
-      scholarshipDetailBody.innerHTML = Object.keys(detailLabels)
-              .filter(function(key) { return button.dataset[key]; })
-              .map(function(key) {
-                return '<div class="info-row"><span>' + detailLabels[key] + '</span><strong>' + escapeHtml(button.dataset[key]) + '</strong></div>';
-              }).join('');
-      scholarshipDetailMask.classList.add('show');
-      scholarshipDetailMask.setAttribute('aria-hidden', 'false');
-    }
+  function openScholarshipDetail(button) {
+    scholarshipDetailTitle.textContent = button.dataset.title || '申请详情';
+    scholarshipDetailBody.innerHTML = Object.keys(detailLabels)
+            .filter(function(key) { return button.dataset[key]; })
+            .map(function(key) {
+              return '<div class="info-row"><span>' + detailLabels[key] + '</span><strong>' + escapeHtml(button.dataset[key]) + '</strong></div>';
+            }).join('');
+    scholarshipDetailMask.classList.add('show');
+    scholarshipDetailMask.setAttribute('aria-hidden', 'false');
+  }
 
-    function escapeHtml(value) {
-      return String(value).replace(/[&<>"']/g, function(char) {
-        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]);
-      });
-    }
-
-    function closeScholarshipDetailModal() {
-      scholarshipDetailMask.classList.remove('show');
-      scholarshipDetailMask.setAttribute('aria-hidden', 'true');
-    }
-
-    document.querySelectorAll('.js-detail').forEach(function(button) {
-      button.addEventListener('click', function() { openScholarshipDetail(button); });
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function(char) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]);
     });
-    if (closeScholarshipDetail) {
-      closeScholarshipDetail.addEventListener('click', closeScholarshipDetailModal);
-    }
-    if (scholarshipDetailMask) {
-      scholarshipDetailMask.addEventListener('click', function(event) {
-        if (event.target === scholarshipDetailMask) {
-          closeScholarshipDetailModal();
-        }
-      });
-    }
+  }
 
-    const profileMask = document.getElementById('profileEditorMask');
-    const openProfileEditor = document.getElementById('openProfileEditor');
-    const closeProfileEditor = document.getElementById('closeProfileEditor');
-    const cancelProfileEditor = document.getElementById('cancelProfileEditor');
+  function closeScholarshipDetailModal() {
+    scholarshipDetailMask.classList.remove('show');
+    scholarshipDetailMask.setAttribute('aria-hidden', 'true');
+  }
 
-    function openEditor() {
-      profileMask.classList.add('show');
-      profileMask.setAttribute('aria-hidden', 'false');
-    }
+  document.querySelectorAll('.js-detail').forEach(function(button) {
+    button.addEventListener('click', function() { openScholarshipDetail(button); });
+  });
+  if (closeScholarshipDetail) {
+    closeScholarshipDetail.addEventListener('click', closeScholarshipDetailModal);
+  }
+  if (scholarshipDetailMask) {
+    scholarshipDetailMask.addEventListener('click', function(event) {
+      if (event.target === scholarshipDetailMask) {
+        closeScholarshipDetailModal();
+      }
+    });
+  }
 
-    function closeEditor() {
-      profileMask.classList.remove('show');
-      profileMask.setAttribute('aria-hidden', 'true');
-    }
+  const profileMask = document.getElementById('profileEditorMask');
+  const openProfileEditor = document.getElementById('openProfileEditor');
+  const closeProfileEditor = document.getElementById('closeProfileEditor');
+  const cancelProfileEditor = document.getElementById('cancelProfileEditor');
 
-    if (openProfileEditor) {
-      openProfileEditor.addEventListener('click', openEditor);
-    }
-    if (closeProfileEditor) {
-      closeProfileEditor.addEventListener('click', closeEditor);
-    }
-    if (cancelProfileEditor) {
-      cancelProfileEditor.addEventListener('click', closeEditor);
-    }
-    if (profileMask) {
-      profileMask.addEventListener('click', function(event) {
-        if (event.target === profileMask) {
-          closeEditor();
-        }
-      });
-    }
-  </script>
+  function openEditor() {
+    profileMask.classList.add('show');
+    profileMask.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeEditor() {
+    profileMask.classList.remove('show');
+    profileMask.setAttribute('aria-hidden', 'true');
+  }
+
+  if (openProfileEditor) {
+    openProfileEditor.addEventListener('click', openEditor);
+  }
+  if (closeProfileEditor) {
+    closeProfileEditor.addEventListener('click', closeEditor);
+  }
+  if (cancelProfileEditor) {
+    cancelProfileEditor.addEventListener('click', closeEditor);
+  }
+  if (profileMask) {
+    profileMask.addEventListener('click', function(event) {
+      if (event.target === profileMask) {
+        closeEditor();
+      }
+    });
+  }
+</script>
 </body>
 </html>
 

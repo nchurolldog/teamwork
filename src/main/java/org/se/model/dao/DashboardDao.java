@@ -418,6 +418,44 @@ public class DashboardDao {
                 "WHERE pa_approval.approver_employee_id = ? ORDER BY pa_approval.approval_id DESC";
         return query(sql, employeeID);
     }
+
+    public List<Map<String, Object>> findAttendanceByMeetingId(String meetingID) {
+        String sql = "SELECT ar.record_id, ar.student_id, s.name AS student_name, " +
+                "ar.attendance_date, ar.is_absent " +
+                "FROM attendance_publish ap " +
+                "JOIN attendance_record ar ON ap.record_id = ar.record_id " +
+                "JOIN student s ON ar.student_id = s.student_id " +
+                "WHERE ap.meeting_id = ? ORDER BY ar.student_id";
+        return query(sql, meetingID);
+    }
+
+    public List<Map<String, Object>> findAttendanceByStudentId(String studentID) {
+        String sql = "SELECT cm.meeting_id, cm.meeting_theme, ce.class_name, cm.classroom, " +
+                "ar.attendance_date, ar.is_absent " +
+                "FROM attendance_publish ap " +
+                "JOIN attendance_record ar ON ap.record_id = ar.record_id " +
+                "JOIN class_meeting cm ON ap.meeting_id = cm.meeting_id " +
+                "JOIN class_entity ce ON cm.class_id = ce.class_id " +
+                "WHERE ar.student_id = ? ORDER BY ar.attendance_date DESC";
+        return query(sql, studentID);
+    }
+
+    public List<Map<String, Object>> findClassStudentsForAttendance(Integer classID) {
+        String sql = "SELECT s.student_id, s.name " +
+                "FROM student_class sc " +
+                "JOIN student s ON sc.student_id = s.student_id " +
+                "WHERE sc.class_id = ? ORDER BY s.student_id";
+        return query(sql, classID);
+    }
+
+    public List<Map<String, Object>> findMeetingsByClassIdForAttendance(Integer classID) {
+        String sql = "SELECT cm.meeting_id, cm.meeting_theme, ce.class_name, cm.classroom " +
+                "FROM class_meeting cm " +
+                "JOIN class_entity ce ON cm.class_id = ce.class_id " +
+                "WHERE cm.class_id = ? ORDER BY cm.meeting_id DESC";
+        return query(sql, classID);
+    }
+
     private int countQuery(String sql, Object... params) {
         List<Map<String, Object>> rows = query(sql, params);
         if (rows.isEmpty()) {

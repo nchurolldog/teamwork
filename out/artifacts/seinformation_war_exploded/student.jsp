@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿﻿﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="org.se.model.dao.*" %>
@@ -219,6 +219,7 @@
       <a class="<%= activeNav(view, "scholarship") %>" href="student.jsp?view=scholarship"><i class="fas fa-award"></i>奖学金</a>
       <a class="<%= activeNav(view, "party") %>" href="student.jsp?view=party"><i class="fas fa-flag"></i>入党申请</a>
       <a class="<%= activeNav(view, "meetings") %>" href="student.jsp?view=meetings"><i class="fas fa-calendar-check"></i>班会</a>
+      <a class="<%= activeNav(view, "attendance") %>" href="student.jsp?view=attendance"><i class="fas fa-clipboard-list"></i>考勤</a>
     </nav>
     <a class="logout" href="logout"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
   </aside>
@@ -241,6 +242,7 @@
       <% } else if ("failed".equals(profileStatus)) { %>
       <div class="notice error">个人信息更新失败。请检查必填字段。</div>
       <% } %>
+      <%@ include file="student/attendance.jsp" %>
       <%@ include file="student/personalinfo.jsp" %>
       <%@ include file="student/classinfo.jsp" %>
       <%@ include file="student/party.jsp" %>
